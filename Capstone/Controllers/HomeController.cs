@@ -17,5 +17,15 @@ namespace Capstone.Controllers
         {
             return View();
         }
+
+        public ActionResult DynamicProgramming()
+        {
+            return View();
+        }
+
+        public ActionResult ReinforcementLearning()
+        {
+            return View();
+        }
     }
 }

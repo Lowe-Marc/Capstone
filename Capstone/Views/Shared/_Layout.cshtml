@@ -18,6 +18,10 @@
     <link href="~/css/sb-admin.css" rel="stylesheet">
     <!-- Custom styles -->
     <link rel="stylesheet" href="~/css/style.css">
+    <!-- Icons -->
+    <link rel="stylesheet" href="~/vendor/open-iconic-master/font/css/open-iconic.css">
+    @*<link rel="stylesheet" href="~/vendor/open-iconic-master/font/css/open-iconic-bootstrap.css">*@
+    @*<link rel="stylesheet" href="~/vendor/open-iconic-master/font/css/open-iconic-foundation.css">*@
 </head>
 
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -31,9 +35,20 @@
             <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
                 <li class="nav-item" data-toggle="tooltip" data-placement="right" title="AStar">
                     <a class="nav-link" href="/Home/AStar">
-                        @* TODO: Where is this image set? *@
-                        <i class="fa fa-fw fa-dashboard"></i>
+                        <span class="oi icon" data-glyph="fork" title="fork" aria-hidden="true"></span>
                         <span class="nav-link-text">A* Search</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="AStar">
+                    <a class="nav-link" href="/Home/DynamicProgramming">
+                        <span class="oi icon" data-glyph="loop" title="loop" aria-hidden="true"></span>
+                        <span class="nav-link-text">Dynamic Programming</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-toggle="tooltip" data-placement="right" title="AStar">
+                    <a class="nav-link" href="/Home/ReinforcementLearning">
+                        <span class="oi icon" data-glyph="pencil" title="pencil" aria-hidden="true"></span>
+                        <span class="nav-link-text">Reinforcement Learning</span>
                     </a>
                 </li>
             </ul>
