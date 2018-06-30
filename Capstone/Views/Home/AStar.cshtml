@@ -3,21 +3,29 @@
 }
 
 <body>
-    
+
     <div class="jumbotron">
         <h1>A* Search</h1>
         <p class="lead">An intelligent path finding algorithm</p>
     </div>
 
     @{
-        Dictionary<String, List<String>> configs = (Dictionary<String, List<String>>)ViewData["Configs"];
-        
+        List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
     }
 
     <div id="cy"></div>
-
+@{ 
+//@Html.Raw(Json.Encode())
+}
     <script>
         $(function () { // on dom ready
+
+            var configs = @Html.Raw(Json.Encode(AStarConfigs));
+            var first = configs[0];
+            var elements = [];
+            
+            buildElementStructure();
+
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 style: [
@@ -32,52 +40,33 @@
                 layout: {
                     name: 'grid'
                 },
-                elements: [
-                    // nodes
-                    { data: { id: 'a' } },
-                    { data: { id: 'b' } },
-                    { data: { id: 'c' } },
-                    { data: { id: 'd' } },
-                    { data: { id: 'e' } },
-                    { data: { id: 'f' } },
-                    // edges
-                    {
-                        data: {
-                            id: 'ab',
-                            source: 'a',
-                            target: 'b'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'cd',
-                            source: 'c',
-                            target: 'd'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ef',
-                            source: 'e',
-                            target: 'f'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ac',
-                            source: 'a',
-                            target: 'd'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'be',
-                            source: 'b',
-                            target: 'e'
-                        }
-                    }
-                ]
+                elements: elements
             });
-        })
+
+            function buildElementStructure() {
+                console.log(first.nodes);
+                console.log(first.edges);
+
+                for (var i = 0; i < first.nodes.length; i++) {
+                    elements.push({
+                        data: {
+                            id: first.nodes[i].id,
+                            x: first.nodes[i].x,
+                            y: first.nodes[i].y
+                        }
+                    })
+                }
+
+                for (var i = 0; i < first.edges.length; i++) {
+                    elements.push({
+                        data: {
+                            id: first.edges[i].id,
+                            source: first.edges[i].source,
+                            target: first.edges[i].target
+                        }
+                    })
+                }
+            }
+        });
     </script>
 </body>

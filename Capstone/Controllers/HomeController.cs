@@ -17,8 +17,12 @@ namespace Capstone.Controllers
 
         public ActionResult AStar()
         {
-            Dictionary<String, List<String>> configs = Helpers.readConfigFiles("AStar");
-            ViewData["Configs"] = configs;
+            List<ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
+                AStarConfigs = ConfigurationHelper.CONFIGURATIONS["AStar"];
+
+            ViewData["Configs"] = AStarConfigs;
+
             return View();
         }
 
