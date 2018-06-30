@@ -9,6 +9,11 @@
         <p class="lead">An intelligent path finding algorithm</p>
     </div>
 
+    @{
+        Dictionary<String, List<String>> configs = (Dictionary<String, List<String>>)ViewData["Configs"];
+        
+    }
+
     <div id="cy"></div>
 
     <script>
