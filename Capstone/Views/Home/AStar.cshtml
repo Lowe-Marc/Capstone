@@ -14,18 +14,19 @@
     }
 
     <div id="cy"></div>
-@{ 
-//@Html.Raw(Json.Encode())
-}
     <script>
         $(function () { // on dom ready
 
             var configs = @Html.Raw(Json.Encode(AStarConfigs));
+            console.log(configs);
             var first = configs[0];
             var elements = [];
+            var positionsArr = [];
             
             buildElementStructure();
 
+            // TODO: positions
+            // find the center point and offset all the points so the center is at 0,0
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 style: [
@@ -38,9 +39,30 @@
                         }
                     }],
                 layout: {
-                    name: 'grid'
+                    name: 'preset'
                 },
-                elements: elements
+                elements: elements,
+                zoom: 1,
+                pan: { x: 0, y: 0 },
+                minZoom: 1e-1,
+                maxZoom: 1e1,
+                wheelSensitivity: 0.2
+            });
+
+            cy.ready(function () {
+                cy.nodes().positions(function (ele, i) {
+                    return {
+                        x: positionsArr[i].x,
+                        y: positionsArr[i].y
+                    }
+                });
+            });
+            
+
+            cy.on('tap', 'node', function (evt) {
+                var node = evt.target;
+                console.log("tap", node.id(), node.position());
+                
             });
 
             function buildElementStructure() {
@@ -48,12 +70,20 @@
                 console.log(first.edges);
 
                 for (var i = 0; i < first.nodes.length; i++) {
+                    var x = (2) * (180 + first.nodes[i].x);
+                    var y = (2) * (90- first.nodes[i].y);
                     elements.push({
                         data: {
                             id: first.nodes[i].id,
-                            x: first.nodes[i].x,
-                            y: first.nodes[i].y
+                            position: {
+                                x: x,
+                                y: y
+                            }
                         }
+                    })
+                    positionsArr.push({
+                        x: x,
+                        y: y
                     })
                 }
 
