@@ -14,7 +14,7 @@ namespace Capstone.Controllers
         {
             try
             {
-                Models.ConfigurationHelper.readConfigFiles();
+                Models.ConfigurationHelper.readConfigFiles("Test");
             }
             catch (Exception e)
             {

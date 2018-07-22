@@ -4,15 +4,15 @@
 
 <body>
 
-    <div class="jumbotron">
-        <h1>Dynamic Programming</h1>
-        <p class="lead">Summary here</p>
-    </div>
-
     <div id="cy"></div>
 
     <script>
         $(function () { // on dom ready
+
+            // Set page description
+            $('#simulation-title').text("Dynamic Programming")
+            $('#simulation-description').text("An summary of dynamic programming.")
+
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 style: [

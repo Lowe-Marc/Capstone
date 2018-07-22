@@ -4,15 +4,15 @@
 
 <body>
 
-    <div class="jumbotron">
-        <h1>Reinforcement Learning</h1>
-        <p class="lead">Summary here</p>
-    </div>
-
     <div id="cy"></div>
 
     <script>
         $(function () { // on dom ready
+
+            // Set page description
+            $('#simulation-title').text("Reinforcement Learning")
+            $('#simulation-description').text("An summary of reinforcement learning.")
+
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 style: [

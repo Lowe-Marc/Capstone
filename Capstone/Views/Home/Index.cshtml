@@ -3,11 +3,11 @@
 }
 
 <body>
-    
-    <div class="jumbotron">
-        <h1>Capstone Homepage</h1>
-        <p class="lead">Hosting simulations</p>
-        <h1>Test: @ViewData["TestInt"]</h1>
-    </div>
 
 </body>
+
+<script>
+    // Set page description
+    $('#simulation-title').text("Capstone Homepage")
+    $('#simulation-description').text("Hosting simulations: " + @ViewData["TestInt"])
+</script>

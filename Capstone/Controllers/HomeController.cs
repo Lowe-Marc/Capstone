@@ -23,7 +23,10 @@ namespace Capstone.Controllers
 
         public ActionResult AStar()
         {
-            List<ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR);
+            ViewData["ConfigurationException"] = "Test";
+
+            List <ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
             if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
                 AStarConfigs = ConfigurationHelper.CONFIGURATIONS["AStar"];
 

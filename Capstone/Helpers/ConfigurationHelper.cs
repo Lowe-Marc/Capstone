@@ -10,6 +10,10 @@ namespace Capstone.Models
 {
     public class ConfigurationHelper
     {
+        public const string A_STAR = "AStar";
+        public const string DYNAMIC_PROGRAMMING = "Dynamic Programming";
+        public const string REINFORCEMENT_LEARNING = "Reinforcement Learning";
+
         private static readonly string CONFIG_DIR = HostingEnvironment.ApplicationPhysicalPath + "SimulationConfig\\";
 
         /* 
@@ -39,14 +43,32 @@ namespace Capstone.Models
             public double heuristicValue;
         }
 
-        public static void readConfigFiles()
+        public static string readConfigFiles(string simulationName)
         {
             if (CONFIGURATIONS == null)
                 CONFIGURATIONS = new Dictionary<string, List<CytoscapeConfig>>();
 
-            readAStarConfigs();
-            readDynamicProgrammingConfigs();
-            readReinforcementLearningConfigs();
+            try
+            {
+                switch (simulationName)
+                {
+                    case A_STAR:
+                        readAStarConfigs();
+                        break;
+                    case DYNAMIC_PROGRAMMING:
+                        readDynamicProgrammingConfigs();
+                        break;
+                    case REINFORCEMENT_LEARNING:
+                        readReinforcementLearningConfigs();
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+
+            return "";
         }
 
         private static void readAStarConfigs()
