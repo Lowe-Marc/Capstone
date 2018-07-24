@@ -127,3 +127,32 @@
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
+/* Accordion */
+
+.description-accordion {
+    background-color: #e9ecef;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+}
+
+.active, .description-accordion:hover {
+    background-color: #ccc;
+}
+
+.panel {
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+}
+
+.accordion-contents {
+    background-color: #e9ecef;
+}

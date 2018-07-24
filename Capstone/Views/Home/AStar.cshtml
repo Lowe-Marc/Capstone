@@ -23,13 +23,31 @@
             var currentConfig = configs[0];
 
             // Set page description
-            $('#simulation-title').text("A* Search")
-            $('#simulation-description').text("An intelligent path finding algorithm.")
+            $('#simulation-title').text("A* Search");
+            $('#simulation-description').text("An intelligent path finding algorithm.");
             $('#simulation-header').show();
+            $('#accordion-contents').text("Do we want this?");
+            //$('#description-accordion').show();
             setConfigurationsInSelector(configs);
 
             // Cytoscape
             setCytoscape(currentConfig);
+
+            //Start a simulation
+            $('#play').click(function () {
+                $.ajax({
+                    method: "GET",
+                    url: "/Simulations/AStar",
+                    success: (result) => {
+                        console.log("Successful ajax request");
+                        console.log(result);
+                    },
+                    error: (result) => {
+                        console.log("Unsuccessful ajax request");
+                        console.log(result);
+                    }
+                });
+            })
         });
     </script>
 </body>

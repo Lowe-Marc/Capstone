@@ -92,31 +92,35 @@
                 <p class="lead" id="simulation-description"></p>
             </div>
 
+            <button id="description-accordion" class="description-accordion"> Description </button>
+                <div>
+                    <p id="accordion-contents" style="display:none"></p>
+                </div>
+
             <div style="display:none" id="simulation-header">
                 <div id="operation">
                     <div>
-                        <select class="first" id="configuration-selector">
-                        </select>
+                        <select class="first" id="configuration-selector"></select>
                     </div>
                     <div class="svg-expand pointer second">
                         <i class="fa fa-fw fa-expand" title="Fullscreen"></i>
                         <!--
-        <i class="fa fa-fw fa-home" data-toggle="modal" data-target="#add-store" title="Create Store"></i>
-        <i class="fa fa-fw fa-flag-checkered" data-toggle="modal" data-target="#add-relay" title="Create Relay"></i>
-        <i class="fa fa-fw fa-th-large" data-toggle="modal" data-target="#add-region" title="Create Region"></i>
-        <i class="fa fa-fw fa-arrows-h" data-toggle="modal" data-target="#add-connection" title="Create Connection"></i>
-        <i class="fa fa-exchange" data-toggle="modal" data-target="#add-transaction" title="Create Transaction"></i>-->
+                <i class="fa fa-fw fa-home" data-toggle="modal" data-target="#add-store" title="Create Store"></i>
+                <i class="fa fa-fw fa-flag-checkered" data-toggle="modal" data-target="#add-relay" title="Create Relay"></i>
+                <i class="fa fa-fw fa-th-large" data-toggle="modal" data-target="#add-region" title="Create Region"></i>
+                <i class="fa fa-fw fa-arrows-h" data-toggle="modal" data-target="#add-connection" title="Create Connection"></i>
+                <i class="fa fa-exchange" data-toggle="modal" data-target="#add-transaction" title="Create Transaction"></i>-->
                         <i class="fa fa-play" id="play" title="Play"></i>
                         <i class="fa fa-fw fa-pause" id="pause" title="Pause"></i>
                     </div>
                     <div class="notation pull-right">
                         <ul class="list-inline list-unstyled">
                             <!--
-            <li><span class="process-label"></span>Processing Center</li>
-            <li><span class="relay-label"></span>Relay Station</li>
-            <li><span class="store-label"></span>Store</li>
-            <li><span class="inactive-label"></span>Inactive</li>
-            <li><span class="animated-label"></span>Animated</li>-->
+                    <li><span class="process-label"></span>Processing Center</li>
+                    <li><span class="relay-label"></span>Relay Station</li>
+                    <li><span class="store-label"></span>Store</li>
+                    <li><span class="inactive-label"></span>Inactive</li>
+                    <li><span class="animated-label"></span>Animated</li>-->
                         </ul>
                     </div>
                 </div>
@@ -142,3 +146,17 @@
 </body>
 
 </html>
+
+<script>
+    var accordion = $('#description-accordion');
+    var contents = $('#accordion-contents');
+    accordion.click(function () {
+        if (accordion.hasClass('active')) {
+            accordion.removeClass('active')
+            contents.hide();
+        } else {
+            accordion.toggleClass('active');
+            contents.show();
+        }
+    })
+</script>

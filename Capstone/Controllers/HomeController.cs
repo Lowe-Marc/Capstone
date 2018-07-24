@@ -12,8 +12,8 @@ namespace Capstone.Controllers
     {
         public ActionResult Index()
         {
-            IntPtr testCppObj = Capstone.Models.TestModel.CreateTest();
-            int testInt = Capstone.Models.TestModel.TestFunction(testCppObj);
+            IntPtr testCppObj = TestModel.CreateTest();
+            int testInt = TestModel.TestFunction(testCppObj);
             //Capstone.Models.TestModel.DeleteTest(testCppObj);
             //testCppObj = IntPtr.Zero;
             ViewData["TestInt"] = testInt;

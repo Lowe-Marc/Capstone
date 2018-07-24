@@ -7,7 +7,7 @@ Test* CreateTest()
 	return new Test();
 }
 
-void DdeleteTest(Test* test)
+void DeleteTest(Test* test)
 {
 	if (test != nullptr)
 	{
