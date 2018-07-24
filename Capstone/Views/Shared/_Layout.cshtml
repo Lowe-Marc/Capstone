@@ -84,6 +84,8 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
             <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
             <script src="~/js/cytoscape-cose-bilkent.js"></script>
+            <!-- Custom scripts for handling cytoscape-->
+            <script src="~/js/Custom/cytoscape-helpers.js"></script>
 
             <div class="jumbotron" style="height:3%">
                 <h1 id="simulation-title"></h1>
@@ -93,10 +95,7 @@
             <div style="display:none" id="simulation-header">
                 <div id="operation">
                     <div>
-                        <select class="first">
-                            <option>Configuration One</option>
-                            <option>Configuration Two</option>
-                            <option>Configuration Three</option>
+                        <select class="first" id="configuration-selector">
                         </select>
                     </div>
                     <div class="svg-expand pointer second">
