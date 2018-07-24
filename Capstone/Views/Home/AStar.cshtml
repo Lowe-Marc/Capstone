@@ -5,6 +5,13 @@
 <body>
 
     @{
+        if (ViewData["ConfigurationException"] != null && !ViewData["ConfigurationException"].Equals(""))
+        {
+            <script>
+                alert("An exception was thrown parsing the configuration file. Please see the /Home/Debug endpoint for a stacktrace.")
+            </script>
+        }
+
         List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
     }
 
@@ -12,15 +19,10 @@
     <script>
         $(function () { // on dom ready
 
-            // Display any configuration parsing exception
-            if ("@ViewData["ConfigurationException"].ToString().Equals("")" == "False") {
-                alert("@ViewData["ConfigurationException"].ToString()");
-            }
-
             // Set page description
             $('#simulation-title').text("A* Search")
             $('#simulation-description').text("An intelligent path finding algorithm.")
-
+            $('#simulation-header').show();
 
             // Cytoscape
 
@@ -29,7 +31,7 @@
             var first = configs[0];
             var elements = [];
             var positionsArr = [];
-            
+
             buildElementStructure();
 
             // TODO: positions
@@ -52,7 +54,7 @@
                 zoom: 1,
                 pan: { x: 0, y: 0 },
                 minZoom: 1e-1,
-                maxZoom: 1e1,
+                maxZoom: 1,
                 wheelSensitivity: 0.2
             });
 
@@ -64,18 +66,14 @@
                     }
                 });
             });
-            
+
 
             cy.on('tap', 'node', function (evt) {
                 var node = evt.target;
                 console.log("tap", node.id(), node.position());
-                
             });
 
             function buildElementStructure() {
-                console.log(first.nodes);
-                console.log(first.edges);
-
                 for (var i = 0; i < first.nodes.length; i++) {
                     var x = (2) * (180 + first.nodes[i].x);
                     var y = (2) * (90- first.nodes[i].y);
@@ -83,14 +81,14 @@
                         data: {
                             id: first.nodes[i].id,
                             position: {
-                                x: i*100,
-                                y: i*100
+                                x: first.nodes[i].x,
+                                y: first.nodes[i].y
                             }
                         }
                     })
                     positionsArr.push({
-                        x: i*100,
-                        y: i*100
+                        x: first.nodes[i].x,
+                        y: first.nodes[i].y
                     })
                 }
 

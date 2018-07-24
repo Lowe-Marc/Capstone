@@ -1,43 +1,30 @@
-/*hr{
-	color: gray;
-}
-
-.fl{
-	float: left;
-}
-.pointer{
-	cursor: pointer;
-}
-
-.card-wrapper{
-    margin: -10px 0 15px 0;
-}
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    opacity: 1;
-}
-
-* {
-    font-family: 'Monda', sans-serif;
-}
-
-#network-view {
-    width: 100%;
-    height: 100%;
-    border: 1px solid #e6e6e6;
-    background-color: #fafbfc;
-}*/
 
 #cy {
     min-height: 600px;
     min-width: 600px;
     width: 100%;
     height: 100%;
+    border-right: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    border-bottom: 2px solid #e6e6e6;
 }
 
-/*#operation {
-    border-bottom: 1px solid #e6e6e6;
+#operation {
+    border-top: 2px solid #e6e6e6;
+    border-bottom: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    border-right: 2px solid #e6e6e6;
+    background-color: #e6e6e64d;
+}
+
+#operation .first {
+    float: left;
+    padding: 8.0px;
+}
+
+#operation .second {
+    overflow: hidden;
+    /* float: right; */
 }
 
 #operation .svg-expand {
@@ -124,7 +111,7 @@ input[type=number]::-webkit-outer-spin-button {
     width: 24px !important;
     height: 24px !important;
     border-radius: 3px;
-}*/
+}
 
 .icon {
     width: 16px;
@@ -134,4 +121,9 @@ input[type=number]::-webkit-outer-spin-button {
 
 .grayscale {
     filter: grayscale(50%);
+}
+
+.jumbotron {
+    padding-top: 0px;
+    padding-bottom: 0px;
 }

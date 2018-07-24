@@ -3219,6 +3219,7 @@
     <Content Include="vendor\open-iconic-master\webp\zoom-out-8x.webp" />
     <Content Include="vendor\open-iconic-master\webp\zoom-out.webp" />
     <Content Include="Views\Configurations\Sync.cshtml" />
+    <Content Include="Views\Home\Debug.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -85,31 +85,39 @@
             <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
             <script src="~/js/cytoscape-cose-bilkent.js"></script>
 
-            <div id="simulation-header">
-                <div class="jumbotron">
-                    <h1 id="simulation-title"></h1>
-                    <p class="lead"id="simulation-description"></p>
-                </div>
+            <div class="jumbotron" style="height:3%">
+                <h1 id="simulation-title"></h1>
+                <p class="lead" id="simulation-description"></p>
+            </div>
+
+            <div style="display:none" id="simulation-header">
                 <div id="operation">
-                    <div class="svg-expand pointer">
+                    <div>
+                        <select class="first">
+                            <option>Configuration One</option>
+                            <option>Configuration Two</option>
+                            <option>Configuration Three</option>
+                        </select>
+                    </div>
+                    <div class="svg-expand pointer second">
                         <i class="fa fa-fw fa-expand" title="Fullscreen"></i>
                         <!--
-                        <i class="fa fa-fw fa-home" data-toggle="modal" data-target="#add-store" title="Create Store"></i>
-                        <i class="fa fa-fw fa-flag-checkered" data-toggle="modal" data-target="#add-relay" title="Create Relay"></i>
-                        <i class="fa fa-fw fa-th-large" data-toggle="modal" data-target="#add-region" title="Create Region"></i>
-                        <i class="fa fa-fw fa-arrows-h" data-toggle="modal" data-target="#add-connection" title="Create Connection"></i>
-                        <i class="fa fa-exchange" data-toggle="modal" data-target="#add-transaction" title="Create Transaction"></i>-->
-                        <i class="fa fa-play hidden" id="play" title="Play"></i>
-                        <i class="fa fa-fw fa-pause " id="pause" title="Pause"></i>
+        <i class="fa fa-fw fa-home" data-toggle="modal" data-target="#add-store" title="Create Store"></i>
+        <i class="fa fa-fw fa-flag-checkered" data-toggle="modal" data-target="#add-relay" title="Create Relay"></i>
+        <i class="fa fa-fw fa-th-large" data-toggle="modal" data-target="#add-region" title="Create Region"></i>
+        <i class="fa fa-fw fa-arrows-h" data-toggle="modal" data-target="#add-connection" title="Create Connection"></i>
+        <i class="fa fa-exchange" data-toggle="modal" data-target="#add-transaction" title="Create Transaction"></i>-->
+                        <i class="fa fa-play" id="play" title="Play"></i>
+                        <i class="fa fa-fw fa-pause" id="pause" title="Pause"></i>
                     </div>
                     <div class="notation pull-right">
                         <ul class="list-inline list-unstyled">
                             <!--
-                            <li><span class="process-label"></span>Processing Center</li>
-                            <li><span class="relay-label"></span>Relay Station</li>
-                            <li><span class="store-label"></span>Store</li>
-                            <li><span class="inactive-label"></span>Inactive</li>
-                            <li><span class="animated-label"></span>Animated</li>-->
+            <li><span class="process-label"></span>Processing Center</li>
+            <li><span class="relay-label"></span>Relay Station</li>
+            <li><span class="store-label"></span>Store</li>
+            <li><span class="inactive-label"></span>Inactive</li>
+            <li><span class="animated-label"></span>Animated</li>-->
                         </ul>
                     </div>
                 </div>

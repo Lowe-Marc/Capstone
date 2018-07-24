@@ -1,0 +1,51 @@
+﻿<body>
+
+    <div class="jumbotron">
+        <h2>AStar:</h2>
+        @{
+            if (ViewData["AStarConfigurationException"] != null && !ViewData["AStarConfigurationException"].Equals(""))
+            {
+                <div>
+                    @Html.Raw(ViewData["AStarConfigurationException"]);
+                </div>
+            }
+            else
+            {
+                <div>Configurations were parsed sucessfully.</div>
+            }
+        }
+    </div>
+
+    <div class="jumbotron">
+        <h2>Dynamic Programming:</h2>
+        @{
+            if (ViewData["RPConfigurationException"] != null)
+            {
+                <div>
+                    @Html.Raw(ViewData["DPConfigurationException"]);
+                </div>
+            }
+            else
+            {
+                <div>Configurations were parsed sucessfully.</div>
+            }
+        }
+    </div>
+
+    <div class="jumbotron">
+        <h2>Reinforcement Learning:</h2>
+        @{
+            if (ViewData["RLConfigurationException"] != null)
+            {
+                <div>
+                    @Html.Raw(ViewData["RLConfigurationException"]);
+                </div>
+            }
+            else
+            {
+                <div>Configurations were parsed sucessfully.</div>
+            }
+        }
+    </div>
+
+</body>

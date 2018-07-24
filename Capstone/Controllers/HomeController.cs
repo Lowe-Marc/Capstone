@@ -24,7 +24,6 @@ namespace Capstone.Controllers
         public ActionResult AStar()
         {
             ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR);
-            ViewData["ConfigurationException"] = "Test";
 
             List <ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
             if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
@@ -42,6 +41,13 @@ namespace Capstone.Controllers
 
         public ActionResult ReinforcementLearning()
         {
+            return View();
+        }
+
+        public ActionResult Debug()
+        {
+            ViewData["AStarConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR).ToString().Replace("\n", "<br />").Replace("System.Exception:", "");
+
             return View();
         }
     }
