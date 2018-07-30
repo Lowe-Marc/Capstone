@@ -1,9 +1,14 @@
 #pragma once
 
+struct AnimationsStruct {
+	int values[];
+};
+
 class __declspec(dllexport) Test
 {
 public:
 	Test();
 	~Test();
-	int testFunction();
+	int testRunSim();
+	bool testGetResults(AnimationsStruct*);
 };

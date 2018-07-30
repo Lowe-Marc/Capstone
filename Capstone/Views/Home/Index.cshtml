@@ -3,7 +3,14 @@
 }
 
 <body>
-
+    @{
+        int[] values = (int[])ViewData["Values"];
+    }
+    CPP Testing - Size from CPP: @ViewData["Size"]
+    <br />
+    CPP Testing - Values: @values
+    <br />
+    CPP Testing - length: @values.Length
 </body>
 
 <script>

@@ -9,7 +9,12 @@ namespace Capstone.Models
 {
     public class TestModel
     {
-        private const string SIMULATIONS_DLL = "Capstone.Simulations.dll";
+        public struct TestAnimationStruct
+        {
+            public int[] values;
+        }
+
+        private const string SIMULATIONS_DLL = "C:\\Users\\Marcus\\School\\Capstone\\Capstone\\Debug\\Capstone.Simulations.dll";
 
         [DllImport(SIMULATIONS_DLL)]
         static public extern IntPtr CreateTest();
@@ -18,6 +23,9 @@ namespace Capstone.Models
         static public extern void DeleteTest(IntPtr test);
 
         [DllImport(SIMULATIONS_DLL)]
-        static public extern int TestFunction(IntPtr test);
+        static public extern int TestRunSim(IntPtr test);
+
+        [DllImport(SIMULATIONS_DLL)]
+        static public extern bool TestGetResults(IntPtr test, TestAnimationStruct structToAssign);
     }
 }

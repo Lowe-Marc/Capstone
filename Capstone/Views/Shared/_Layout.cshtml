@@ -86,16 +86,11 @@
             <script src="~/js/cytoscape-cose-bilkent.js"></script>
             <!-- Custom scripts for handling cytoscape-->
             <script src="~/js/Custom/cytoscape-helpers.js"></script>
-
             <div class="jumbotron" style="height:3%">
                 <h1 id="simulation-title"></h1>
                 <p class="lead" id="simulation-description"></p>
             </div>
 
-            <button id="description-accordion" class="description-accordion"> Description </button>
-                <div>
-                    <p id="accordion-contents" style="display:none"></p>
-                </div>
 
             <div style="display:none" id="simulation-header">
                 <div id="operation">
@@ -146,17 +141,3 @@
 </body>
 
 </html>
-
-<script>
-    var accordion = $('#description-accordion');
-    var contents = $('#accordion-contents');
-    accordion.click(function () {
-        if (accordion.hasClass('active')) {
-            accordion.removeClass('active')
-            contents.hide();
-        } else {
-            accordion.toggleClass('active');
-            contents.show();
-        }
-    })
-</script>

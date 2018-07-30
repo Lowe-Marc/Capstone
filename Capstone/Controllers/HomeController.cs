@@ -13,10 +13,12 @@ namespace Capstone.Controllers
         public ActionResult Index()
         {
             IntPtr testCppObj = TestModel.CreateTest();
-            int testInt = TestModel.TestFunction(testCppObj);
-            //Capstone.Models.TestModel.DeleteTest(testCppObj);
-            //testCppObj = IntPtr.Zero;
-            ViewData["TestInt"] = testInt;
+            int size = TestModel.TestRunSim(testCppObj);
+            TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct();
+            testStruct.values = new int[size];
+            TestModel.TestGetResults(testCppObj, testStruct);
+            ViewData["Size"] = size;
+            ViewData["Values"] = testStruct.values;
 
             return View();
         }

@@ -16,11 +16,20 @@ void DeleteTest(Test* test)
 	}
 }
 
-int TestFunction(Test* test)
+int TestRunSim(Test* test)
 {
 	if (test != nullptr)
 	{
-		return test->testFunction();
+		return test->testRunSim();
 	}
 	return -1;
+}
+
+bool TestGetResults(Test* test, AnimationsStruct* handle)
+{
+	if (test != nullptr)
+	{
+		return test->testGetResults(handle);
+	}
+	return false;
 }

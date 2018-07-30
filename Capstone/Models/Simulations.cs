@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Runtime.InteropServices;
 using System.Web.Hosting;
+using Microsoft.Win32.SafeHandles;
+
+
 
 namespace Capstone.Models
 {
@@ -22,15 +25,22 @@ namespace Capstone.Models
         double heuristicValue;
     };
 
-    //struct AStarCYAnimationFrame
-    //{
-    //    vector<AStarCYNode> nodes;
-    //    vector<AStarCYEdge> edges;
-    //};
+    struct AStarCYAnimationFrame
+    {
+        AStarCYNode[] nodes;
+        AStarCYEdge[] edges;
+    };
 
     public class Simulations
     {
         private const string SIMULATIONS_DLL = "Capstone.Simulations.dll";
+
+        [DllImport(SIMULATIONS_DLL)]
+        static unsafe extern bool ReleaseAnimations(IntPtr animationsHandle);
+
+        static unsafe extern bool GenerateAnimations(out AnimationsHandle handle,
+            out AStarCYAnimationFrame frames, out int frameCount);
+
 
         [DllImport(SIMULATIONS_DLL)]
         static public extern IntPtr CreateAStar();
@@ -40,5 +50,18 @@ namespace Capstone.Models
 
         [DllImport(SIMULATIONS_DLL)]
         static public extern int Simulate(IntPtr astar);
+
+        private class AnimationsHandle : SafeHandleZeroOrMinusOneIsInvalid
+        {
+            public AnimationsHandle() : base(true)
+            {
+
+            }
+
+            protected override bool ReleaseHandle()
+            {
+                return ReleaseAnimations(handle);
+            }
+        }
     }
 }
