@@ -25,7 +25,7 @@ int TestRunSim(Test* test)
 	return -1;
 }
 
-bool TestGetResults(Test* test, AnimationsStruct* handle)
+bool TestGetResults(Test* test, int handle[])
 {
 	if (test != nullptr)
 	{

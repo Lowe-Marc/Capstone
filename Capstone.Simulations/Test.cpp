@@ -1,8 +1,8 @@
 #include "Test.h"
 #include "stdafx.h"
 
-static AnimationsStruct testStruct;
-static int testSize;
+static int testArr[] = {0,1};
+static int testSize = 0;
 
 
 Test::Test() {
@@ -14,18 +14,18 @@ Test::~Test() {
 int Test::testRunSim() {
 
 	testSize = 10;
-	testStruct.values[testSize] = {};
+	testArr[testSize] = {0};
 
 	for (int i = 0; i < testSize; i++) {
-		testStruct.values[i] = i;
+		testArr[i] = i;
 	}
 
 	return testSize;
 }
 
-bool Test::testGetResults(AnimationsStruct* handle) {
+bool Test::testGetResults(int handle[]) {
 	for (int i = 0; i < testSize; i++) {
-		handle->values[i] = i;
+		handle[i] = testArr[i];
 	}
 
 	return true;

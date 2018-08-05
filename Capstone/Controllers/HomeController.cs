@@ -14,9 +14,12 @@ namespace Capstone.Controllers
         {
             IntPtr testCppObj = TestModel.CreateTest();
             int size = TestModel.TestRunSim(testCppObj);
-            TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct();
-            testStruct.values = new int[size];
-            TestModel.TestGetResults(testCppObj, testStruct);
+            TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct
+            {
+                values = new int[size]
+            };
+            bool success = TestModel.TestGetResults(testCppObj, testStruct.values);
+            ViewData["Success"] = success;
             ViewData["Size"] = size;
             ViewData["Values"] = testStruct.values;
 

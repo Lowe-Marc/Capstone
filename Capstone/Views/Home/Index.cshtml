@@ -5,10 +5,17 @@
 <body>
     @{
         int[] values = (int[])ViewData["Values"];
+        string valueString = "";
+        foreach (int i in values)
+        {
+            valueString = valueString + " " + i;
+        }
     }
+    CPP Testing - Success: @ViewData["Success"]
+    <br />
     CPP Testing - Size from CPP: @ViewData["Size"]
     <br />
-    CPP Testing - Values: @values
+    CPP Testing - Values: @valueString
     <br />
     CPP Testing - length: @values.Length
 </body>

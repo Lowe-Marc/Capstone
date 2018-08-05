@@ -10,5 +10,5 @@ public:
 	Test();
 	~Test();
 	int testRunSim();
-	bool testGetResults(AnimationsStruct*);
+	bool testGetResults(int handle[]);
 };

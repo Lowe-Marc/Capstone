@@ -9,6 +9,7 @@ namespace Capstone.Models
 {
     public class TestModel
     {
+        [StructLayout(LayoutKind.Sequential)]
         public struct TestAnimationStruct
         {
             public int[] values;
@@ -26,6 +27,6 @@ namespace Capstone.Models
         static public extern int TestRunSim(IntPtr test);
 
         [DllImport(SIMULATIONS_DLL)]
-        static public extern bool TestGetResults(IntPtr test, TestAnimationStruct structToAssign);
+        static public extern bool TestGetResults(IntPtr test, int[] structToAssign);
     }
 }

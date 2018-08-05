@@ -20,25 +20,62 @@
         $(function () { // on dom ready
 
             var configs = @Html.Raw(Json.Encode(AStarConfigs));
+            var possibleCytoscapeMaps = [];
+            for (var i = 0; i < configs.length; i++) {
+                possibleCytoscapeMaps.push({
+                    map: null,
+                    current: false
+                });
+            }
             var currentConfig = configs[0];
+            var currentTimestep = 0;
+            var animationFrames = [];
 
             // Set page description
             $('#simulation-title').text("A* Search");
             $('#simulation-description').text("An intelligent path finding algorithm.");
             $('#simulation-header').show();
-            setConfigurationsInSelector(configs);
-
             // Cytoscape
-            setCytoscape(currentConfig);
+            var cy = setCytoscape(currentConfig);
+            setConfigurationsInSelector(configs, possibleCytoscapeMaps);
+            possibleCytoscapeMaps[0]['current'] = true;
+            possibleCytoscapeMaps[0]['map'] = cy;
+            
 
             //Start a simulation
             $('#play').click(function () {
+                cy = getCurrentMapObject(possibleCytoscapeMaps);
+                //console.log("possible");
+                //console.log(possibleCytoscapeMaps)
                 $.ajax({
                     method: "GET",
                     url: "/Simulations/AStar",
                     success: (result) => {
                         console.log("Successful ajax request");
-                        console.log(result);
+                        result = $.parseJSON(result)
+                        ////console.log(result);
+                        assembleFullAnimation(result, cy, animationFrames, currentTimestep);
+                        //console.log("After: ", animationFrames, currentTimestep);
+                        //animationFrames[currentTimestep].play()
+
+                        //cy.nodes()
+                        //    .animate({
+                        //        style: { 'background-color': 'blue' }
+                        //    }, {
+                        //        duration: 1000
+                        //    })
+
+                        //    .delay(1000)
+
+                        //    .animate({
+                        //        style: { 'background-color': 'yellow' }
+                        //    })
+                        //    ;
+
+                        //console.log("testing")
+                        //var testarr = [null,null,null]
+                        //testing(testarr)
+                        //console.log(testarr)
                     },
                     error: (result) => {
                         console.log("Unsuccessful ajax request");
