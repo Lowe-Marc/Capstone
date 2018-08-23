@@ -172,11 +172,13 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                 if (i >= thisFrame.length - 1) {
                     thisFrame[i].promise('completed').then(function() {
                         console.log("frame finishing...");
-                        console.log("finishing timestep: " + currentTimestep)
-                        currentTimestep++; //TODO: This isn't actually incrementing the value
-                        console.log("startime timestep " + currentIndex)
-                        if (currentTimestep < fullAnimation.length) {
-                            fullAnimation[currentTimestep][0].play();
+                        console.log("finishing timestep: " + currentTimestep["timestep"])
+                        currentTimestep["timestep"]++; //TODO: This isn't actually incrementing the value
+                        console.log("starting timestep " + currentTimestep)
+                        if (currentTimestep["timestep"] < fullAnimation.length) {
+                            fullAnimation[currentTimestep["timestep"]][0].play();
+                        } else {
+                            currentTimestep["timestep"] = 0;
                         }
                     });
                 }
