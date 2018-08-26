@@ -10,7 +10,7 @@ function setCytoscape(currentConfig) {
                 selector: 'node',
                 style: {
                     shape: 'ellipse',
-                    'background-color': 'black',
+                    'background-color': inactiveColor(),
                     label: 'data(id)'
                 }
             }],
@@ -106,25 +106,21 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
 
 // simulationResults is a list of lists
 // the inner list is a list of nodes to be animated at each frame
-function assembleFullAnimation(simulationResults, cy, animationFrames, currentTimestep) {
+function assembleFullAnimation(simulationResults, cy, currentAnimation) {
     
     debug = simulationResults.length
 
     var fullAnimation = new Array(debug);
     for (var i = 0; i < debug; i++) {
-        fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentTimestep, cy, fullAnimation);
+        fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentAnimation, cy, fullAnimation);
     }
+    currentAnimation['frames'] = fullAnimation;
     
     console.log("fullAnimation")
     console.log(fullAnimation)
-    
-    fullAnimation[0][0].play();
 }
 
-function assembleAnimationFrame(nodes, currentTimestep, cy, fullAnimation) {
-    // console.log("nodes")
-    // console.log(nodes)
-
+function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation) {
     var animationFrame = new Array(nodes.length);
     var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
@@ -132,7 +128,7 @@ function assembleAnimationFrame(nodes, currentTimestep, cy, fullAnimation) {
         if (i == nodes.length - 1) {
             lastInFrame = true;
         }
-        var nodeAnimation = assembleAnimation(elementToAnimate, currentTimestep, i, animationFrame, fullAnimation);
+        var nodeAnimation = assembleAnimation(elementToAnimate, currentAnimation, i, animationFrame, fullAnimation);
 
         animationFrame[i] = nodeAnimation;
     }
@@ -140,22 +136,23 @@ function assembleAnimationFrame(nodes, currentTimestep, cy, fullAnimation) {
     return animationFrame
 }
 
-function assembleAnimation(elementToAnimate, currentTimestep, currentIndex, thisFrame, fullAnimation) {
-    
+function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thisFrame, fullAnimation) {
         var lastInFrame = (currentIndex >= thisFrame.length - 1);
         var nodeAnimation = elementToAnimate.animation({
             style: {
-                'background-color': 'red'
+                'background-color': activeColor()
             },
-            duration: 500
+            duration: animationTime()
         });
+        nodeAnimation['startColor'] = inactiveColor();
+        nodeAnimation['element'] = elementToAnimate;
 
-        connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentTimestep)
+        connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation)
 
     return nodeAnimation
 }
 
-function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentTimestep) {
+function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation) {
     // Once the node has animated to its active color, kick off the animation for the next node
     nodeAnimation.promise('completed').then(function() {
         console.log("black to red complete")
@@ -164,33 +161,98 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
         // i.e. go back to their original color.
         // When the last animation in this frame is back to its original, start the next frame
         if (lastInFrame) {
-            for (var i = 0; i < thisFrame.length; i++) {
-                console.log("rewinding " + i + " in frame " + thisFrame.length)
-                thisFrame[i].reverse()
-                            .rewind();
-                // Last in frame kicks off next frame
-                if (i >= thisFrame.length - 1) {
-                    thisFrame[i].promise('completed').then(function() {
-                        console.log("frame finishing...");
-                        console.log("finishing timestep: " + currentTimestep["timestep"])
-                        currentTimestep["timestep"]++; //TODO: This isn't actually incrementing the value
-                        console.log("starting timestep " + currentTimestep)
-                        if (currentTimestep["timestep"] < fullAnimation.length) {
-                            fullAnimation[currentTimestep["timestep"]][0].play();
-                        } else {
-                            currentTimestep["timestep"] = 0;
-                        }
-                    });
+            setTimeout( function() { // This timeout setups the amount of time the frame will pause when active
+                for (var i = 0; i < thisFrame.length; i++) {
+                    console.log("rewinding " + i + " in frame " + thisFrame.length)
+                    thisFrame[i]['startColor'] = activeColor();
+                    thisFrame[i].reverse()
+                                .rewind();
+                    // Last in frame kicks off next frame
+                    if (i >= thisFrame.length - 1) {
+                        thisFrame[i].promise('completed').then(function() {
+                            console.log("frame finishing...");
+                            console.log("finishing timestep: " + currentAnimation["timestep"])
+                            currentAnimation["timestep"]++;
+                            console.log("starting timestep " + currentAnimation['timestep'])
+                            if (currentAnimation["timestep"] < fullAnimation.length) {
+                                $('#frame-tracker').text(currentIndex + 2 + '/' + fullAnimation.length);
+                                fullAnimation[currentAnimation["timestep"]][0].play();
+                            } else {
+                                currentAnimation["timestep"] = 0;
+                                currentAnimation["finished"] = true;
+                                $('#frame-tracker').text(0 + '/' + fullAnimation.length);
+                                $('#pause').addClass('disabled');
+                                $('#play').removeClass('disabled');
+                            }
+                        });
+                    }
+                    thisFrame[i].play();
                 }
-                thisFrame[i].play();
-            }
+            }, animationActiveTime())
+            
         } else {
             var nextInFrame = null;
             if (!lastInFrame) {
                 nextInFrame = thisFrame[currentIndex + 1];
-                console.log("playing next in frame")                
             }
             nextInFrame.play();
         }
     });
+}
+
+function pauseFrame(frame) {
+    console.log("pausing")
+    for (var i = 0; i < frame.length; i++) {
+        frame[i].pause();
+    }
+}
+
+function playFrame(frame, timestep, totalTime) {
+    console.log("playing")
+    $('#frame-tracker').text(timestep + 1 + '/' + totalTime);
+    frame[0].play();
+}
+
+// This will reset all active elements back to inactive, then execute restartAnimfunction
+// which rebuilds the animations and starts at the point where it was paused
+function resetFrame(frame, restartAnimfunction) {
+    console.log("resetting")
+    var resetAnim;
+    for (var i = 0; i < frame.length; i++) {
+        resetAnim = frame[i]['element'].animation({
+            style: {
+                'background-color': inactiveColor()
+            },
+            duration: resetTime()
+        });
+        resetAnim.play();
+        if (i == frame.length - 1) {
+            resetAnim.promise('completed').then(function() {
+                restartAnimfunction();
+            });
+        }
+    }
+}
+
+function inactiveColor() {
+    return 'black';
+}
+
+function activeColor() {
+    return 'red';
+}
+
+// Time in ms it takes to reset after pausing
+function resetTime() {
+    return 500;
+}
+
+// Time in ms it takes for each animation in a frame to activate
+function animationTime() {
+    return 200;
+}
+
+// Time in ms nodes will stay active during a frame
+function animationActiveTime() {
+    return 1000;
 }
