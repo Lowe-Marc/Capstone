@@ -106,13 +106,13 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
 
 // simulationResults is a list of lists
 // the inner list is a list of nodes to be animated at each frame
-function assembleFullAnimation(simulationResults, cy, currentAnimation) {
+function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
     
     debug = simulationResults.length
 
     var fullAnimation = new Array(debug);
     for (var i = 0; i < debug; i++) {
-        fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentAnimation, cy, fullAnimation);
+        fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentAnimation, cy, fullAnimation, frameToPauseOn);
     }
     currentAnimation['frames'] = fullAnimation;
     
@@ -120,7 +120,7 @@ function assembleFullAnimation(simulationResults, cy, currentAnimation) {
     console.log(fullAnimation)
 }
 
-function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation) {
+function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation, frameToPauseOn) {
     var animationFrame = new Array(nodes.length);
     var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
@@ -128,7 +128,7 @@ function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation) {
         if (i == nodes.length - 1) {
             lastInFrame = true;
         }
-        var nodeAnimation = assembleAnimation(elementToAnimate, currentAnimation, i, animationFrame, fullAnimation);
+        var nodeAnimation = assembleAnimation(elementToAnimate, currentAnimation, i, animationFrame, fullAnimation, frameToPauseOn);
 
         animationFrame[i] = nodeAnimation;
     }
@@ -136,7 +136,7 @@ function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation) {
     return animationFrame
 }
 
-function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thisFrame, fullAnimation) {
+function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thisFrame, fullAnimation, frameToPauseOn) {
         var lastInFrame = (currentIndex >= thisFrame.length - 1);
         var nodeAnimation = elementToAnimate.animation({
             style: {
@@ -147,12 +147,12 @@ function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thi
         nodeAnimation['startColor'] = inactiveColor();
         nodeAnimation['element'] = elementToAnimate;
 
-        connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation)
+        connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation, frameToPauseOn)
 
     return nodeAnimation
 }
 
-function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation) {
+function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation, frameToPauseOn) {
     // Once the node has animated to its active color, kick off the animation for the next node
     nodeAnimation.promise('completed').then(function() {
         console.log("black to red complete")
@@ -161,32 +161,40 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
         // i.e. go back to their original color.
         // When the last animation in this frame is back to its original, start the next frame
         if (lastInFrame) {
+            // When moving forward or backward, the frame should auto-pause
+            if (currentAnimation['timestep'] == frameToPauseOn) {
+                return;
+            }
             setTimeout( function() { // This timeout setups the amount of time the frame will pause when active
-                for (var i = 0; i < thisFrame.length; i++) {
-                    console.log("rewinding " + i + " in frame " + thisFrame.length)
-                    thisFrame[i]['startColor'] = activeColor();
-                    thisFrame[i].reverse()
-                                .rewind();
-                    // Last in frame kicks off next frame
-                    if (i >= thisFrame.length - 1) {
-                        thisFrame[i].promise('completed').then(function() {
-                            console.log("frame finishing...");
-                            console.log("finishing timestep: " + currentAnimation["timestep"])
-                            currentAnimation["timestep"]++;
-                            console.log("starting timestep " + currentAnimation['timestep'])
-                            if (currentAnimation["timestep"] < fullAnimation.length) {
-                                $('#frame-tracker').text(currentIndex + 2 + '/' + fullAnimation.length);
-                                fullAnimation[currentAnimation["timestep"]][0].play();
-                            } else {
-                                currentAnimation["timestep"] = 0;
-                                currentAnimation["finished"] = true;
-                                $('#frame-tracker').text(0 + '/' + fullAnimation.length);
-                                $('#pause').addClass('disabled');
-                                $('#play').removeClass('disabled');
-                            }
-                        });
+                if (!currentAnimation['paused']) {
+                    for (var i = 0; i < thisFrame.length; i++) {
+                        console.log("rewinding " + i + " in frame " + thisFrame.length)
+                        thisFrame[i]['startColor'] = activeColor();
+                        thisFrame[i].reverse()
+                                    .rewind();
+                        // Last in frame kicks off next frame
+                        if (i >= thisFrame.length - 1) {
+                            thisFrame[i].promise('completed').then(function() {
+                                console.log("frame finishing...");
+                                console.log("finishing timestep: " + currentAnimation["timestep"])
+                                currentAnimation["timestep"]++;
+                                console.log("starting timestep " + currentAnimation['timestep'])
+                                if (currentAnimation["timestep"] < fullAnimation.length) {
+                                    $('#frame-tracker').text(currentIndex + 2 + '/' + fullAnimation.length);
+                                    fullAnimation[currentAnimation["timestep"]][0].play();
+                                } else {
+                                    currentAnimation["timestep"] = 0;
+                                    currentAnimation["finished"] = true;
+                                    $('#frame-tracker').text(0 + '/' + fullAnimation.length);
+                                    $('#pause').addClass('disabled');
+                                    $('#play').removeClass('disabled');
+                                    $('#forward').removeClass('disabled');
+                                    $('#backward').removeClass('disabled');                                    
+                                }
+                            });
+                        }
+                        thisFrame[i].play();
                     }
-                    thisFrame[i].play();
                 }
             }, animationActiveTime())
             

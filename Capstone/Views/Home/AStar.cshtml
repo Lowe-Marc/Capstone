@@ -36,6 +36,7 @@
             };
             var animationResults = [];
             var currentTimestep = 0;
+            var DONTPAUSE = -1;
 
             // Set page description
             $('#simulation-title').text("A* Search");
@@ -55,30 +56,17 @@
                 }
                 currentAnimation['paused'] = false;
                 $('#play').addClass('disabled');
+                $('#forward').addClass('disabled');
+                $('#backward').addClass('disabled');
                 $('#pause').removeClass('disabled');
 
                 cy = getCurrentMapObject(possibleCytoscapeMaps);
 
                 //Only run the simulation if it hasn't already been run on this configuration
                 if (currentAnimation['frames'].length == 0) {
-                    $.ajax({
-                        method: "GET",
-                        url: "/Simulations/AStar",
-                        success: (result) => {
-                            console.log("Successful ajax request");
-                            animationResults = $.parseJSON(result);
-                            //console.log(result);
-                            assembleFullAnimation(animationResults, cy, currentAnimation);
-                            playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
-                        },
-                        error: (result) => {
-                            console.log("Unsuccessful ajax request");
-                            console.log(result);
-                        }
-                    });
+                    runSimulation(firstPlay)
                 } else {
-                    resetFrame(currentAnimation['frames'][currentTimestep], restartAnim)
-                }
+                    resetFrame(currentAnimation['frames'][currentTimestep], restartAnim)                }
             });
 
             $('#pause').click(function () {
@@ -89,8 +77,35 @@
                 pauseFrame(currentAnimation['frames'][currentTimestep]);
                 currentAnimation['paused'] = true;
                 $('#play').removeClass('disabled');
+                $('#forward').removeClass('disabled');
+                $('#backward').removeClass('disabled');
                 $('#pause').addClass('disabled');
             });
+
+            // Need to run the simulation before advancing a frame if it has not already run
+            $('#forward').click(function () {
+                if (animationResults.length == 0) {
+                    runSimulation(frameForward);
+                } else {
+                    frameForward();
+                }
+            });
+
+            function frameForward() {
+                resetFrame(currentAnimation['frames'][currentTimestep], startNextFrame)
+            }
+
+            function startNextFrame() {
+                currentTimestep++;
+                currentAnimation = {
+                    timestep: currentTimestep,
+                    frames: [],
+                    paused: false,
+                    finished: false
+                };
+                assembleFullAnimation(animationResults, cy, currentAnimation, currentTimestep);
+                playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
+            }
 
             function restartAnim() {
                 currentAnimation = {
@@ -100,7 +115,30 @@
                     finished: false
                 };
                 currentTimestep = 0;
-                assembleFullAnimation(animationResults, cy, currentAnimation);
+                assembleFullAnimation(animationResults, cy, currentAnimation, DONTPAUSE);
+                playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
+            }
+
+            function runSimulation(executeOnSuccess) {
+                $.ajax({
+                    method: "GET",
+                    url: "/Simulations/AStar",
+                    success: (result) => {
+                        console.log("Successful ajax request");
+                        animationResults = $.parseJSON(result);
+                        if (executeOnSuccess != null) {
+                            executeOnSuccess();
+                        }
+                    },
+                    error: (result) => {
+                        console.log("Unsuccessful ajax request");
+                        console.log(result);
+                    }
+                });
+            }
+
+            function firstPlay() {
+                assembleFullAnimation(animationResults, cy, currentAnimation, DONTPAUSE);
                 playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
             }
 
