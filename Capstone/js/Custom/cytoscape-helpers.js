@@ -116,8 +116,8 @@ function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToP
     }
     currentAnimation['frames'] = fullAnimation;
     
-    console.log("fullAnimation")
-    console.log(fullAnimation)
+    // console.log("fullAnimation")
+    // console.log(fullAnimation) 
 }
 
 function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation, frameToPauseOn) {
@@ -155,14 +155,14 @@ function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thi
 function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation, frameToPauseOn) {
     // Once the node has animated to its active color, kick off the animation for the next node
     nodeAnimation.promise('completed').then(function() {
-        console.log("black to red complete")
+        // console.log("black to red complete")
 
         // When the last animation in the frame finishes, play the reverse animation for the frame
         // i.e. go back to their original color.
         // When the last animation in this frame is back to its original, start the next frame
         if (lastInFrame) {
             // When moving forward or backward, the frame should auto-pause
-            if (currentAnimation['timestep'] == frameToPauseOn) {
+            if (currentAnimation['timestep'] == frameToPauseOn || frameToPauseOn == -2) {
                 return;
             }
             setTimeout( function() { // This timeout setups the amount of time the frame will pause when active
@@ -176,9 +176,9 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                         if (i >= thisFrame.length - 1) {
                             thisFrame[i].promise('completed').then(function() {
                                 console.log("frame finishing...");
-                                console.log("finishing timestep: " + currentAnimation["timestep"])
+                                // console.log("finishing timestep: " + currentAnimation["timestep"])
                                 currentAnimation["timestep"]++;
-                                console.log("starting timestep " + currentAnimation['timestep'])
+                                // console.log("starting timestep " + currentAnimation['timestep'])
                                 if (currentAnimation["timestep"] < fullAnimation.length) {
                                     $('#frame-tracker').text(currentIndex + 2 + '/' + fullAnimation.length);
                                     fullAnimation[currentAnimation["timestep"]][0].play();
@@ -215,16 +215,22 @@ function pauseFrame(frame) {
     }
 }
 
-function playFrame(frame, timestep, totalTime) {
-    console.log("playing")
-    $('#frame-tracker').text(timestep + 1 + '/' + totalTime);
-    frame[0].play();
+function playFrame(frameInfo) {
+    if (frameInfo['timestep'] > frameInfo['numFrames'] || frameInfo['timestep'] < 0) {
+        return
+    }
+    console.log("playing frame")
+    console.log(frameInfo)
+    $('#frame-tracker').text(frameInfo['timestep'] + 1 + '/' + frameInfo['numFrames']);
+    frameInfo['frame'][0].play();
 }
 
-// This will reset all active elements back to inactive, then execute restartAnimfunction
-// which rebuilds the animations and starts at the point where it was paused
-function resetFrame(frame, restartAnimfunction) {
+// This will reset all active elements back to inactive, then execute setFrameFunction
+// which rebuilds the animations and starts at a specific frame
+function resetFrame(frame, setFrameFunction, setFrameFunctionParameters) {
     console.log("resetting")
+    console.log("frame in reset")
+    console.log(frame)
     var resetAnim;
     for (var i = 0; i < frame.length; i++) {
         resetAnim = frame[i]['element'].animation({
@@ -236,7 +242,7 @@ function resetFrame(frame, restartAnimfunction) {
         resetAnim.play();
         if (i == frame.length - 1) {
             resetAnim.promise('completed').then(function() {
-                restartAnimfunction();
+                setFrameFunction(setFrameFunctionParameters);
             });
         }
     }
@@ -263,4 +269,8 @@ function animationTime() {
 // Time in ms nodes will stay active during a frame
 function animationActiveTime() {
     return 1000;
+}
+
+function getDisplayedFrame() {
+    return $('#frame-tracker').text().split("/")[0]
 }

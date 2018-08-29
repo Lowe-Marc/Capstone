@@ -34,7 +34,7 @@
                 paused: false,
                 finished: false
             };
-            var animationResults = [];
+            var simulationResults = [];
             var currentTimestep = 0;
             var DONTPAUSE = -1;
 
@@ -47,9 +47,13 @@
             setConfigurationsInSelector(configs, possibleCytoscapeMaps);
             possibleCytoscapeMaps[0]['current'] = true;
             possibleCytoscapeMaps[0]['map'] = cy;
-            
 
-            //Start a simulation
+            // Run a simulation
+            $('#simulate').click(function () {
+                runSimulation()
+            });
+
+            // Play a full animation
             $('#play').click(function () {
                 if ($('#play').hasClass('disabled')) {
                     return;
@@ -60,13 +64,12 @@
                 $('#backward').addClass('disabled');
                 $('#pause').removeClass('disabled');
 
-                cy = getCurrentMapObject(possibleCytoscapeMaps);
 
-                //Only run the simulation if it hasn't already been run on this configuration
-                if (currentAnimation['frames'].length == 0) {
-                    runSimulation(firstPlay)
+                if (currentTimestep == 0) {
+                    playFromBeginning();
                 } else {
-                    resetFrame(currentAnimation['frames'][currentTimestep], restartAnim)                }
+                    resetFrame(currentAnimation['frames'][currentTimestep], restartAnim)
+                }
             });
 
             $('#pause').click(function () {
@@ -84,26 +87,63 @@
 
             // Need to run the simulation before advancing a frame if it has not already run
             $('#forward').click(function () {
-                if (animationResults.length == 0) {
-                    runSimulation(frameForward);
-                } else {
-                    frameForward();
-                }
+                frameForward();
             });
 
+            $('#backward').click(function () {
+                frameBackward();
+            });
+
+            // Start the next frame after resetting
             function frameForward() {
-                resetFrame(currentAnimation['frames'][currentTimestep], startNextFrame)
+                console.log("forward timestep: " + currentTimestep)
+
+                var frameParam;
+                if (currentTimestep == currentAnimation['frames'].length - 1) {
+                    return;
+                }
+                if (getDisplayedFrame() != 0) {
+                    currentTimestep++;
+                }
+                frameInfo = {
+                    frame: currentAnimation['frames'][currentTimestep],
+                    timestep: currentTimestep,
+                    numFrames: currentAnimation['frames'].length
+                }
+                assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
+                resetFrame(currentAnimation['frames'][currentTimestep], playFrame, frameInfo);
+            }
+
+            function frameBackward() {
+                //assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
+                console.log("backward timestep: " + currentTimestep)
+                var frameParam;
+                if (currentTimestep == 0) {
+                    return;
+                } else {
+                    currentTimestep--;
+                }
+                frameInfo = {
+                    frame: currentAnimation['frames'][currentTimestep],
+                    timestep: currentTimestep,
+                    numFrames: currentAnimation['frames'].length
+                }
+                assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
+                resetFrame(currentAnimation['frames'][currentTimestep+1], playFrame, frameInfo);
             }
 
             function startNextFrame() {
                 currentTimestep++;
+                console.log("starting next frame: " + currentTimestep)
                 currentAnimation = {
                     timestep: currentTimestep,
                     frames: [],
                     paused: false,
                     finished: false
                 };
-                assembleFullAnimation(animationResults, cy, currentAnimation, currentTimestep);
+                assembleFullAnimation(simulationResults, cy, currentAnimation, currentTimestep);
                 playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
             }
 
@@ -115,31 +155,44 @@
                     finished: false
                 };
                 currentTimestep = 0;
-                assembleFullAnimation(animationResults, cy, currentAnimation, DONTPAUSE);
+                assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
                 playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
             }
 
-            function runSimulation(executeOnSuccess) {
+            function runSimulation() {
+                //TODO: Collect simulation parameters
                 $.ajax({
                     method: "GET",
                     url: "/Simulations/AStar",
                     success: (result) => {
-                        console.log("Successful ajax request");
-                        animationResults = $.parseJSON(result);
-                        if (executeOnSuccess != null) {
-                            executeOnSuccess();
-                        }
+                        console.log("Simulation has completed successfully.");
+                        simulationResults = $.parseJSON(result);
+                        cy = getCurrentMapObject(possibleCytoscapeMaps);
+                        assembleFullAnimation(simulationResults, cy, currentAnimation, currentTimestep);
+                        $('#play').removeClass('disabled');
+                        $('#forward').removeClass('disabled');
+                        $('#backward').removeClass('disabled');
                     },
                     error: (result) => {
-                        console.log("Unsuccessful ajax request");
+                        console.log("Simulation has completed unsuccessfully.");
                         console.log(result);
                     }
                 });
             }
 
-            function firstPlay() {
-                assembleFullAnimation(animationResults, cy, currentAnimation, DONTPAUSE);
-                playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
+            function playFromBeginning() {
+                assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
+                var frameInfo = {
+                    frame: currentAnimation['frames'][currentTimestep],
+                    timestep: currentTimestep,
+                    numFrames: currentAnimation['frames'].length
+                }
+                playFrame(frameInfo);
+            }
+
+            function pauseAtFrame(frameNumber) {
+                assembleFullAnimation(simulationResults, cy, currentAnimation, frameNumber);
+                playFrame(currentAnimation['frames'][currentTimestep], frameNumber, currentAnimation['frames'].length);
             }
 
         });
