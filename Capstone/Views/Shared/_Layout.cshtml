@@ -86,47 +86,35 @@
             <script src="~/js/cytoscape-cose-bilkent.js"></script>
             <!-- Custom scripts for handling cytoscape-->
             <script src="~/js/Custom/cytoscape-helpers.js"></script>
+            <!-- Full screen functionality -->
+            <script src="~/js/fullscreen/jquery.fullscreen-min.js"></script>
             <div class="jumbotron" style="height:3%">
                 <h1 id="simulation-title"></h1>
                 <p class="lead" id="simulation-description"></p>
             </div>
 
-
-            <div style="display:none" id="simulation-header">
-                <div id="operation">
-                    <div>
-                        <select class="first" id="configuration-selector"></select>
-                    </div>
-                    <div class="svg-expand pointer second">
-                        <span class="fa oi icon" id="fullscreen-enter" data-glyph="fullscreen-enter" title="Fullscreen" aria-hidden="true"></span>
-                        <!--
-    <i class="fa fa-fw fa-home" data-toggle="modal" data-target="#add-store" title="Create Store"></i>
-    <i class="fa fa-fw fa-flag-checkered" data-toggle="modal" data-target="#add-relay" title="Create Relay"></i>
-    <i class="fa fa-fw fa-th-large" data-toggle="modal" data-target="#add-region" title="Create Region"></i>
-    <i class="fa fa-fw fa-arrows-h" data-toggle="modal" data-target="#add-connection" title="Create Connection"></i>
-    <i class="fa fa-exchange" data-toggle="modal" data-target="#add-transaction" title="Create Transaction"></i>-->
-                        <span class="fa oi icon" id="simulate" data-glyph="calculator" title="Run Simulation" aria-hidden="true"></span>
-                        <span class="fa oi icon disabled" id="play" data-glyph="media-play" title="Play Animation" aria-hidden="true"></span>
-                        <span class="fa oi icon disabled" id="pause" data-glyph="media-pause" title="Pause Animation" aria-hidden="true"></span>
-                        <span class="fa oi icon disabled" id="backward" data-glyph="media-skip-backward" title="Move Back a Frame" aria-hidden="true"></span>
-                        <label id="frame-tracker">0/0</label>
-                        <span class="fa oi icon disabled" id="forward" data-glyph="media-skip-forward" title="Move Forward a Frame" aria-hidden="true"></span>
-                    </div>
-                    <div class="notation pull-right">
-                        <ul class="list-inline list-unstyled">
-                            <!--
-                    <li><span class="process-label"></span>Processing Center</li>
-                    <li><span class="relay-label"></span>Relay Station</li>
-                    <li><span class="store-label"></span>Store</li>
-                    <li><span class="inactive-label"></span>Inactive</li>
-                    <li><span class="animated-label"></span>Animated</li>-->
-                        </ul>
+            <div id="simulation-area" content="width=device-width, initial-scale=1">
+                <div style="display:none" id="simulation-header">
+                    <div id="operation">
+                        <div>
+                            <select class="first" id="configuration-selector"></select>
+                        </div>
+                        <div class="svg-expand pointer second">
+                            <span class="fa oi icon" id="fullscreen-enter" data-glyph="fullscreen-enter" title="Fullscreen" aria-hidden="true"></span>
+                            <span class="fa oi icon" style="display: none" id="fullscreen-exit" data-glyph="fullscreen-exit" title="Fullscreen" aria-hidden="true"></span>
+                            <span class="fa oi icon" id="simulate" data-glyph="calculator" title="Run Simulation" aria-hidden="true"></span>
+                            <span class="fa oi icon disabled" id="play" data-glyph="media-play" title="Play Animation" aria-hidden="true"></span>
+                            <span class="fa oi icon disabled" id="pause" data-glyph="media-pause" title="Pause Animation" aria-hidden="true"></span>
+                            <span class="fa oi icon disabled" id="backward" data-glyph="media-skip-backward" title="Move Back a Frame" aria-hidden="true"></span>
+                            <label id="frame-tracker">0/0</label>
+                            <span class="fa oi icon disabled" id="forward" data-glyph="media-skip-forward" title="Move Forward a Frame" aria-hidden="true"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="simulation-area">
-                @RenderBody()
+                <div id="simulation-display">
+                    @RenderBody()
+                </div>
             </div>
 
             <!-- Area Chart Example-->

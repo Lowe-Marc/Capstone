@@ -55,6 +55,14 @@
                 animation: null
             }
 
+            $('#fullscreen-enter').click(function () {
+                toggleFullscreen();
+            });
+
+            $('#fullscreen-exit').click(function () {
+                closeFullscreen();
+            });
+
             // Run a simulation
             $('#simulate').click(function () {
                 runSimulation()

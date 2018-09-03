@@ -30,6 +30,35 @@ function DONTPAUSE() {
     return -1;
 }
 
+function toggleFullscreen() {
+    var section = document.getElementById('simulation-area');
+    if (section.requestFullscreen) {
+        section.requestFullscreen();
+    } else if (section.mozRequestFullScreen) { /* Firefox */
+        section.mozRequestFullScreen();
+    } else if (section.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+        section.webkitRequestFullscreen();
+    } else if (section.msRequestFullscreen) { /* IE/Edge */
+        section.msRequestFullscreen();
+    }
+    $('#fullscreen-enter').hide();
+    $('#fullscreen-exit').show();
+}
+
+function closeFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { /* Firefox */
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE/Edge */
+      document.msExitFullscreen();
+    }
+    $('#fullscreen-enter').show();
+    $('#fullscreen-exit').hide();
+  }
+
 
 // Renders the CY map and handles node specific properties such as clicking and locking
 function setCytoscape(currentConfig) {
