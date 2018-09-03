@@ -19,6 +19,7 @@
     <script>
         $(function () { // on dom ready
 
+            // Parse simulation configs
             var configs = @Html.Raw(Json.Encode(AStarConfigs));
             var possibleCytoscapeMaps = [];
             for (var i = 0; i < configs.length; i++) {
@@ -35,129 +36,76 @@
                 finished: false
             };
             var simulationResults = [];
-            var currentTimestep = 0;
-            var DONTPAUSE = -1;
 
             // Set page description
             $('#simulation-title').text("A* Search");
             $('#simulation-description').text("An intelligent path finding algorithm.");
             $('#simulation-header').show();
-            // Cytoscape
+
+            // Cytoscape initialization
             var cy = setCytoscape(currentConfig);
             setConfigurationsInSelector(configs, possibleCytoscapeMaps);
             possibleCytoscapeMaps[0]['current'] = true;
             possibleCytoscapeMaps[0]['map'] = cy;
+
+            // Master simulation object, useful since the JS functions are separated from the views
+            var simulationInfo = {
+                results: null,
+                cy: null,
+                animation: null
+            }
 
             // Run a simulation
             $('#simulate').click(function () {
                 runSimulation()
             });
 
-            // Play a full animation
+            // Start playing the animation beginning from the current frame
             $('#play').click(function () {
                 if ($('#play').hasClass('disabled')) {
                     return;
                 }
                 currentAnimation['paused'] = false;
+                updateSimulationInfo()
                 $('#play').addClass('disabled');
                 $('#forward').addClass('disabled');
                 $('#backward').addClass('disabled');
                 $('#pause').removeClass('disabled');
 
-
-                if (currentTimestep == 0) {
-                    playFromBeginning();
+                if (currentAnimation['timestep'] == 0) {
+                    playFromBeginning(simulationInfo);
                 } else {
-                    resetFrame(currentAnimation['frames'][currentTimestep], restartAnim)
+                    resetFrame(currentAnimation['frames'][currentAnimation['timestep']], restartAnim, simulationInfo)
                 }
             });
 
+            // Pauses the animation at the current frame
             $('#pause').click(function () {
                 if ($('#pause').hasClass('disabled')) {
                     return;
                 }
-                currentTimestep = currentAnimation['timestep'];
-                pauseFrame(currentAnimation['frames'][currentTimestep]);
+                currentAnimation['timestep'] = currentAnimation['timestep'];
+                updateSimulationInfo()
+                pauseFrame(currentAnimation['frames'][currentAnimation['timestep']]);
                 currentAnimation['paused'] = true;
+                updateSimulationInfo()
                 $('#play').removeClass('disabled');
                 $('#forward').removeClass('disabled');
                 $('#backward').removeClass('disabled');
                 $('#pause').addClass('disabled');
             });
 
-            // Need to run the simulation before advancing a frame if it has not already run
+            // Move forward a frame
             $('#forward').click(function () {
-                frameForward();
+                updateSimulationInfo()
+                frameForward(simulationInfo);
             });
 
+            // Move backward a frame
             $('#backward').click(function () {
-                frameBackward();
+                updateSimulationInfo()
+                frameBackward(simulationInfo);
             });
-
-            // Start the next frame after resetting
-            function frameForward() {
-                console.log("forward timestep: " + currentTimestep)
-
-                var frameParam;
-                if (currentTimestep == currentAnimation['frames'].length - 1) {
-                    return;
-                }
-                if (getDisplayedFrame() != 0) {
-                    currentTimestep++;
-                }
-                frameInfo = {
-                    frame: currentAnimation['frames'][currentTimestep],
-                    timestep: currentTimestep,
-                    numFrames: currentAnimation['frames'].length
-                }
-                assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
-
-                resetFrame(currentAnimation['frames'][currentTimestep], playFrame, frameInfo);
-            }
-
-            function frameBackward() {
-                //assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
-                console.log("backward timestep: " + currentTimestep)
-                var frameParam;
-                if (currentTimestep == 0) {
-                    return;
-                } else {
-                    currentTimestep--;
-                }
-                frameInfo = {
-                    frame: currentAnimation['frames'][currentTimestep],
-                    timestep: currentTimestep,
-                    numFrames: currentAnimation['frames'].length
-                }
-                assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
-
-                resetFrame(currentAnimation['frames'][currentTimestep+1], playFrame, frameInfo);
-            }
-
-            function startNextFrame() {
-                currentTimestep++;
-                console.log("starting next frame: " + currentTimestep)
-                currentAnimation = {
-                    timestep: currentTimestep,
-                    frames: [],
-                    paused: false,
-                    finished: false
-                };
-                assembleFullAnimation(simulationResults, cy, currentAnimation, currentTimestep);
-                playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
-            }
-
-            function restartAnim() {
-                currentAnimation = {
-                    timestep: currentTimestep,
-                    frames: [],
-                    paused: false,
-                    finished: false
-                };
-                currentTimestep = 0;
-                assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
-                playFrame(currentAnimation['frames'][currentTimestep], currentTimestep, currentAnimation['frames'].length);
-            }
 
             function runSimulation() {
                 //TODO: Collect simulation parameters
@@ -168,10 +116,11 @@
                         console.log("Simulation has completed successfully.");
                         simulationResults = $.parseJSON(result);
                         cy = getCurrentMapObject(possibleCytoscapeMaps);
-                        assembleFullAnimation(simulationResults, cy, currentAnimation, currentTimestep);
+                        assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
                         $('#play').removeClass('disabled');
                         $('#forward').removeClass('disabled');
                         $('#backward').removeClass('disabled');
+                        updateSimulationInfo()
                     },
                     error: (result) => {
                         console.log("Simulation has completed unsuccessfully.");
@@ -180,21 +129,12 @@
                 });
             }
 
-            function playFromBeginning() {
-                assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE);
-                var frameInfo = {
-                    frame: currentAnimation['frames'][currentTimestep],
-                    timestep: currentTimestep,
-                    numFrames: currentAnimation['frames'].length
-                }
-                playFrame(frameInfo);
+            // Helper to keep the master simulation object up to date
+            function updateSimulationInfo() {
+                simulationInfo['results'] = simulationResults;
+                simulationInfo['cy'] = cy;
+                simulationInfo['animation'] = currentAnimation;
             }
-
-            function pauseAtFrame(frameNumber) {
-                assembleFullAnimation(simulationResults, cy, currentAnimation, frameNumber);
-                playFrame(currentAnimation['frames'][currentTimestep], frameNumber, currentAnimation['frames'].length);
-            }
-
         });
     </script>
 </body>

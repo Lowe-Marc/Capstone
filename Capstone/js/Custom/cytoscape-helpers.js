@@ -1,3 +1,37 @@
+// Constants
+function inactiveColor() {
+    return 'black';
+}
+
+function activeColor() {
+    return 'red';
+}
+
+// Time in ms it takes to reset after pausing
+function resetTime() {
+    return 500;
+}
+
+// Time in ms it takes for each animation in a frame to activate
+function animationTime() {
+    return 200;
+}
+
+// Time in ms nodes will stay active during a frame
+function animationActiveTime() {
+    return 1000;
+}
+
+function getDisplayedFrame() {
+    return $('#frame-tracker').text().split("/")[0]
+}
+
+function DONTPAUSE() {
+    return -1;
+}
+
+
+// Renders the CY map and handles node specific properties such as clicking and locking
 function setCytoscape(currentConfig) {
     buildElementStructure(currentConfig);
 
@@ -32,7 +66,7 @@ function setCytoscape(currentConfig) {
                 y: positionsArr[i].y
             }
         });
-        // cy.nodes().lock()
+        cy.nodes().lock()
     });
 
     cy.on('tap', 'node', function (evt) {
@@ -43,6 +77,7 @@ function setCytoscape(currentConfig) {
     return cy
 }
 
+// Assembles the object used to render the CY map
 function buildElementStructure(currentConfig) {
     elements = [];
     positionsArr = [];
@@ -104,8 +139,7 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
     }
 }
 
-// simulationResults is a list of lists
-// the inner list is a list of nodes to be animated at each frame
+// Assembles each frame in a full animation
 function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
     
     debug = simulationResults.length
@@ -115,11 +149,10 @@ function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToP
         fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentAnimation, cy, fullAnimation, frameToPauseOn);
     }
     currentAnimation['frames'] = fullAnimation;
-    
-    // console.log("fullAnimation")
-    // console.log(fullAnimation) 
 }
 
+// Creates a single animation frame, i.e. a set of nodes each transitioning between two states
+// in a particular order
 function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation, frameToPauseOn) {
     var animationFrame = new Array(nodes.length);
     var lastInFrame = false;
@@ -136,6 +169,7 @@ function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation, fram
     return animationFrame
 }
 
+// Creates a single animation i.e. a single node transitioning between two single states
 function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thisFrame, fullAnimation, frameToPauseOn) {
         var lastInFrame = (currentIndex >= thisFrame.length - 1);
         var nodeAnimation = elementToAnimate.animation({
@@ -152,11 +186,11 @@ function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thi
     return nodeAnimation
 }
 
+// Sets callbacks for each animation in a frame, so the full frame will play.
+// Also sets callbacks so each frame will know what to kick off when it completes.
 function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, fullAnimation, currentAnimation, frameToPauseOn) {
     // Once the node has animated to its active color, kick off the animation for the next node
     nodeAnimation.promise('completed').then(function() {
-        // console.log("black to red complete")
-
         // When the last animation in the frame finishes, play the reverse animation for the frame
         // i.e. go back to their original color.
         // When the last animation in this frame is back to its original, start the next frame
@@ -208,6 +242,7 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
     });
 }
 
+// Pauses each animation in a frame
 function pauseFrame(frame) {
     console.log("pausing")
     for (var i = 0; i < frame.length; i++) {
@@ -215,6 +250,7 @@ function pauseFrame(frame) {
     }
 }
 
+// Plays the currently displayed frame
 function playFrame(frameInfo) {
     if (frameInfo['timestep'] > frameInfo['numFrames'] || frameInfo['timestep'] < 0) {
         return
@@ -248,29 +284,109 @@ function resetFrame(frame, setFrameFunction, setFrameFunctionParameters) {
     }
 }
 
-function inactiveColor() {
-    return 'black';
+// Start the next frame after resetting
+function frameForward(simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+    console.log("forward timestep: " + currentAnimation['timestep'])
+
+    var frameParam;
+    if (currentAnimation['timestep'] == currentAnimation['frames'].length - 1) {
+        return;
+    }
+    if (getDisplayedFrame() != 0) {
+        currentAnimation['timestep']++;
+    }
+    frameInfo = {
+        frame: currentAnimation['frames'][currentAnimation['timestep']],
+        timestep: currentAnimation['timestep'],
+        numFrames: currentAnimation['frames'].length
+    }
+    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
+    resetFrame(currentAnimation['frames'][currentAnimation['timestep']], playFrame, frameInfo);
 }
 
-function activeColor() {
-    return 'red';
+// Start the previous frame after resetting
+function frameBackward(simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    console.log("backward timestep: " + currentAnimation['timestep'])
+    var frameParam;
+    if (currentAnimation['timestep'] == 0) {
+        return;
+    } else {
+        currentAnimation['timestep']--;
+    }
+    frameInfo = {
+        frame: currentAnimation['frames'][currentAnimation['timestep']],
+        timestep: currentAnimation['timestep'],
+        numFrames: currentAnimation['frames'].length
+    }
+    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
+    resetFrame(currentAnimation['frames'][currentAnimation['timestep']+1], playFrame, frameInfo);
 }
 
-// Time in ms it takes to reset after pausing
-function resetTime() {
-    return 500;
+// Starts the next frame
+function startNextFrame(simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    currentAnimation['timestep']++;
+    console.log("starting next frame: " + currentAnimation['timestep'])
+    currentAnimation = {
+        timestep: currentAnimation['timestep'],
+        frames: [],
+        paused: false,
+        finished: false
+    };
+    assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
+    playFrame(currentAnimation['frames'][currentAnimation['timestep']], currentAnimation['timestep'], currentAnimation['frames'].length);
 }
 
-// Time in ms it takes for each animation in a frame to activate
-function animationTime() {
-    return 200;
+// Reassembles the animations so promises are set, kicks off at a specific frame
+function restartAnim(simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    currentAnimation = {
+        timestep: currentAnimation['timestep'],
+        frames: [],
+        paused: false,
+        finished: false
+    };
+    currentAnimation['timestep'] = 0;
+    assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE());
+    playFrame(currentAnimation['frames'][currentAnimation['timestep']], currentAnimation['timestep'], currentAnimation['frames'].length);
 }
 
-// Time in ms nodes will stay active during a frame
-function animationActiveTime() {
-    return 1000;
+// Starts an animation from the first frame
+function playFromBeginning(simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE());
+    var frameInfo = {
+        frame: currentAnimation['frames'][currentAnimation['timestep']],
+        timestep: currentAnimation['timestep'],
+        numFrames: currentAnimation['frames'].length
+    }
+    playFrame(frameInfo);
 }
 
-function getDisplayedFrame() {
-    return $('#frame-tracker').text().split("/")[0]
+// Pauses an animation at a specific frame
+function pauseAtFrame(frameNumber, simulationInfo) {
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    assembleFullAnimation(simulationResults, cy, currentAnimation, frameNumber);
+    playFrame(currentAnimation['frames'][currentAnimation['timestep']], frameNumber, currentAnimation['frames'].length);
 }
