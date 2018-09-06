@@ -228,10 +228,10 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
             if (currentAnimation['timestep'] == frameToPauseOn || frameToPauseOn == -2) {
                 return;
             }
-            setTimeout( function() { // This timeout setups the amount of time the frame will pause when active
+            setTimeout( function() { // This timeout sets up the amount of time the frame will pause when active
                 if (!currentAnimation['paused']) {
                     for (var i = 0; i < thisFrame.length; i++) {
-                        console.log("rewinding " + i + " in frame " + thisFrame.length)
+                        // console.log("rewinding " + i + " in frame " + thisFrame.length)
                         thisFrame[i]['startColor'] = activeColor();
                         thisFrame[i].reverse()
                                     .rewind();
@@ -274,8 +274,14 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
 // Pauses each animation in a frame
 function pauseFrame(frame) {
     console.log("pausing")
+    console.log(frame)
     for (var i = 0; i < frame.length; i++) {
-        frame[i].pause();
+        if (frame[i]['startColor'] == inactiveColor()) {
+            frame[i].progress(0.99).apply().pause();
+            console.log("applying progress 0.99")
+        } else {
+            frame[i].progress(0.0).apply().pause();
+        }
     }
 }
 
@@ -305,7 +311,7 @@ function resetFrame(frame, setFrameFunction, setFrameFunctionParameters) {
             duration: resetTime()
         });
         resetAnim.play();
-        if (i == frame.length - 1) {
+        if (i == frame.length - 1 && setFrameFunction != null) {
             resetAnim.promise('completed').then(function() {
                 setFrameFunction(setFrameFunctionParameters);
             });
@@ -380,19 +386,18 @@ function startNextFrame(simulationInfo) {
 
 // Reassembles the animations so promises are set, kicks off at a specific frame
 function restartAnim(simulationInfo) {
-    var simulationResults = simulationInfo['results'];
-    var cy = simulationInfo['cy'];
-    var currentAnimation = simulationInfo['animation'];
-
-    currentAnimation = {
+    var simulationResults, cy, currentAnimation, frameInfo;
+    simulationResults = simulationInfo['results'];
+    cy = simulationInfo['cy'];
+    currentAnimation = simulationInfo['animation'];
+    // currentAnimation['timestep'] = 0;
+    assembleFullAnimation(simulationInfo['results'], simulationInfo['cy'], simulationInfo['animation'], DONTPAUSE());
+    frameInfo = {
+        frame: currentAnimation['frames'][currentAnimation['timestep']],
         timestep: currentAnimation['timestep'],
-        frames: [],
-        paused: false,
-        finished: false
-    };
-    currentAnimation['timestep'] = 0;
-    assembleFullAnimation(simulationResults, cy, currentAnimation, DONTPAUSE());
-    playFrame(currentAnimation['frames'][currentAnimation['timestep']], currentAnimation['timestep'], currentAnimation['frames'].length);
+        numFrames: currentAnimation['frames'].length
+    }
+    playFrame(frameInfo);
 }
 
 // Starts an animation from the first frame

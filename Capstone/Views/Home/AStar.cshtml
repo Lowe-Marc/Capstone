@@ -74,13 +74,16 @@
                     return;
                 }
                 currentAnimation['paused'] = false;
-                updateSimulationInfo()
+                updateSimulationInfo();
                 $('#play').addClass('disabled');
                 $('#forward').addClass('disabled');
                 $('#backward').addClass('disabled');
                 $('#pause').removeClass('disabled');
-
-                if (currentAnimation['timestep'] == 0) {
+                console.log("currentAnimation")
+                console.log(currentAnimation)
+                console.log("getDisplayedFrame")
+                console.log(getDisplayedFrame())
+                if (getDisplayedFrame() == 0) {
                     playFromBeginning(simulationInfo);
                 } else {
                     resetFrame(currentAnimation['frames'][currentAnimation['timestep']], restartAnim, simulationInfo)
@@ -92,11 +95,12 @@
                 if ($('#pause').hasClass('disabled')) {
                     return;
                 }
-                currentAnimation['timestep'] = currentAnimation['timestep'];
-                updateSimulationInfo()
+                console.log("PAUSE - currentAnimation")
+                console.log(currentAnimation)
+                updateSimulationInfo();
                 pauseFrame(currentAnimation['frames'][currentAnimation['timestep']]);
                 currentAnimation['paused'] = true;
-                updateSimulationInfo()
+                updateSimulationInfo();
                 $('#play').removeClass('disabled');
                 $('#forward').removeClass('disabled');
                 $('#backward').removeClass('disabled');
@@ -105,7 +109,7 @@
 
             // Move forward a frame
             $('#forward').click(function () {
-                updateSimulationInfo()
+                updateSimulationInfo();
                 frameForward(simulationInfo);
             });
 
