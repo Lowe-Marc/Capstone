@@ -57,8 +57,42 @@ function closeFullscreen() {
     }
     $('#fullscreen-enter').show();
     $('#fullscreen-exit').hide();
-  }
+}
 
+// Simple helpers to disable/enable buttons
+function disablePlay() {
+    $('#play').addClass('disabled');
+    $('#forward').addClass('disabled');
+    $('#backward').addClass('disabled');
+}
+
+function disablePause() {
+    $('#pause').addClass('disabled');
+}
+
+function disablePlayAndPause() {
+    disablePlay();
+    disablePause();
+}
+
+function enablePlay() {
+    $('#play').removeClass('disabled');
+    $('#forward').removeClass('disabled');
+    $('#backward').removeClass('disabled');
+}
+
+function enablePause() {
+    $('#pause').removeClass('disabled');
+}
+
+function enablePlayAndPause() {
+    enablePlay();
+    enablePause();
+}
+
+function canPlay() {
+    return !$('#play').hasClass('disabled')
+}
 
 // Renders the CY map and handles node specific properties such as clicking and locking
 function setCytoscape(currentConfig) {
@@ -226,12 +260,20 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
         if (lastInFrame) {
             // When moving forward or backward, the frame should auto-pause
             if (currentAnimation['timestep'] == frameToPauseOn || frameToPauseOn == -2) {
+                var frame = currentAnimation['frames'][currentAnimation['timestep']]
+                var lastAnimInFrame = frame[frame.length-1]
+                console.log("lastAnimInFrame: " )
+                console.log(lastAnimInFrame)
+                // lastAnimInFrame.promise('completed').then(function() { // Not quite right
+                //     console.log("HERE")
+                //     enablePlay();
+                // });
+                enablePlay();
                 return;
             }
             setTimeout( function() { // This timeout sets up the amount of time the frame will pause when active
                 if (!currentAnimation['paused']) {
                     for (var i = 0; i < thisFrame.length; i++) {
-                        // console.log("rewinding " + i + " in frame " + thisFrame.length)
                         thisFrame[i]['startColor'] = activeColor();
                         thisFrame[i].reverse()
                                     .rewind();
@@ -239,9 +281,7 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                         if (i >= thisFrame.length - 1) {
                             thisFrame[i].promise('completed').then(function() {
                                 console.log("frame finishing...");
-                                // console.log("finishing timestep: " + currentAnimation["timestep"])
                                 currentAnimation["timestep"]++;
-                                // console.log("starting timestep " + currentAnimation['timestep'])
                                 if (currentAnimation["timestep"] < fullAnimation.length) {
                                     $('#frame-tracker').text(currentIndex + 2 + '/' + fullAnimation.length);
                                     fullAnimation[currentAnimation["timestep"]][0].play();
@@ -325,7 +365,8 @@ function frameForward(simulationInfo) {
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
     console.log("forward timestep: " + currentAnimation['timestep'])
-
+    disablePlay();
+    disablePause();
     var frameParam;
     if (currentAnimation['timestep'] == currentAnimation['frames'].length - 1) {
         return;
@@ -333,12 +374,13 @@ function frameForward(simulationInfo) {
     if (getDisplayedFrame() != 0) {
         currentAnimation['timestep']++;
     }
+    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
     frameInfo = {
         frame: currentAnimation['frames'][currentAnimation['timestep']],
         timestep: currentAnimation['timestep'],
         numFrames: currentAnimation['frames'].length
     }
-    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
 
     resetFrame(currentAnimation['frames'][currentAnimation['timestep']], playFrame, frameInfo);
 }
@@ -348,7 +390,8 @@ function frameBackward(simulationInfo) {
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
-
+    disablePlay();
+    disablePause();
     console.log("backward timestep: " + currentAnimation['timestep'])
     var frameParam;
     if (currentAnimation['timestep'] == 0) {
@@ -356,12 +399,13 @@ function frameBackward(simulationInfo) {
     } else {
         currentAnimation['timestep']--;
     }
+    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
+
     frameInfo = {
         frame: currentAnimation['frames'][currentAnimation['timestep']],
         timestep: currentAnimation['timestep'],
         numFrames: currentAnimation['frames'].length
     }
-    assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
 
     resetFrame(currentAnimation['frames'][currentAnimation['timestep']+1], playFrame, frameInfo);
 }

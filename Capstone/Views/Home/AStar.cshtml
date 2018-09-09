@@ -70,15 +70,13 @@
 
             // Start playing the animation beginning from the current frame
             $('#play').click(function () {
-                if ($('#play').hasClass('disabled')) {
+                if (!canPlay()) {
                     return;
                 }
                 currentAnimation['paused'] = false;
                 updateSimulationInfo();
-                $('#play').addClass('disabled');
-                $('#forward').addClass('disabled');
-                $('#backward').addClass('disabled');
-                $('#pause').removeClass('disabled');
+                disablePlay();
+                enablePause();
                 console.log("currentAnimation")
                 console.log(currentAnimation)
                 console.log("getDisplayedFrame")
@@ -86,7 +84,7 @@
                 if (getDisplayedFrame() == 0) {
                     playFromBeginning(simulationInfo);
                 } else {
-                    resetFrame(currentAnimation['frames'][currentAnimation['timestep']], restartAnim, simulationInfo)
+                    resetFrame(currentAnimation['frames'][currentAnimation['timestep']], restartAnim, simulationInfo);
                 }
             });
 
@@ -101,22 +99,24 @@
                 pauseFrame(currentAnimation['frames'][currentAnimation['timestep']]);
                 currentAnimation['paused'] = true;
                 updateSimulationInfo();
-                $('#play').removeClass('disabled');
-                $('#forward').removeClass('disabled');
-                $('#backward').removeClass('disabled');
-                $('#pause').addClass('disabled');
+                enablePlay();
+                disablePause();
             });
 
             // Move forward a frame
             $('#forward').click(function () {
-                updateSimulationInfo();
-                frameForward(simulationInfo);
+                if (canPlay()) {
+                    updateSimulationInfo();
+                    frameForward(simulationInfo);   
+                }
             });
 
             // Move backward a frame
             $('#backward').click(function () {
-                updateSimulationInfo()
-                frameBackward(simulationInfo);
+                if (canPlay()) {
+                    updateSimulationInfo()
+                    frameBackward(simulationInfo);
+                }
             });
 
             function runSimulation() {
@@ -129,9 +129,7 @@
                         simulationResults = $.parseJSON(result);
                         cy = getCurrentMapObject(possibleCytoscapeMaps);
                         assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
-                        $('#play').removeClass('disabled');
-                        $('#forward').removeClass('disabled');
-                        $('#backward').removeClass('disabled');
+                        enablePlay();
                         updateSimulationInfo()
                     },
                     error: (result) => {
