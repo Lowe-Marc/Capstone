@@ -21,6 +21,7 @@
 
             // Parse simulation configs
             var configs = @Html.Raw(Json.Encode(AStarConfigs));
+            console.log("configs", configs)
             var possibleCytoscapeMaps = [];
             for (var i = 0; i < configs.length; i++) {
                 possibleCytoscapeMaps.push({
@@ -41,6 +42,8 @@
             $('#simulation-title').text("A* Search");
             $('#simulation-description').text("An intelligent path finding algorithm.");
             $('#simulation-header').show();
+
+            $('#simulation-config').html("<div>test</div>");
 
             // Cytoscape initialization
             var cy = setCytoscape(currentConfig);
@@ -65,6 +68,8 @@
 
             // Run a simulation
             $('#simulate').click(function () {
+                //setAStarConfig();
+                //configurationOverlayOn();
                 runSimulation()
             });
 
@@ -145,6 +150,7 @@
                 simulationInfo['cy'] = cy;
                 simulationInfo['animation'] = currentAnimation;
             }
+
         });
     </script>
 </body>

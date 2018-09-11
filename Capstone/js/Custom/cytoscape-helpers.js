@@ -57,6 +57,7 @@ function closeFullscreen() {
     }
     $('#fullscreen-enter').show();
     $('#fullscreen-exit').hide();
+    configurationOverlayOff();
 }
 
 // Simple helpers to disable/enable buttons
@@ -364,13 +365,13 @@ function frameForward(simulationInfo) {
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
+    if (currentAnimation['timestep'] == currentAnimation['frames'].length - 1) {
+        return;
+    }
     console.log("forward timestep: " + currentAnimation['timestep'])
     disablePlay();
     disablePause();
     var frameParam;
-    if (currentAnimation['timestep'] == currentAnimation['frames'].length - 1) {
-        return;
-    }
     if (getDisplayedFrame() != 0) {
         currentAnimation['timestep']++;
     }
@@ -390,15 +391,15 @@ function frameBackward(simulationInfo) {
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
-    disablePlay();
-    disablePause();
-    console.log("backward timestep: " + currentAnimation['timestep'])
-    var frameParam;
     if (currentAnimation['timestep'] == 0) {
         return;
     } else {
         currentAnimation['timestep']--;
     }
+    disablePlay();
+    disablePause();
+    console.log("backward timestep: " + currentAnimation['timestep'])
+    var frameParam;
     assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
 
     frameInfo = {
