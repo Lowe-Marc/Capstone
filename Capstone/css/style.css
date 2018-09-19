@@ -174,16 +174,12 @@
     height: 100%;
 }
 
-#simulation-config-overlay {
-    position: fixed;
-    display: none;
-    width: 100%;
-    height: 25%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.75);
-    z-index: 2;
-    cursor: pointer;
+#simulation-area:fullscreen {
+    background-color: rgba(255,255,255,1);
+}
+#simulation-area:-webkit-full-screen {
+    background-color: rgba(255,255,255,1);
+}
+#simulation-area:-moz-full-screen {
+    background-color: rgba(255,255,255,1);
 }
