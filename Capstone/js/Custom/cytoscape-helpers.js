@@ -109,7 +109,7 @@ function setCytoscape(currentConfig) {
                 style: {
                     shape: 'ellipse',
                     'background-color': inactiveColor(),
-                    label: 'data(id)'
+                    label: 'data(label)'
                 }
             }],
         layout: {
@@ -138,7 +138,42 @@ function setCytoscape(currentConfig) {
         console.log("tap", node.id(), node.position());
     });
 
+    cy.nodes().each(function (node) {
+        cy.$('#' + node.id()).qtip({
+            content: qtipContent(node),
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        });
+    });
+
     return cy
+}
+
+function qtipContent(node) {
+    console.log("node label")
+    var content = "";
+    content  = "<div>";
+    content += "<button onclick=makeStartNode(\"" + node.id() + "\")>Start Here</button>";
+    content += "<button onclick=makeGoalNode(\"" + node.id() + "\")>End Here</button>";
+    content += "</div>";
+    return content;
+}
+
+function makeStartNode(id) {
+    console.log("making start node: " + id)
+}
+
+function makeGoalNode(id) {
+    console.log("making goal node: " + id)
 }
 
 // Assembles the object used to render the CY map
@@ -151,7 +186,8 @@ function buildElementStructure(currentConfig) {
         // var y = (2) * (90 - currentConfig.nodes[i].y);
         elements.push({
             data: {
-                id: currentConfig.nodes[i].id,
+                id: currentConfig.nodes[i].id.replace(' ', '-'),
+                label: currentConfig.nodes[i].id,
                 position: {
                     x: currentConfig.nodes[i].x,
                     y: currentConfig.nodes[i].y
@@ -168,8 +204,8 @@ function buildElementStructure(currentConfig) {
         elements.push({
             data: {
                 id: currentConfig.edges[i].id,
-                source: currentConfig.edges[i].source,
-                target: currentConfig.edges[i].target
+                source: currentConfig.edges[i].source.replace(' ','-'),
+                target: currentConfig.edges[i].target.replace(' ','-')
             }
         })
     }

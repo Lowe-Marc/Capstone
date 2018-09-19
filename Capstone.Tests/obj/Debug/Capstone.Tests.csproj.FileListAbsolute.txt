@@ -1,0 +1,2 @@
+C:\Users\Marcus\Classes\Capstone\Capstone\Capstone.Tests\obj\Debug\Capstone.Tests.csprojResolveAssemblyReference.cache
+C:\Users\Marcus\Classes\Capstone\Capstone\Capstone.Tests\obj\Debug\Capstone.Tests.csproj.CoreCompileInputs.cache
