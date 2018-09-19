@@ -170,8 +170,18 @@
 }
 
 #simulation-display {
-    width: 100%; 
+    width: 85%; 
     height: 100%;
+    float: right;
+}
+
+#simulation-config {
+    float: left;
+    width: 15%;
+    height: 100%;
+    border-bottom: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    background-color: #e6e6e64d;
 }
 
 #simulation-area:fullscreen {

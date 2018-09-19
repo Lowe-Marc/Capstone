@@ -133,10 +133,19 @@ function setCytoscape(currentConfig) {
         cy.nodes().lock()
     });
 
-    cy.on('tap', 'node', function (evt) {
-        var node = evt.target;
-        console.log("tap", node.id(), node.position());
-    });
+    // cy.on('tap', 'node', function (evt) {
+    //     // var node = evt.target;
+    //     // $('#simulation-config').qtip({
+    //     //     show: 'click',
+    //     //     hide: 'click'
+    //     // })
+    //     // console.log("tap", node.id(), node.position());
+    //     popOver(this, cy, evt.target);
+    // });
+
+    cy.on('click', 'node', function(evt) {
+        popOver(this, cy)
+    })
 
     return cy
 }
@@ -151,6 +160,7 @@ function buildElementStructure(currentConfig) {
         // var y = (2) * (90 - currentConfig.nodes[i].y);
         elements.push({
             data: {
+                category: 2,
                 id: currentConfig.nodes[i].id,
                 position: {
                     x: currentConfig.nodes[i].x,
