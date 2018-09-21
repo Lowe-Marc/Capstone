@@ -109,7 +109,7 @@ function setCytoscape(currentConfig) {
                 style: {
                     shape: 'ellipse',
                     'background-color': inactiveColor(),
-                    label: 'data(id)'
+                    label: 'data(label)'
                 }
             }],
         layout: {
@@ -133,21 +133,44 @@ function setCytoscape(currentConfig) {
         cy.nodes().lock()
     });
 
-    // cy.on('tap', 'node', function (evt) {
-    //     // var node = evt.target;
-    //     // $('#simulation-config').qtip({
-    //     //     show: 'click',
-    //     //     hide: 'click'
-    //     // })
-    //     // console.log("tap", node.id(), node.position());
-    //     popOver(this, cy, evt.target);
-    // });
-
-    cy.on('click', 'node', function(evt) {
-        popOver(this, cy)
-    })
+    cy.nodes().each(function (node) {
+        cy.$('#' + node.id()).qtip({
+            content: qtipContent(node),
+            position: {
+                my: 'top center',
+                at: 'bottom center'
+            },
+            style: {
+                classes: 'qtip-bootstrap',
+                tip: {
+                    width: 16,
+                    height: 8
+                }
+            }
+        });
+    });
 
     return cy
+}
+
+function qtipContent(node) {
+    console.log("node simID", node.data('simulationID'))
+    var content = "";
+    content  = "<div>";
+    content += "<button onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
+    content += "<button onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
+    content += "</div>";
+    return content;
+}
+
+function makeStartNode(id, simulationID) {
+    $('#start-label').text(id.replace('_', ' '));
+    $('#start-id').text(simulationID);
+}
+
+function makeGoalNode(id, simulationID) {
+    $('#goal-label').text(id.replace('_', ' '));
+    $('#goal-id').text(simulationID);
 }
 
 // Assembles the object used to render the CY map
@@ -160,8 +183,10 @@ function buildElementStructure(currentConfig) {
         // var y = (2) * (90 - currentConfig.nodes[i].y);
         elements.push({
             data: {
-                category: 2,
-                id: currentConfig.nodes[i].id,
+                id: currentConfig.nodes[i].id.replace(' ', '_'),
+                elementType: "node",
+                simulationID: i,
+                label: currentConfig.nodes[i].id,
                 position: {
                     x: currentConfig.nodes[i].x,
                     y: currentConfig.nodes[i].y
@@ -178,8 +203,10 @@ function buildElementStructure(currentConfig) {
         elements.push({
             data: {
                 id: currentConfig.edges[i].id,
-                source: currentConfig.edges[i].source,
-                target: currentConfig.edges[i].target
+                elementType: "edge",
+                simulationID: i,
+                source: currentConfig.edges[i].source.replace(' ','_'),
+                target: currentConfig.edges[i].target.replace(' ','_')
             }
         })
     }
@@ -375,6 +402,7 @@ function frameForward(simulationInfo) {
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
+    var frameToReset;
     if (currentAnimation['timestep'] == currentAnimation['frames'].length - 1) {
         return;
     }
@@ -393,6 +421,12 @@ function frameForward(simulationInfo) {
         numFrames: currentAnimation['frames'].length
     }
 
+    //Need to reset the frame prior to the one about to be played
+    currentAnimation['timestep'] = 0;
+    if (currentAnimation['timestep'] > 1) {
+        frameToReset = currentAnimation['timestep'] - 1;
+    }
+
     resetFrame(currentAnimation['frames'][currentAnimation['timestep']], playFrame, frameInfo);
 }
 
@@ -401,6 +435,8 @@ function frameBackward(simulationInfo) {
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
+    console.log("backward timestep: " + currentAnimation['timestep'])
+
     if (currentAnimation['timestep'] == 0) {
         return;
     } else {
@@ -408,7 +444,6 @@ function frameBackward(simulationInfo) {
     }
     disablePlay();
     disablePause();
-    console.log("backward timestep: " + currentAnimation['timestep'])
     var frameParam;
     assembleFullAnimation(simulationResults, cy, currentAnimation, -2);
 

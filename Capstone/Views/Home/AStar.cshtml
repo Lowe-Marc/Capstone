@@ -72,7 +72,7 @@
             $('#simulate').click(function () {
                 //setAStarConfig();
                 //configurationOverlayOn();
-                runSimulation()
+                runSimulation();
             });
 
             // Start playing the animation beginning from the current frame
@@ -127,13 +127,17 @@
             });
 
             function runSimulation() {
-                //TODO: Collect simulation parameters
+                var params = collectAStarParams();
+                console.log(params);
+
                 $.ajax({
-                    method: "GET",
+                    method: "POST",
                     url: "/Simulations/AStar",
+                    data: params,
                     success: (result) => {
                         console.log("Simulation has completed successfully.");
                         simulationResults = $.parseJSON(result);
+                        console.log("simulationResults", simulationResults);
                         cy = getCurrentMapObject(possibleCytoscapeMaps);
                         assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
                         enablePlay();
@@ -150,6 +154,9 @@
             function updateSimulationInfo() {
                 simulationInfo['results'] = simulationResults;
                 simulationInfo['cy'] = cy;
+                if (getDisplayedFrame() > 0) {
+                    currentAnimation['timestep'] = getDisplayedFrame() - 1;
+                }
                 simulationInfo['animation'] = currentAnimation;
             }
 
