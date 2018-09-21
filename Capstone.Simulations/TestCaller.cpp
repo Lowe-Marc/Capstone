@@ -16,13 +16,14 @@ void DeleteTest(Test* test)
 	}
 }
 
-int TestRunSim(Test* test)
+int * TestRunSim(Test* test)
 {
+	int tempVal[] = { -1 };
 	if (test != nullptr)
 	{
 		return test->testRunSim();
 	}
-	return -1;
+	return tempVal;
 }
 
 bool TestGetResults(Test* test, int handle[])

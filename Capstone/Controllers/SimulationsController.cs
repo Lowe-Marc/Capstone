@@ -18,19 +18,41 @@ namespace Capstone.Controllers
          */
         public Object AStar(FormCollection collection)
         {
-
+            // C++ DLL with parameters
             int startID = Convert.ToInt32(collection["startID"]);
             int goalID = Convert.ToInt32(collection["goalID"]);
 
-            int[][] debug = new int[2][];
+            IntPtr testCppObj = TestModel.CreateTest();
+            IntPtr sizes = TestModel.TestRunSim(testCppObj);
+            TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct
+            {
+                frames = new int[1][]
+            };
+            bool success = TestModel.TestGetResults(testCppObj, testStruct.frames);
+            //ViewData["Success"] = success;
+            //ViewData["Size"] = size;
+            //ViewData["Values"] = testStruct.values;
 
-            int[] debug_frame_0 = { startID };
-            debug[0] = debug_frame_0;
+            int[][] simulationResults = new int[1][];
 
-            int[] debug_frame_1 = { goalID };
-            debug[1] = debug_frame_1;
+            return new JavaScriptSerializer().Serialize(testStruct.frames);
 
-            return new JavaScriptSerializer().Serialize(debug);
+            // Hard coded frames using parameters
+            //int startID = Convert.ToInt32(collection["startID"]);
+            //int goalID = Convert.ToInt32(collection["goalID"]);
+
+            //int[][] debug = new int[2][];
+
+            //int[] debug_frame_0 = { startID };
+            //debug[0] = debug_frame_0;
+
+            //int[] debug_frame_1 = { goalID };
+            //debug[1] = debug_frame_1;
+
+            //return new JavaScriptSerializer().Serialize(debug);
+
+
+            // Hard coded frames not using parameters
 
             ////IntPtr testCppObj = Simulations.CreateAStar();
             ////return Simulations.Simulate(testCppObj);

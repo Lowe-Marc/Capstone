@@ -6,6 +6,8 @@ using System.Web.Mvc;
 
 using Capstone.Models;
 
+using System.Runtime.InteropServices;
+
 namespace Capstone.Controllers
 {
     public class HomeController : Controller
@@ -13,15 +15,17 @@ namespace Capstone.Controllers
         public ActionResult Index()
         {
             IntPtr testCppObj = TestModel.CreateTest();
-            int size = TestModel.TestRunSim(testCppObj);
+            int numFrames = 2;
+            int[] sizes = new int[numFrames];
+            Marshal.Copy(TestModel.TestRunSim(testCppObj), sizes,0, numFrames);
             TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct
             {
-                values = new int[size]
+                frames = new int[1][]
             };
-            bool success = TestModel.TestGetResults(testCppObj, testStruct.values);
+            bool success = TestModel.TestGetResults(testCppObj, testStruct.frames);
             ViewData["Success"] = success;
-            ViewData["Size"] = size;
-            ViewData["Values"] = testStruct.values;
+            ViewData["Size"] = sizes;
+            ViewData["Values"] = testStruct.frames;
 
             return View();
         }

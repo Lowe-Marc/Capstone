@@ -12,13 +12,40 @@ function simulationConfigBottomBorder() {
 }
 
 // Note that the keys in params must match the names used in Simulations/AStar
-function collectAStarParams() {
+function collectAStarParams(cy) {
+    console.log("collecting parameters")
     var params = new Object();
+    var nodes = [];
+    var node;
+    var connections = [];
+    var connection = {
+        sourceID: -1,
+        targetID: -1,
+        heuristic: -1,
+        distance: -1
+    }
+    // Look through the nodes, for each one assemble a list of edges
+    // that connect to them
+    cy.nodes().each(function(element) {
+        connections = []
+        element.connectedEdges().each(function(edge){
+            connection = {
+                source: edge.data('source'),
+                target: edge.data('target'),
+                heuristic: edge.data('heuristic'),
+                distance: edge.data('distance')
+            }
+            connections.push(connection);
+        })
+        node = {
+            id: element.data('simulationID'),
+            connections: connections
+        };
+        nodes.push(node)
+    });
+
     params.startID = $('#start-id').text();
     params.goalID = $('#goal-id').text();
-    // params = {
-    //     startID: $('#start-id').text(),
-    //     goalID: $('#goal-id').text()
-    // }
+    params.nodes = nodes;
     return params;
 }

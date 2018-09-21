@@ -9,6 +9,6 @@ class __declspec(dllexport) Test
 public:
 	Test();
 	~Test();
-	int testRunSim();
+	int * testRunSim();
 	bool testGetResults(int handle[]);
 };

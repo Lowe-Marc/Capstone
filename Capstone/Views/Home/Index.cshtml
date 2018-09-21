@@ -4,16 +4,26 @@
 
 <body>
     @{
-        int[] values = (int[])ViewData["Values"];
+        int[][] values = (int[][])ViewData["Values"];
         string valueString = "";
-        foreach (int i in values)
+        foreach (int[] i in values)
         {
             valueString = valueString + " " + i;
         }
     }
     CPP Testing - Success: @ViewData["Success"]
     <br />
-    CPP Testing - Size from CPP: @ViewData["Size"]
+
+    @{
+        string sizeValueString = "";
+        int[] sizes = (int[])ViewData["Size"];
+        foreach (int i in sizes)
+        {
+            sizeValueString = sizeValueString + " " + i;
+        }
+    }
+
+    CPP Testing - Size from CPP: @sizeValueString
     <br />
     CPP Testing - Values: @valueString
     <br />

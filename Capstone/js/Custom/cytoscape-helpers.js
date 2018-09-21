@@ -111,7 +111,15 @@ function setCytoscape(currentConfig) {
                     'background-color': inactiveColor(),
                     label: 'data(label)'
                 }
-            }],
+            },
+            {
+                selector: 'edge',
+                style: {
+                    label: 'data(label)',
+                    'edge-text-rotation': 'autorotate'
+                },
+            }
+        ],
         layout: {
             name: 'preset'
         },
@@ -199,12 +207,18 @@ function buildElementStructure(currentConfig) {
         })
     }
 
+    var heuristic = 0.5;
+    var actualDistance = 1.0;
+    var label = "h: " + heuristic + " f: " + actualDistance;
     for (var i = 0; i < currentConfig.edges.length; i++) {
         elements.push({
             data: {
                 id: currentConfig.edges[i].id,
                 elementType: "edge",
                 simulationID: i,
+                heuristic: heuristic,
+                distance: actualDistance,
+                label: label,
                 source: currentConfig.edges[i].source.replace(' ','_'),
                 target: currentConfig.edges[i].target.replace(' ','_')
             }

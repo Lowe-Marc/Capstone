@@ -127,7 +127,7 @@
             });
 
             function runSimulation() {
-                var params = collectAStarParams();
+                var params = collectAStarParams(cy);
                 console.log(params);
 
                 $.ajax({
@@ -138,10 +138,10 @@
                         console.log("Simulation has completed successfully.");
                         simulationResults = $.parseJSON(result);
                         console.log("simulationResults", simulationResults);
-                        cy = getCurrentMapObject(possibleCytoscapeMaps);
-                        assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
-                        enablePlay();
-                        updateSimulationInfo()
+                        //cy = getCurrentMapObject(possibleCytoscapeMaps);
+                        //assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
+                        //enablePlay();
+                        //updateSimulationInfo()
                     },
                     error: (result) => {
                         console.log("Simulation has completed unsuccessfully.");

@@ -10,5 +10,6 @@ c:\users\marcus\school\capstone\capstone\capstone.simulations\test.h(4): warning
   Generating Code...
 c:\users\marcus\school\capstone\capstone\capstone.simulations\astar.cpp(61): warning C4172: returning address of local variable or temporary: animations
 c:\users\marcus\school\capstone\capstone\capstone.simulations\astarcaller.cpp(26): warning C4172: returning address of local variable or temporary: animations
+c:\users\marcus\school\capstone\capstone\capstone.simulations\testcaller.cpp(26): warning C4172: returning address of local variable or temporary: tempVal
      Creating library C:\Users\Marcus\School\Capstone\Capstone\Debug\Capstone.Simulations.lib and object C:\Users\Marcus\School\Capstone\Capstone\Debug\Capstone.Simulations.exp
   Capstone.Simulations.vcxproj -> C:\Users\Marcus\School\Capstone\Capstone\Debug\Capstone.Simulations.dll
