@@ -46,6 +46,20 @@ int * Test::testRunSim() {
 	return &testSize[0];
 }
 
+// Return the number of animation frames in the simulation results
+bool Test::getFrameCount(int handle) {
+	handle = 2;
+	return true;
+}
+
+// Return the number of nodes animated in each frame
+bool Test::getFrameSizes(int handle[]) {
+	for (int i = 0; i < sizeof(testSize); i++) {
+		handle[i] = testSize[i];
+	}
+	return true;
+}
+
 bool Test::testGetResults(int handle[]) {
 	handle[0] = testArr[0];
 	handle[1] = testArr[1];

@@ -4,30 +4,41 @@
 
 <body>
     @{
-        int[][] values = (int[][])ViewData["Values"];
-        string valueString = "";
-        foreach (int[] i in values)
+        int numFrames = -1;
+        int[] sizes = {0};
+        int[][] values = new int[1][];
+        values[0] = new int[1];
+        numFrames = (int)ViewData["NumFrames"];
+        sizes = (int[])ViewData["Sizes"];
+        values = (int[][])ViewData["Values"];
+
+        string sizesString = "";
+        foreach (int i in sizes)
         {
-            valueString = valueString + " " + i;
+            sizesString = sizesString + " " + i;
         }
+
+        string valueString = "";
+        //foreach (int[] i in values)
+        //{
+        //    foreach (int j in i)
+        //    {
+        //        valueString = valueString + " " + j;
+        //    }
+        //}
     }
     CPP Testing - Success: @ViewData["Success"]
     <br />
-
-    @{
-        string sizeValueString = "";
-        int[] sizes = (int[])ViewData["Size"];
-        foreach (int i in sizes)
-        {
-            sizeValueString = sizeValueString + " " + i;
-        }
-    }
-
-    CPP Testing - Size from CPP: @sizeValueString
+    CPP Testing - NumFrames:
+    <br />
+    CPP Testing - Sizes Length: @sizes
+    <br />
+    CPP Testing - Sizes: @sizesString
+    <br />
+    CPP Testing - Values Length: @values
     <br />
     CPP Testing - Values: @valueString
     <br />
-    CPP Testing - length: @values.Length
 </body>
 
 <script>

@@ -34,3 +34,21 @@ bool TestGetResults(Test* test, int handle[])
 	}
 	return false;
 }
+
+bool TestGetFrameCount(Test* test, int handle) 
+{
+	if (test != nullptr)
+	{
+		return test->getFrameCount(handle);
+	}
+	return false;
+}
+
+bool TestGetFrameSizes(Test* test, int handle[])
+{
+	if (test != nullptr)
+	{
+		return test->testGetResults(handle);
+	}
+	return false;
+}

@@ -27,6 +27,12 @@ namespace Capstone.Models
         static public extern IntPtr TestRunSim(IntPtr test);
 
         [DllImport(SIMULATIONS_DLL)]
+        static public extern bool TestGetFrameCount(IntPtr test, int handle);
+
+        [DllImport(SIMULATIONS_DLL)]
+        static public extern IntPtr TestGetFrameSizes(IntPtr test, int[] handle);
+
+        [DllImport(SIMULATIONS_DLL)]
         static public extern bool TestGetResults(IntPtr test, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(JaggedArrayMarshaler))]int[][] structToAssign);
     }
 

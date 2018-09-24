@@ -29,9 +29,6 @@ namespace Capstone.Controllers
                 frames = new int[1][]
             };
             bool success = TestModel.TestGetResults(testCppObj, testStruct.frames);
-            //ViewData["Success"] = success;
-            //ViewData["Size"] = size;
-            //ViewData["Values"] = testStruct.values;
 
             int[][] simulationResults = new int[1][];
 
