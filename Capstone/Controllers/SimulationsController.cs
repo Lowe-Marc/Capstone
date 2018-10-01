@@ -8,6 +8,12 @@ using Capstone.Models;
 
 using System.Web.Script.Serialization;
 
+using System.Web.Http;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+
 namespace Capstone.Controllers
 {
     public class SimulationsController : Controller
@@ -18,8 +24,18 @@ namespace Capstone.Controllers
          */
         public Object AStar(FormCollection collection)
         {
-            int startID = Convert.ToInt32(collection["startID"]);
-            int goalID = Convert.ToInt32(collection["goalID"]);
+            string s = collection["data"].ToString();
+            JObject json = JObject.Parse(s);
+            CytoscapeParams debug = json.ToObject<CytoscapeParams>();
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            CytoscapeParams test = new CytoscapeParams();
+            test = serializer.Deserialize<CytoscapeParams>(collection["data"].ToString());
+            //CytoscapeParams test = JsonConvert.DeserializeObject<CytoscapeParams>(collection["data"].ToString());
+
+            //int startID = Convert.ToInt32(collection["startID"]);
+            //int goalID = Convert.ToInt32(collection["goalID"]);
+            int startID = test.startID;
+            int goalID = test.goalID;
 
             Animation animation = Models.AStar.runSimulation(startID, goalID);
 

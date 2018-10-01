@@ -14,32 +14,32 @@ namespace Capstone.Controllers
     {
         public ActionResult Index()
         {
-            // Create CPP obj
-            IntPtr testCppObj = TestModel.CreateTest();
-            // Run simulation
-            IntPtr debug = TestModel.TestRunSim(testCppObj);
-            // Get the frame count
-            int numFrames = 0;
-            numFrames = TestModel.TestGetFrameCount(testCppObj);
+            //// Create CPP obj
+            //IntPtr testCppObj = TestModel.CreateTest();
+            //// Run simulation
+            //IntPtr debug = TestModel.TestRunSim(testCppObj);
+            //// Get the frame count
+            //int numFrames = 0;
+            //numFrames = TestModel.TestGetFrameCount(testCppObj);
 
-            // Allocate frame size buffer and collect frame sizes;
-            int[] sizes = new int[numFrames];
-            TestModel.TestGetFrameSizes(testCppObj, sizes);
-            //Marshal.Copy(TestModel.TestGetFrameSizes(testCppObj), sizes, 0, numFrames);
+            //// Allocate frame size buffer and collect frame sizes;
+            //int[] sizes = new int[numFrames];
+            //TestModel.TestGetFrameSizes(testCppObj, sizes);
+            ////Marshal.Copy(TestModel.TestGetFrameSizes(testCppObj), sizes, 0, numFrames);
 
-            // Allocate frame buffer and collect frames
-            int[][] frames = new int[numFrames][];
-            for (int i = 0; i < numFrames; i++)
-            {
-                frames[i] = new int[sizes[i]];
-            }
+            //// Allocate frame buffer and collect frames
+            //int[][] frames = new int[numFrames][];
+            //for (int i = 0; i < numFrames; i++)
+            //{
+            //    frames[i] = new int[sizes[i]];
+            //}
 
-            bool success = TestModel.TestGetResults(testCppObj, frames);
+            //bool success = TestModel.TestGetResults(testCppObj, frames);
 
-            ViewData["Success"] = success;
-            ViewData["NumFrames"] = numFrames;
-            ViewData["Sizes"] = sizes;
-            ViewData["Frames"] = frames;
+            //ViewData["Success"] = success;
+            //ViewData["NumFrames"] = numFrames;
+            //ViewData["Sizes"] = sizes;
+            //ViewData["Frames"] = frames;
 
             return View();
         }

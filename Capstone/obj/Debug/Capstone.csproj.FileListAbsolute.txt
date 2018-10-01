@@ -82,3 +82,7 @@ C:\Users\Marcus\School\Capstone\Capstone\Capstone\obj\Debug\Capstone.csprojResol
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\obj\Debug\Capstone.csproj.CoreCompileInputs.cache
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\obj\Debug\Capstone.dll
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\obj\Debug\Capstone.pdb
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Net.Http.Formatting.dll
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Web.Http.dll
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Net.Http.Formatting.xml
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Web.Http.xml

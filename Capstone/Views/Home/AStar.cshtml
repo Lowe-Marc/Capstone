@@ -128,12 +128,18 @@
 
             function runSimulation() {
                 var params = collectAStarParams(cy);
+                console.log("params")
                 console.log(params);
-
+                console.log("JSON.stringify")
+                console.log(JSON.stringify(params));
+                //console.log("jQuery.parseJSON")
+                //console.log(jQuery.parseJSON(params));
+                //jQuery.ajaxSettings.traditional = true
                 $.ajax({
                     method: "POST",
                     url: "/Simulations/AStar",
-                    data: params,
+                    data: { "data": JSON.stringify(params) },
+                    dataType: "json",
                     success: (result) => {
                         console.log("Simulation has completed successfully.");
                         simulationResults = $.parseJSON(result);

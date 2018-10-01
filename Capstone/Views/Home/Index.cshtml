@@ -3,43 +3,6 @@
 }
 
 <body>
-    @{
-        int numFrames = -1;
-        int[] sizes = {0};
-        int[][] frames = new int[1][];
-        frames[0] = new int[1];
-        numFrames = (int)ViewData["NumFrames"];
-        sizes = (int[])ViewData["Sizes"];
-        frames = (int[][])ViewData["Frames"];
-
-        string sizesString = "";
-        foreach (int i in sizes)
-        {
-            sizesString = sizesString + " " + i;
-        }
-
-        string framesString = "";
-        foreach (int[] i in frames)
-        {
-            foreach (int j in i)
-            {
-                framesString = framesString + " " + j;
-            }
-            framesString = framesString + ", ";
-        }
-    }
-    CPP Testing - Success: @ViewData["Success"]
-    <br />
-    CPP Testing - NumFrames: @numFrames
-    <br />
-    CPP Testing - Sizes Length: @sizes
-    <br />
-    CPP Testing - Sizes: @sizesString
-    <br />
-    CPP Testing - Values Length: @frames
-    <br />
-    CPP Testing - Values: @framesString
-    <br />
 </body>
 
 <script>

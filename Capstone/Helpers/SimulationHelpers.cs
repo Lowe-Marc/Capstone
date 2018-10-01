@@ -35,6 +35,29 @@ namespace Capstone.Models
         public double heuristicValue;
     }
 
+
+    // Params coming from the view, built in javascript
+    public class CytoscapeParams
+    {
+        public int startID { get; set; }
+        public int goalID { get; set; }
+        public List<CytoscapeNode> nodes { get; set; }
+    }
+
+    public class CytoscapeConnection
+    {
+        string source { get; set; }
+        string target { get; set; }
+        double heuristic { get; set; }
+        double distance { get; set; }
+    }
+
+    public class CytoscapeNode
+    {
+        int id { get; set; }
+        List<CytoscapeConnection> connections { get; set; }
+    }
+
     public class SimulationHelpers
     {
     }
