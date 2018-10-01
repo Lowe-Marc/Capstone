@@ -162,7 +162,6 @@ function setCytoscape(currentConfig) {
 }
 
 function qtipContent(node) {
-    console.log("node simID", node.data('simulationID'))
     var content = "";
     content  = "<div>";
     content += "<button onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
@@ -256,20 +255,23 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
 
 // Assembles each frame in a full animation
 function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
-    
-    debug = simulationResults.length
-
-    var fullAnimation = new Array(debug);
-    for (var i = 0; i < debug; i++) {
-        fullAnimation[i] = assembleAnimationFrame(simulationResults[i], currentAnimation, cy, fullAnimation, frameToPauseOn);
+    var frames = simulationResults['frames']
+    var fullAnimation = new Array(frames.length);
+    for (var i = 0; i < frames.length; i++) {
+        fullAnimation[i] = assembleAnimationFrame(frames[i]['frame'], currentAnimation, cy, fullAnimation, frameToPauseOn);
     }
     currentAnimation['frames'] = fullAnimation;
 }
 
 // Creates a single animation frame, i.e. a set of nodes each transitioning between two states
 // in a particular order
-function assembleAnimationFrame(nodes, currentAnimation, cy, fullAnimation, frameToPauseOn) {
-    var animationFrame = new Array(nodes.length);
+function assembleAnimationFrame(resultFrame, currentAnimation, cy, fullAnimation, frameToPauseOn) {
+    var nodes = [];
+    for (var i = 0; i < resultFrame.length; i++) {
+        nodes.push(resultFrame[i]['id'])
+    }
+
+    var animationFrame = new Array(resultFrame.length);
     var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
         var elementToAnimate = cy.nodes()[nodes[i]]
@@ -314,12 +316,6 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
             if (currentAnimation['timestep'] == frameToPauseOn || frameToPauseOn == -2) {
                 var frame = currentAnimation['frames'][currentAnimation['timestep']]
                 var lastAnimInFrame = frame[frame.length-1]
-                console.log("lastAnimInFrame: " )
-                console.log(lastAnimInFrame)
-                // lastAnimInFrame.promise('completed').then(function() { // Not quite right
-                //     console.log("HERE")
-                //     enablePlay();
-                // });
                 enablePlay();
                 return;
             }

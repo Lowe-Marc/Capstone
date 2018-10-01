@@ -1,8 +1,16 @@
 #include "Test.h"
 #include "stdafx.h"
 
-static int testArr[] = { {0},{0} };
-static int testSize[] = { 0, 0 };
+using namespace std;
+
+
+static int frameCount = 0;
+
+// Indicates the number of nodes in the frames
+static vector<int> testSize = {};
+
+// Indicates the node IDs in each frame
+static vector<vector<int>> testArr = {};
 
 
 Test::Test() {
@@ -11,58 +19,43 @@ Test::Test() {
 Test::~Test() {
 }
 
-//int Test::testRunSim() {
-//
-//	testSize = 10;
-//	testArr[testSize] = {0};
-//
-//	for (int i = 0; i < testSize; i++) {
-//		testArr[i] = i;
-//	}
-//
-//	return testSize;
-//}
-//
-//bool Test::testGetResults(int handle[]) {
-//	for (int i = 0; i < testSize; i++) {
-//		handle[i] = testArr[i];
-//	}
-//
-//	return true;
-//}
-
-
 // Should return an array of ints, each int represents the number of nodes in that frame
 int * Test::testRunSim() {
-
-	// Indicates the number of nodes in the frames
-	testSize[0] = 1;
-	testSize[1] = 3;
-
-	// Indicates the node IDs in each frame
-	testArr[0] = { 0 };
-	testArr[1] = { 1 };
+	testSize.clear();
+	testArr.clear();
+	frameCount = 3;
+	for (int i = 0; i < frameCount; i++) {
+		testSize.push_back(1);
+		vector<int> frameIDs = { i };
+		testArr.push_back(frameIDs);
+	}
 
 	return &testSize[0];
 }
 
 // Return the number of animation frames in the simulation results
-bool Test::getFrameCount(int handle) {
-	handle = 2;
-	return true;
+int Test::getFrameCount() {
+	frameCount = testSize.size();
+	return frameCount;
 }
 
 // Return the number of nodes animated in each frame
 bool Test::getFrameSizes(int handle[]) {
-	for (int i = 0; i < sizeof(testSize); i++) {
+	for (int i = 0; i < testSize.size(); i++) {
 		handle[i] = testSize[i];
 	}
 	return true;
 }
 
-bool Test::testGetResults(int handle[]) {
-	handle[0] = testArr[0];
-	handle[1] = testArr[1];
+// Fill the buffer with the frames
+bool Test::testGetResults(int ** handle) {
+	for (int i = 0; i < testArr.size(); i++) {
+		handle[i] = &testArr[i][0];
+	}
+
+	/*handle[0] = &testArr[0][0];
+	handle[1] = &testArr[1][0];
+	handle[2] = &testArr[2][0];*/
 
 	return true;
 }

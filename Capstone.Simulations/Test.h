@@ -10,7 +10,7 @@ public:
 	Test();
 	~Test();
 	int * testRunSim();
-	bool testGetResults(int handle[]);
-	bool getFrameCount(int handle);
+	int getFrameCount();
 	bool getFrameSizes(int handle[]);
+	bool testGetResults(int ** handle);
 };

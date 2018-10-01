@@ -16,22 +16,26 @@ namespace Capstone.Controllers
         {
             // Create CPP obj
             IntPtr testCppObj = TestModel.CreateTest();
-            // Run simulaiton
-            TestModel.TestRunSim(testCppObj);
+            // Run simulation
+            IntPtr debug = TestModel.TestRunSim(testCppObj);
             // Get the frame count
             int numFrames = 0;
-            TestModel.TestGetFrameCount(testCppObj, numFrames);
+            numFrames = TestModel.TestGetFrameCount(testCppObj);
+
             // Allocate frame size buffer and collect frame sizes;
             int[] sizes = new int[numFrames];
             TestModel.TestGetFrameSizes(testCppObj, sizes);
             //Marshal.Copy(TestModel.TestGetFrameSizes(testCppObj), sizes, 0, numFrames);
+
             // Allocate frame buffer and collect frames
             int[][] frames = new int[numFrames][];
-            //TestModel.TestAnimationStruct testStruct = new TestModel.TestAnimationStruct
-            //{
-            //    frames = new int[numFrames][]
-            //};
+            for (int i = 0; i < numFrames; i++)
+            {
+                frames[i] = new int[sizes[i]];
+            }
+
             bool success = TestModel.TestGetResults(testCppObj, frames);
+
             ViewData["Success"] = success;
             ViewData["NumFrames"] = numFrames;
             ViewData["Sizes"] = sizes;

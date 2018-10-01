@@ -27,21 +27,6 @@ namespace Capstone.Models
             public List<Object> nodes;
             public List<Object> edges;
         };
-        
-        public struct AStarNode
-        {
-            public string id;
-            public double x;
-            public double y;
-        }
-
-        public struct AStarEdge
-        {
-            public string source;
-            public string target;
-            public double distance;
-            public double heuristicValue;
-        }
 
         public static string readConfigFiles(string simulationName)
         {

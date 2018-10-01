@@ -26,25 +26,25 @@ int * TestRunSim(Test* test)
 	return tempVal;
 }
 
-bool TestGetResults(Test* test, int handle[])
+int TestGetFrameCount(Test* test) 
 {
 	if (test != nullptr)
 	{
-		return test->testGetResults(handle);
-	}
-	return false;
-}
-
-bool TestGetFrameCount(Test* test, int handle) 
-{
-	if (test != nullptr)
-	{
-		return test->getFrameCount(handle);
+		return test->getFrameCount();
 	}
 	return false;
 }
 
 bool TestGetFrameSizes(Test* test, int handle[])
+{
+	if (test != nullptr)
+	{
+		return test->getFrameSizes(handle);
+	}
+	return false;
+}
+
+bool TestGetResults(Test* test, int ** handle)
 {
 	if (test != nullptr)
 	{

@@ -6,11 +6,11 @@
     @{
         int numFrames = -1;
         int[] sizes = {0};
-        int[][] values = new int[1][];
-        values[0] = new int[1];
+        int[][] frames = new int[1][];
+        frames[0] = new int[1];
         numFrames = (int)ViewData["NumFrames"];
         sizes = (int[])ViewData["Sizes"];
-        values = (int[][])ViewData["Values"];
+        frames = (int[][])ViewData["Frames"];
 
         string sizesString = "";
         foreach (int i in sizes)
@@ -18,26 +18,27 @@
             sizesString = sizesString + " " + i;
         }
 
-        string valueString = "";
-        //foreach (int[] i in values)
-        //{
-        //    foreach (int j in i)
-        //    {
-        //        valueString = valueString + " " + j;
-        //    }
-        //}
+        string framesString = "";
+        foreach (int[] i in frames)
+        {
+            foreach (int j in i)
+            {
+                framesString = framesString + " " + j;
+            }
+            framesString = framesString + ", ";
+        }
     }
     CPP Testing - Success: @ViewData["Success"]
     <br />
-    CPP Testing - NumFrames:
+    CPP Testing - NumFrames: @numFrames
     <br />
     CPP Testing - Sizes Length: @sizes
     <br />
     CPP Testing - Sizes: @sizesString
     <br />
-    CPP Testing - Values Length: @values
+    CPP Testing - Values Length: @frames
     <br />
-    CPP Testing - Values: @valueString
+    CPP Testing - Values: @framesString
     <br />
 </body>
 

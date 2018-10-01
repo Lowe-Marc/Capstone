@@ -27,7 +27,7 @@ namespace Capstone.Models
         static public extern IntPtr TestRunSim(IntPtr test);
 
         [DllImport(SIMULATIONS_DLL)]
-        static public extern bool TestGetFrameCount(IntPtr test, int handle);
+        static public extern int TestGetFrameCount(IntPtr test);
 
         [DllImport(SIMULATIONS_DLL)]
         static public extern IntPtr TestGetFrameSizes(IntPtr test, int[] handle);

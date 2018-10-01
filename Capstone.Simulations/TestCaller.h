@@ -8,9 +8,9 @@ extern "C" {
 	extern __declspec(dllexport) Test* CreateTest();
 	extern __declspec(dllexport) void DeleteTest(Test* test);
 	extern __declspec(dllexport) int * TestRunSim(Test* test);
-	extern __declspec(dllexport) bool TestGetResults(Test* test, int handle[]);
-	extern __declspec(dllexport) bool TestGetFrameCount(Test* test, int handle);
+	extern __declspec(dllexport) int TestGetFrameCount(Test* test);
 	extern __declspec(dllexport) bool TestGetFrameSizes(Test* test, int handle[]);
+	extern __declspec(dllexport) bool TestGetResults(Test* test, int ** handle);
 
 
 #ifdef __cplusplus
