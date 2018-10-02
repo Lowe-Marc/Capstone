@@ -1,0 +1,23 @@
+# name latitude longitude
+One -200.0 -200.0
+Two 0.0 -200.0
+Three 200.0 -200.0
+Four -200.0 0.0
+Five 0.0 0.0
+Six 200.0 0.0
+Seven -200.0 200.0
+Eight 0.0 200.0
+Nine 200.0 200.0
+# distances
+One, Two: 5.0
+Four, Five: 5.0
+Seven, Eight: 5.0
+Two, Three: 5.0
+Five, Six: 5.0
+Eight, Nine: 5.0
+One, Four: 5.0
+Four, Seven: 5.0
+Five, Eight: 5.0
+Two, Five: 5.0
+Three, Six: 5.0
+Six, Nine: 5.0

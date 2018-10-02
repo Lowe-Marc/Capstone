@@ -86,3 +86,5 @@ C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Net.Http.Formatting
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Web.Http.dll
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Net.Http.Formatting.xml
 C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\System.Web.Http.xml
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\C5.dll
+C:\Users\Marcus\School\Capstone\Capstone\Capstone\bin\C5.xml

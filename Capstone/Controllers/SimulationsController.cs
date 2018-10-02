@@ -26,18 +26,9 @@ namespace Capstone.Controllers
         {
             string s = collection["data"].ToString();
             JObject json = JObject.Parse(s);
-            CytoscapeParams debug = json.ToObject<CytoscapeParams>();
-            JavaScriptSerializer serializer = new JavaScriptSerializer();
-            CytoscapeParams test = new CytoscapeParams();
-            test = serializer.Deserialize<CytoscapeParams>(collection["data"].ToString());
-            //CytoscapeParams test = JsonConvert.DeserializeObject<CytoscapeParams>(collection["data"].ToString());
+            CytoscapeParams cyParams = json.ToObject<CytoscapeParams>();
 
-            //int startID = Convert.ToInt32(collection["startID"]);
-            //int goalID = Convert.ToInt32(collection["goalID"]);
-            int startID = test.startID;
-            int goalID = test.goalID;
-
-            Animation animation = Models.AStar.runSimulation(startID, goalID);
+            Animation animation = Models.AStar.runSimulation(cyParams.startID, cyParams.goalID, cyParams);
 
             return new JavaScriptSerializer().Serialize(animation);
         }

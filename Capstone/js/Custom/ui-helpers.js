@@ -30,8 +30,8 @@ function collectAStarParams(cy) {
         connections = []
         element.connectedEdges().each(function(edge){
             connection = {
-                source: edge.data('source'),
-                target: edge.data('target'),
+                source: edge.data('sourceID'),
+                target: edge.data('targetID'),
                 heuristic: edge.data('heuristic'),
                 distance: edge.data('distance')
             }

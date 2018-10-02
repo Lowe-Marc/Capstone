@@ -127,14 +127,12 @@
             });
 
             function runSimulation() {
+                cy = getCurrentMapObject(possibleCytoscapeMaps);
                 var params = collectAStarParams(cy);
                 console.log("params")
                 console.log(params);
                 console.log("JSON.stringify")
                 console.log(JSON.stringify(params));
-                //console.log("jQuery.parseJSON")
-                //console.log(jQuery.parseJSON(params));
-                //jQuery.ajaxSettings.traditional = true
                 $.ajax({
                     method: "POST",
                     url: "/Simulations/AStar",
@@ -142,8 +140,9 @@
                     dataType: "json",
                     success: (result) => {
                         console.log("Simulation has completed successfully.");
-                        simulationResults = $.parseJSON(result);
+                        simulationResults = result
                         console.log("simulationResults", simulationResults);
+                        setDisplayedFrame(simulationResults['frames'].length);
                         cy = getCurrentMapObject(possibleCytoscapeMaps);
                         assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
                         enablePlay();

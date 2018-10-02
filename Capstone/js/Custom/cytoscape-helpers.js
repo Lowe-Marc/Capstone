@@ -26,6 +26,10 @@ function getDisplayedFrame() {
     return $('#frame-tracker').text().split("/")[0]
 }
 
+function setDisplayedFrame(frameCount) {
+    $('#frame-tracker').text("0/"+frameCount)
+}
+
 function DONTPAUSE() {
     return -1;
 }
@@ -185,6 +189,8 @@ function buildElementStructure(currentConfig) {
     elements = [];
     positionsArr = [];
 
+    var nodeMap = {};
+
     for (var i = 0; i < currentConfig.nodes.length; i++) {
         // var x = (2) * (180 + currentConfig.nodes[i].x);
         // var y = (2) * (90 - currentConfig.nodes[i].y);
@@ -200,6 +206,7 @@ function buildElementStructure(currentConfig) {
                 }
             }
         })
+        nodeMap[currentConfig.nodes[i].id.replace(' ', '_')] = i;
         positionsArr.push({
             x: currentConfig.nodes[i].x,
             y: currentConfig.nodes[i].y
@@ -219,7 +226,9 @@ function buildElementStructure(currentConfig) {
                 distance: actualDistance,
                 label: label,
                 source: currentConfig.edges[i].source.replace(' ','_'),
-                target: currentConfig.edges[i].target.replace(' ','_')
+                target: currentConfig.edges[i].target.replace(' ','_'),
+                sourceID: nodeMap[currentConfig.edges[i].source.replace(' ','_')],
+                targetID: nodeMap[currentConfig.edges[i].target.replace(' ','_')]
             }
         })
     }
@@ -255,6 +264,7 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
 
 // Assembles each frame in a full animation
 function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
+    console.log('assembling full', simulationResults)
     var frames = simulationResults['frames']
     var fullAnimation = new Array(frames.length);
     for (var i = 0; i < frames.length; i++) {
@@ -502,6 +512,7 @@ function restartAnim(simulationInfo) {
 
 // Starts an animation from the first frame
 function playFromBeginning(simulationInfo) {
+    console.log("playing from beginning", simulationInfo)
     var simulationResults = simulationInfo['results'];
     var cy = simulationInfo['cy'];
     var currentAnimation = simulationInfo['animation'];
