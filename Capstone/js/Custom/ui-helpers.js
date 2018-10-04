@@ -3,7 +3,29 @@ function setAStarConfig() {
     // $('#simulation-config-overlay').load('..\\Views\\Configurations\\AStarConfiguration.cshtml')
     var content = '<div> Start: <label id="start-label"></label><label id="start-id" style="display:none">-1</label></div>';
     content += '<div> Goal: <label id="goal-label"></label><label id="goal-id" style="display:none">-1<label></div>';
+    content += '<div><label id="priority-queue-label"><u>Priority Queue</u></label></div>';
+    content += '<div id="priority-queue-div"></div>';
     $('#simulation-config').html(content)
+    $('#simulation-config').show();
+    $('#simulation-config').height($('#simulation-display').height() - simulationConfigBottomBorder());
+}
+
+function setAStarPriorityQueue() {
+    var content = '<div><label id="priority-queue-label"><u>Priority Queue</u></label></div>';
+    $('#simulation-specific-anim').html(content)
+    $('#simulation-specific-anim').show();
+    $('#simulation-specific-anim').height($('#simulation-display').height() - simulationConfigBottomBorder());
+}
+
+function updateAStarPriorityQueue(priorityQueue, cy) {
+    console.log("updating priority queue:", priorityQueue)
+    console.log("cy", cy)
+    var content = '';
+    for (var i = 0; i < priorityQueue.length; i++) {
+        content += priorityQueue[i].name + '<br>';
+    }
+    
+    $('#priority-queue-div').html(content);
 }
 
 function simulationConfigBottomBorder() {
@@ -39,6 +61,7 @@ function collectAStarParams(cy) {
         })
         node = {
             id: element.data('simulationID'),
+            name: element.data('id'),
             connections: connections
         };
         nodes.push(node)

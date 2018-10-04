@@ -42,9 +42,8 @@
             $('#simulation-title').text("A* Search");
             $('#simulation-description').text("An intelligent path finding algorithm.");
             $('#simulation-header').show();
-            $('#simulation-config').show();
-            $('#simulation-config').height($('#simulation-display').height() - simulationConfigBottomBorder());
             setAStarConfig();
+            //setAStarPriorityQueue();
             
 
             // Cytoscape initialization

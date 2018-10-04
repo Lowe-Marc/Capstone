@@ -27,9 +27,11 @@ namespace Capstone.Controllers
             string s = collection["data"].ToString();
             JObject json = JObject.Parse(s);
             CytoscapeParams cyParams = json.ToObject<CytoscapeParams>();
+            Animation animation = new Animation();
+            if (cyParams.startID == cyParams.goalID)
+                return new JavaScriptSerializer().Serialize(animation);
 
-            Animation animation = Models.AStar.runSimulation(cyParams.startID, cyParams.goalID, cyParams);
-
+            animation = Models.AStar.runSimulation(cyParams.startID, cyParams.goalID, cyParams);
             return new JavaScriptSerializer().Serialize(animation);
         }
     }

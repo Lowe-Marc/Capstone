@@ -11,15 +11,17 @@ namespace Capstone.Models
     {
         /*
          * Currently using two different classes to perform simulations. One is prefaced with
-         * Cytoscape, which is passed in via the UI's ajax call. The other is prefaced with
-         * Animation, which is a simplified form and is passed back to the UI to animate.
-         * May not be worth the extra processing time depending on how the configurations scale.
+         * Cytoscape, which is passed in via the UI's ajax call and used in the simulation.
+         * The other is prefaced with Animation, which is a simplified form and is
+         * passed back to the UI to animate. In addition to it being a simplified form, it 
+         * also does not contain any circular references, unlike the Cytoscape versions. 
+         * C# has issues serializing objects with circular references, unlike Javascript.
          */
         public static Animation runSimulation(int startID, int goalID, CytoscapeParams cyParams)
         {
             //return testAnim(startID, goalID);
             Animation results = new Animation();
-            List<IntervalHeap<CytoscapeNode>> frontierOvertime = new List<IntervalHeap<CytoscapeNode>>();
+            List<List<AStarAnimationNode>> frontierOvertime = new List<List<AStarAnimationNode>>();
             List<AnimationFrame> frames = new List<AnimationFrame>();
             bool goalFound = false;
             Dictionary<int, CytoscapeNode> map = initializeInternalNodes(cyParams.nodes);
@@ -35,7 +37,7 @@ namespace Capstone.Models
                 trackAnimationFrame(frames, current);
 
                 //Store the frontier every iteration for animation
-                frontierOvertime.Add(frontier);
+                storeFrontierOverTime(frontierOvertime, frontier);
 
                 //Get the next node to expand
                 current = frontier.DeleteMax();
@@ -45,11 +47,12 @@ namespace Capstone.Models
                 {
                     goalFound = true;
                     trackAnimationFrame(frames, current);
-                    frontierOvertime.Add(frontier);
+                    storeFrontierOverTime(frontierOvertime, frontier);
                 }
             }
 
             results.frames = frames;
+            results.simulationSpecific = frontierOvertime;
 
             return results;
         }
@@ -78,6 +81,20 @@ namespace Capstone.Models
             }
         }
 
+        // Converts the Cytoscape nodes into animation nodes and pushes them onto the list that tracks frontiers
+        private static void storeFrontierOverTime(List<List<AStarAnimationNode>> frontierOverTime, IntervalHeap<CytoscapeNode> frontier)
+        {
+            AStarAnimationNode animationNode;
+            List<AStarAnimationNode> currentFrontier = new List<AStarAnimationNode>();
+            foreach (CytoscapeNode cyNode in frontier)
+            {
+                animationNode = new AStarAnimationNode(cyNode.id);
+                animationNode.name = cyNode.name;
+                currentFrontier.Add(animationNode);
+            }
+            frontierOverTime.Add(currentFrontier);
+        }
+
         // Produces a map to use for convenient lookup when adding to the frontier
         private static Dictionary<int, CytoscapeNode> initializeInternalNodes(List<CytoscapeNode> nodes)
         {
@@ -99,8 +116,7 @@ namespace Capstone.Models
 
             foreach (CytoscapeNode node in current.path)
             {
-                tempNode = new AStarAnimationNode();
-                tempNode.id = node.id;
+                tempNode = new AStarAnimationNode(node.id);
                 frame.frame.Add(tempNode);
             }
             frames.Add(frame);
@@ -115,16 +131,14 @@ namespace Capstone.Models
 
             AnimationFrame firstFrame = new AnimationFrame();
             List<AStarAnimationNode> firstFrameContents = new List<AStarAnimationNode>();
-            AStarAnimationNode start = new AStarAnimationNode();
-            start.id = startID;
+            AStarAnimationNode start = new AStarAnimationNode(startID);
             firstFrameContents.Add(start);
             firstFrame.frame = firstFrameContents;
             results.frames.Add(firstFrame);
 
             AnimationFrame nextFrame = new AnimationFrame();
             List<AStarAnimationNode> nextFrameContents = new List<AStarAnimationNode>();
-            AStarAnimationNode goal = new AStarAnimationNode();
-            goal.id = goalID;
+            AStarAnimationNode goal = new AStarAnimationNode(goalID);
             nextFrameContents.Add(goal);
             nextFrame.frame = nextFrameContents;
             results.frames.Add(nextFrame);

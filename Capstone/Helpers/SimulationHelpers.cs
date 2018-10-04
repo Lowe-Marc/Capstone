@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using C5;
 
 namespace Capstone.Models
 {
     public class Animation
     {
         public List<AnimationFrame> frames;
+        public List<List<AStarAnimationNode>> simulationSpecific;
     }
 
     public class AnimationFrame
@@ -23,6 +25,12 @@ namespace Capstone.Models
     public class AStarAnimationNode
     {
         public int id;
+        public string name;
+
+        public AStarAnimationNode(int thisID)
+        {
+            id = thisID;
+        }
     }
 
     public class AStarNode
@@ -81,6 +89,7 @@ namespace Capstone.Models
     public class CytoscapeNode : IComparable
     {
         public int id { get; set; }
+        public string name { get; set; }
         public List<CytoscapeConnection> connections { get; set; }
 
         // Below will not be set in UI
