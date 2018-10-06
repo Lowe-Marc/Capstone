@@ -54,7 +54,6 @@ function collectAStarParams(cy) {
             connection = {
                 source: edge.data('sourceID'),
                 target: edge.data('targetID'),
-                heuristic: edge.data('heuristic'),
                 distance: edge.data('distance')
             }
             connections.push(connection);
@@ -62,6 +61,7 @@ function collectAStarParams(cy) {
         node = {
             id: element.data('simulationID'),
             name: element.data('id'),
+            heuristic: element.data('heuristic'),
             connections: connections
         };
         nodes.push(node)

@@ -82,18 +82,28 @@ namespace Capstone.Models
     {
         public int source { get; set; }
         public int target { get; set; }
-        public double heuristic { get; set; }
         public double distance { get; set; }
+
+        // Cytoscape required a source and target to be defined when rendering the network on the UI.
+        // However, AStar will treat them as undirected connections, so this will make sure
+        // We aren't accidentally looking at the wrong node.
+        public int undirectedTarget(CytoscapeNode desiredSource)
+        {
+            if (source == desiredSource.id)
+                return target;
+            else
+                return source;
+        }
     }
 
     public class CytoscapeNode : IComparable
     {
         public int id { get; set; }
         public string name { get; set; }
+        public double heuristic { get; set; }
         public List<CytoscapeConnection> connections { get; set; }
 
         // Below will not be set in UI
-        public double heuristic { get; set; }
         public double distance { get; set; }
         public List<CytoscapeNode> path { get; set; }
 
@@ -103,10 +113,13 @@ namespace Capstone.Models
             path.Add(this);
         }
 
-        // Will throw an exception if compared to any other type
+        // A CytoscapeNode is "greater than" another node if its distance + heuristic is
+        // less than the node is it being compared to. This is written with the sole intention
+        // of them being compared in the context of an AStar priority queue.
+        // NOTE: Will throw an exception if compared to any other type
         public int CompareTo(Object node)
         {
-            return heuristic.CompareTo(((CytoscapeNode)node).distance + ((CytoscapeNode)node).heuristic);
+            return -1 * (distance + heuristic).CompareTo(((CytoscapeNode)node).distance + ((CytoscapeNode)node).heuristic);
         }
 
         public CytoscapeNode previous()

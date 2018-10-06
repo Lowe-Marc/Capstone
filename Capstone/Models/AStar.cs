@@ -62,9 +62,10 @@ namespace Capstone.Models
             CytoscapeNode tempNode;
             foreach (CytoscapeConnection connection in node.connections)
             {
-                tempNode = map[connection.target];
+                int undirectedTarget = connection.undirectedTarget(node);
+                tempNode = map[undirectedTarget];
                 // Discard cyclic paths
-                if (connection.target != node.previous().id)
+                if (undirectedTarget != node.previous().id)
                 {
                     // Keep track of the path taken
                     if (node.path == null || !node.path.Any())
@@ -72,7 +73,8 @@ namespace Capstone.Models
                         node.path = new List<CytoscapeNode>();
                         node.path.Add(node);
                     }
-                    tempNode.path = node.path;
+                    // Make sure to be duplicating the path instead of pointing at node's path field
+                    tempNode.path = new List<CytoscapeNode>(node.path);
                     tempNode.path.Add(tempNode);
                     // Add on heuristic value
                     tempNode.distance = node.distance + connection.distance;
@@ -82,17 +84,32 @@ namespace Capstone.Models
         }
 
         // Converts the Cytoscape nodes into animation nodes and pushes them onto the list that tracks frontiers
+        // We have to clone the frontier and then delete the elements from the copy because there is no way
+        // to iterate through the frontier ordered by priority.
         private static void storeFrontierOverTime(List<List<AStarAnimationNode>> frontierOverTime, IntervalHeap<CytoscapeNode> frontier)
         {
+            IntervalHeap<CytoscapeNode> frontierCopy = cloneFrontier(frontier);
             AStarAnimationNode animationNode;
             List<AStarAnimationNode> currentFrontier = new List<AStarAnimationNode>();
-            foreach (CytoscapeNode cyNode in frontier)
+            CytoscapeNode cyNode;
+            while (frontierCopy.Any())
             {
+                cyNode = frontierCopy.DeleteMax();
                 animationNode = new AStarAnimationNode(cyNode.id);
                 animationNode.name = cyNode.name;
                 currentFrontier.Add(animationNode);
             }
+
             frontierOverTime.Add(currentFrontier);
+        }
+
+        // Helper method to duplicate an interval heap
+        private static IntervalHeap<CytoscapeNode> cloneFrontier(IntervalHeap<CytoscapeNode> frontier)
+        {
+            IntervalHeap<CytoscapeNode> frontierCopy = new IntervalHeap<CytoscapeNode>();
+            foreach (CytoscapeNode cyNode in frontier)
+                frontierCopy.Add(cyNode);
+            return frontierCopy;
         }
 
         // Produces a map to use for convenient lookup when adding to the frontier

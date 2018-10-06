@@ -180,7 +180,7 @@ function qtipContent(node, cy) {
     content += "</div>";
 
     content += "<div>"
-    content += "Heuristic: <input id='heuristic-value' type='number' value='" + node.data('heuristic') + "'></input>"
+    content += "Heuristic: <input id='heuristic-value-" + node.id() + "' type='number' value='" + node.data('heuristic') + "'></input>"
     content += "<button onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     return content;
@@ -191,18 +191,21 @@ function makeStartNode(id, simulationID) {
     $('#start-id').text(simulationID);
 }
 
-// Needs to set the label, as well as make the heuristic calculation
+// Needs to set the label, set the goal node heuristic to 0 and make the heuristic calculations
 function makeGoalNode(id, simulationID) {
     $('#goal-label').text(id.replace('_', ' '));
     $('#goal-id').text(simulationID);
 
+    cy.$('#' + id).data('heuristic', 0);
     calculateDistances(id, simulationID);
 }
 
 function checkHeuristic(id, simulationID) {
     var node = cy.$('#' + id);
-    var heuristic = $('#heuristic-value').val();
-    console.log(heuristic)
+    var heuristic = $('#heuristic-value-' + id).val();
+    node.data('heuristic', heuristic);
+    console.log("heuristic", heuristic)
+    console.log("distanceToGoal", node.data('distanceToGoal'))
     console.log(node.data('distanceToGoal'))
     if (heuristic > node.data('distanceToGoal')) {
         console.log("greater than")
@@ -223,8 +226,6 @@ function checkHeuristic(id, simulationID) {
         });
         nodeAnimation.play();
     }
-
-    
 }
 
 // TODO: If running into performance concerns, this calculation could probably be moved
@@ -279,7 +280,6 @@ function buildElementStructure(currentConfig) {
                 id: currentConfig.edges[i].id,
                 elementType: "edge",
                 simulationID: i,
-                heuristic: heuristic,
                 distance: actualDistance,
                 label: label,
                 source: currentConfig.edges[i].source.replace(' ','_'),
