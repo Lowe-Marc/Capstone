@@ -106,7 +106,7 @@ namespace Capstone.Models
         // Will throw an exception if compared to any other type
         public int CompareTo(Object node)
         {
-            return heuristic.CompareTo(((CytoscapeNode)node).heuristic);
+            return heuristic.CompareTo(((CytoscapeNode)node).distance + ((CytoscapeNode)node).heuristic);
         }
 
         public CytoscapeNode previous()

@@ -125,9 +125,14 @@
                 }
             });
 
+            $('#goal-button').click(function () {
+                console.log("DEBUG")
+            });
+
             function runSimulation() {
                 cy = getCurrentMapObject(possibleCytoscapeMaps);
                 var params = collectAStarParams(cy);
+
                 console.log("params")
                 console.log(params);
                 console.log("JSON.stringify")

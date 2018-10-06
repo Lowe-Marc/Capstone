@@ -75,7 +75,7 @@ namespace Capstone.Models
                     tempNode.path = node.path;
                     tempNode.path.Add(tempNode);
                     // Add on heuristic value
-                    tempNode.distance = node.distance + connection.heuristic;
+                    tempNode.distance = node.distance + connection.distance;
                     frontier.Add(tempNode);
                 }
             }

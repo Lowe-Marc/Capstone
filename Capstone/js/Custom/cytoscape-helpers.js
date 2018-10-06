@@ -1,9 +1,15 @@
+var cy;
+
 // Constants
 function inactiveColor() {
     return 'black';
 }
 
 function activeColor() {
+    return 'blue';
+}
+
+function errorColor() {
     return 'red';
 }
 
@@ -105,7 +111,7 @@ function setCytoscape(currentConfig) {
 
     // TODO: positions
     // find the center point and offset all the points so the center is at 0,0
-    var cy = cytoscape({
+    cy = cytoscape({
         container: document.getElementById('cy'),
         style: [
             {
@@ -147,7 +153,7 @@ function setCytoscape(currentConfig) {
 
     cy.nodes().each(function (node) {
         cy.$('#' + node.id()).qtip({
-            content: qtipContent(node),
+            content: qtipContent(node, cy),
             position: {
                 my: 'top center',
                 at: 'bottom center'
@@ -165,12 +171,18 @@ function setCytoscape(currentConfig) {
     return cy
 }
 
-function qtipContent(node) {
+function qtipContent(node, cy) {
     var content = "";
+
     content  = "<div>";
     content += "<button onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
-    content += "<button onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
+    content += "<button id='goal-button' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
     content += "</div>";
+
+    content += "<div>"
+    content += "Heuristic: <input id='heuristic-value' type='number' value='" + node.data('heuristic') + "'></input>"
+    content += "<button onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
+    content += "</div>"
     return content;
 }
 
@@ -179,9 +191,52 @@ function makeStartNode(id, simulationID) {
     $('#start-id').text(simulationID);
 }
 
+// Needs to set the label, as well as make the heuristic calculation
 function makeGoalNode(id, simulationID) {
     $('#goal-label').text(id.replace('_', ' '));
     $('#goal-id').text(simulationID);
+
+    calculateDistances(id, simulationID);
+}
+
+function checkHeuristic(id, simulationID) {
+    var node = cy.$('#' + id);
+    var heuristic = $('#heuristic-value').val();
+    console.log(heuristic)
+    console.log(node.data('distanceToGoal'))
+    if (heuristic > node.data('distanceToGoal')) {
+        console.log("greater than")
+        var nodeAnimation = node.animation({
+            style: {
+                'background-color': errorColor()
+            },
+            duration: animationTime()
+        });
+        nodeAnimation.play();
+    } else {
+        console.log("less than")
+        var nodeAnimation = node.animation({
+            style: {
+                'background-color': inactiveColor()
+            },
+            duration: animationTime()
+        });
+        nodeAnimation.play();
+    }
+
+    
+}
+
+// TODO: If running into performance concerns, this calculation could probably be moved
+function calculateDistances(id, simulationID) {
+    var dijkstra
+    console.log("nodes")
+    for (var i = 0; i < cy.nodes()['length']; i++) {
+        dijkstra = cy.elements().dijkstra('#' + cy.nodes()[i].id(), function(edge) {
+            return edge.data('distance');
+        })
+        cy.nodes()[i].data('distanceToGoal', dijkstra.distanceTo(cy.$('#' + id)))
+    }
 }
 
 // Assembles the object used to render the CY map
@@ -190,7 +245,7 @@ function buildElementStructure(currentConfig) {
     positionsArr = [];
 
     var nodeMap = {};
-
+    var label;
     for (var i = 0; i < currentConfig.nodes.length; i++) {
         // var x = (2) * (180 + currentConfig.nodes[i].x);
         // var y = (2) * (90 - currentConfig.nodes[i].y);
@@ -200,6 +255,8 @@ function buildElementStructure(currentConfig) {
                 elementType: "node",
                 simulationID: i,
                 label: currentConfig.nodes[i].id,
+                distanceToGoal: -1,
+                heuristic: 0.5,
                 position: {
                     x: currentConfig.nodes[i].x,
                     y: currentConfig.nodes[i].y
@@ -215,7 +272,7 @@ function buildElementStructure(currentConfig) {
 
     var heuristic = 0.5;
     var actualDistance = 1.0;
-    var label = "h: " + heuristic + " f: " + actualDistance;
+    label = "h: " + heuristic + " f: " + actualDistance;
     for (var i = 0; i < currentConfig.edges.length; i++) {
         elements.push({
             data: {
