@@ -25,7 +25,7 @@ function updateAStarPriorityQueue(priorityQueue, cy) {
     var displayLimit = 10;
     queueLength = priorityQueue.length > displayLimit ? displayLimit : priorityQueue.length;
     for (var i = 0; i < queueLength; i++) {
-        content += priorityQueue[i].name + '<br>';
+        content += priorityQueue[i].name.replace('_', ' ') + '<br>';
     }
     if (queueLength == displayLimit) {
         content += '...<br>'

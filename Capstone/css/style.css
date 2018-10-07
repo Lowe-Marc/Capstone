@@ -197,3 +197,33 @@
 .autorotate {
     edge-text-rotation: 'autorotate';
 }
+
+/* AStar qtip menu */
+.qtip-sub-div {
+    height: 100%;
+    width: 100%;
+    border: 2px solid #e6e6e6;
+    padding: 5px;
+    background-color: #e6e6e64d;
+    overflow: auto;
+}
+
+#make-start-div {
+    float: left;
+    padding: 5px;
+}
+
+#make-goal-div {
+    float: right;
+    padding: 5px;
+}
+
+#heuristic-div {
+    display: flex;
+    align-items: center;
+}
+
+#heuristic-label {
+    padding: 5px
+}
+/* AStar qtip menu */

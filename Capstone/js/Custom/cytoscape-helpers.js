@@ -160,10 +160,10 @@ function setCytoscape(currentConfig) {
             },
             style: {
                 classes: 'qtip-bootstrap',
-                tip: {
-                    width: 16,
-                    height: 8
-                }
+                // tip: {
+                //     width: 16,
+                //     height: 8
+                // }
             }
         });
     });
@@ -174,14 +174,24 @@ function setCytoscape(currentConfig) {
 function qtipContent(node, cy) {
     var content = "";
 
-    content  = "<div>";
-    content += "<button onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
-    content += "<button id='goal-button' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
+    content  = "<div class='qtip-sub-div'>";
+    content += "<div id='make-start-div'>"
+    content += "<button id='make-start-button' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
+    content += "</div>"
+
+    content += "<div id='make-goal-div'>"
+    content += "<button id='make-goal-button' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
+    content += "</div>"
     content += "</div>";
 
-    content += "<div>"
-    content += "Heuristic: <input id='heuristic-value-" + node.id() + "' type='number' value='" + node.data('heuristic') + "'></input>"
-    content += "<button onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
+    content += "<br>";
+
+    content += "<div class='qtip-sub-div' id='heuristic-div'>";
+    content += "<div id='heuristic-input-div'>"
+    content += "<label id='heuristic-label'>Heuristic:</label>"
+    content += "<input id='heuristic-value-" + node.id() + "' type='number' value='" + node.data('heuristic') + "'></input>"
+    content += "</div>"
+    content += "<button id='heuristic-update-button' onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     return content;
 }
@@ -196,6 +206,7 @@ function makeGoalNode(id, simulationID) {
     $('#goal-label').text(id.replace('_', ' '));
     $('#goal-id').text(simulationID);
 
+    $('#heuristic-value-' + id).val(0)
     cy.$('#' + id).data('heuristic', 0);
     calculateDistances(id, simulationID);
 }
