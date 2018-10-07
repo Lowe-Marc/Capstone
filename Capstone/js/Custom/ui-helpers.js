@@ -21,8 +21,14 @@ function updateAStarPriorityQueue(priorityQueue, cy) {
     console.log("updating priority queue:", priorityQueue)
     console.log("cy", cy)
     var content = '';
-    for (var i = 0; i < priorityQueue.length; i++) {
+    var queueLength = priorityQueue.length;
+    var displayLimit = 10;
+    queueLength = priorityQueue.length > displayLimit ? displayLimit : priorityQueue.length;
+    for (var i = 0; i < queueLength; i++) {
         content += priorityQueue[i].name + '<br>';
+    }
+    if (queueLength == displayLimit) {
+        content += '...<br>'
     }
     
     $('#priority-queue-div').html(content);

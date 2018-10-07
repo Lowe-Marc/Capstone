@@ -463,19 +463,35 @@ function resetFrame(frame, setFrameFunction, setFrameFunctionParameters) {
     console.log("frame in reset")
     console.log(frame)
     var resetAnim;
-    for (var i = 0; i < frame.length; i++) {
-        resetAnim = frame[i]['element'].animation({
+    // for (var i = 0; i < frame.length; i++) {
+    //     resetAnim = frame[i]['element'].animation({
+    //         style: {
+    //             'background-color': inactiveColor()
+    //         },
+    //         duration: resetTime()
+    //     });
+    //     resetAnim.play();
+    //     if (i == frame.length - 1 && setFrameFunction != null) {
+    //         resetAnim.promise('completed').then(function() {
+    //             setFrameFunction(setFrameFunctionParameters);
+    //         });
+    //     }
+    // }
+
+    for (var i = 0; i < cy.nodes().length; i++) {
+        console.log(cy.nodes()[i])
+        resetAnim = cy.nodes()[i].animation({
             style: {
                 'background-color': inactiveColor()
             },
             duration: resetTime()
         });
-        resetAnim.play();
-        if (i == frame.length - 1 && setFrameFunction != null) {
+        if (cy.nodes()[i] == frame[frame.length-1]['element'] && setFrameFunction != null) {
             resetAnim.promise('completed').then(function() {
                 setFrameFunction(setFrameFunctionParameters);
             });
         }
+        resetAnim.play();
     }
 }
 
