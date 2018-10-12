@@ -176,11 +176,11 @@ function qtipContent(node, cy) {
 
     content  = "<div class='qtip-sub-div'>";
     content += "<div id='make-start-div'>"
-    content += "<button id='make-start-button' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
+    content += "<button id='make-start-button' class='btn' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
     content += "</div>"
 
     content += "<div id='make-goal-div'>"
-    content += "<button id='make-goal-button' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
+    content += "<button id='make-goal-button' class='btn' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
     content += "</div>"
     content += "</div>";
 
@@ -189,9 +189,10 @@ function qtipContent(node, cy) {
     content += "<div class='qtip-sub-div' id='heuristic-div'>";
     content += "<div id='heuristic-input-div'>"
     content += "<label id='heuristic-label'>Heuristic:</label>"
-    content += "<input id='heuristic-value-" + node.id() + "' type='number' value='" + node.data('heuristic') + "'></input>"
+    content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "'></input>"
+    content += "<div style='padding:2px'></div>"
+    content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
-    content += "<button id='heuristic-update-button' onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     return content;
 }
@@ -209,12 +210,27 @@ function makeGoalNode(id, simulationID) {
     $('#heuristic-value-' + id).val(0)
     cy.$('#' + id).data('heuristic', 0);
     calculateDistances(id, simulationID);
+    setHeuristics();
+}
+
+function setHeuristics() {
+    cy.nodes().each(function(node) {
+        console.log(node)
+        node.data('label', node.id().replace('_', ' ') + ": " + node.data('heuristic'));
+    });
 }
 
 function checkHeuristic(id, simulationID) {
     var node = cy.$('#' + id);
-    var heuristic = $('#heuristic-value-' + id).val();
+    var heuristic = parseInt($('#heuristic-value-' + id).val());
+    if (heuristic < 0 || !Number.isInteger(heuristic)) {
+        $('#heuristic-value-' + id).addClass('has-error');
+        return;
+    }
+    $('#heuristic-value-' + id).val(heuristic);
+    $('#heuristic-value-' + id).removeClass('has-error');
     node.data('heuristic', heuristic);
+    node.data('label', node.id() + ": " + heuristic);
     console.log("heuristic", heuristic)
     console.log("distanceToGoal", node.data('distanceToGoal'))
     console.log(node.data('distanceToGoal'))
@@ -261,6 +277,7 @@ function buildElementStructure(currentConfig) {
     for (var i = 0; i < currentConfig.nodes.length; i++) {
         // var x = (2) * (180 + currentConfig.nodes[i].x);
         // var y = (2) * (90 - currentConfig.nodes[i].y);
+        heuristic = 1;
         elements.push({
             data: {
                 id: currentConfig.nodes[i].id.replace(' ', '_'),
@@ -268,7 +285,7 @@ function buildElementStructure(currentConfig) {
                 simulationID: i,
                 label: currentConfig.nodes[i].id,
                 distanceToGoal: -1,
-                heuristic: 0.5,
+                heuristic: heuristic,
                 position: {
                     x: currentConfig.nodes[i].x,
                     y: currentConfig.nodes[i].y
@@ -282,9 +299,9 @@ function buildElementStructure(currentConfig) {
         })
     }
 
-    var heuristic = 0.5;
+    var heuristic = 1;
     var actualDistance = 1.0;
-    label = "h: " + heuristic + " f: " + actualDistance;
+    label = "g: " + actualDistance;
     for (var i = 0; i < currentConfig.edges.length; i++) {
         elements.push({
             data: {

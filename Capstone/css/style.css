@@ -206,6 +206,7 @@
     padding: 5px;
     background-color: #e6e6e64d;
     overflow: auto;
+    border-radius: 4px;
 }
 
 #make-start-div {
@@ -221,9 +222,37 @@
 #heuristic-div {
     display: flex;
     align-items: center;
+    border-radius: 4px;
 }
 
 #heuristic-label {
-    padding: 5px
+    padding: 5px;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    font-weight: 700 !important;
+    display: inline
 }
+
+.heuristic-input {
+    border-radius: 3px;
+    border-radius: 3px;
+    border: 2px solid #e8ebed;
+    padding: 2px;
+}
+
+.heuristic-input:focus.has-error {
+    outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px red;
+}
+
+.heuristic-input.has-error {
+    border-color: red;
+}
+
+.btn {
+    background-color: #343a40;
+    color: white;
+    padding: 2px;
+}
+
 /* AStar qtip menu */

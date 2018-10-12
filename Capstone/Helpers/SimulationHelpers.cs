@@ -12,6 +12,16 @@ namespace Capstone.Models
         public List<List<AStarAnimationNode>> simulationSpecific;
     }
 
+    public class SimulationSpecificAnimation
+    {
+
+    }
+
+    public class AStarSpecificAnimation : SimulationSpecificAnimation
+    {
+        List<List<AStarAnimationNode>> priorityQueue;
+    }
+
     public class AnimationFrame
     {
         public List<AStarAnimationNode> frame;
@@ -26,10 +36,12 @@ namespace Capstone.Models
     {
         public int id;
         public string name;
+        public int f;
 
         public AStarAnimationNode(int thisID)
         {
             id = thisID;
+            f = 0;
         }
     }
 

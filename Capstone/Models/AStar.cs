@@ -97,6 +97,7 @@ namespace Capstone.Models
                 cyNode = frontierCopy.DeleteMax();
                 animationNode = new AStarAnimationNode(cyNode.id);
                 animationNode.name = cyNode.name;
+                animationNode.f = cyNode.heuristic + cyNode.distance;
                 currentFrontier.Add(animationNode);
             }
 
