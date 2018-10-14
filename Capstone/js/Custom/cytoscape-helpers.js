@@ -162,7 +162,7 @@ function setCytoscape(currentConfig) {
                 y: positionsArr[i].y
             }
         });
-        cy.nodes().lock()
+        lockNodes();
     });
 
     cy.nodes().each(function (node) {
@@ -198,16 +198,16 @@ function setCytoscape(currentConfig) {
 function qtipContent(node, connecting) {
     var content;
     if (connecting) {
-        return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.data('label').replace(' ','_') + "\")'>Connect to this node</button>"
+        return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.data('label').replace(' ','_').split(':')[0] + "\")'>Connect to this node</button>"
     }
     // Start and end buttons
     // Add node and connection buttons
     content  = "<div id='operation' class='qtip-sub-div'>"
     content += "<div class='svg-expand pointer second'>"
-    content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")></span>"
-    content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")></span>"
-    content += "<span class='fa oi icon' data-toggle='modal' id='plus' data-glyph='plus' title='Add a new node' aria-hidden='true' onclick=promptAddNode(\"" + node.data('label').replace(' ','_') + "\")></span>"
-    content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Add a new connection' aria-hidden='true' onclick=promptAddConnection(\"" + node.data('label').replace(' ','_') + "\")></span>"
+    content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='plus' data-glyph='plus' title='Add a new node' aria-hidden='true' onclick=promptAddNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Add a new connection' aria-hidden='true' onclick=promptAddConnection(\"" + node.data('label').replace(' ','_').split(':')[0] + "\")></span>"
     content += "</div>";
     content += "</div>";
 
@@ -265,12 +265,14 @@ function confirmConnection(nodeOne) {
 }
 
 function addConnection(nodeOne, nodeTwo) {
+    nodeOne = nodeOne.split(':')[0];
+    nodeTwo = nodeTwo.split(':')[0];
     console.log("nodeOne - nodeTwo: ", nodeOne, nodeTwo)
     console.log("configs again", configs)
     console.log("currentConfig:", currentConfig)
     currentConfig.edges.push({
-        source: nodeOne.replace(' ', '_'),
-        target: nodeTwo.replace(' ', '_'),
+        source: nodeOne,
+        target: nodeTwo,
         distance: 5,
     });
     setCytoscape(currentConfig);
@@ -443,16 +445,18 @@ function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToP
 
 // Creates a single animation frame, i.e. a set of nodes each transitioning between two states
 // in a particular order
-function assembleAnimationFrame(resultFrame, currentAnimation, cy, fullAnimation, frameToPauseOn, simulationSpecific) {
+function assembleAnimationFrame(resultFrame, currentAnimation, c, fullAnimation, frameToPauseOn, simulationSpecific) {
     var nodes = [];
     for (var i = 0; i < resultFrame.length; i++) {
         nodes.push(resultFrame[i]['id'])
     }
 
+    console.log("cy.nodes()", cy.nodes())
     var animationFrame = new Array(resultFrame.length);
     var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
         var elementToAnimate = cy.nodes()[nodes[i]]
+        console.log("elementToAnimate", elementToAnimate)
         if (i == nodes.length - 1) {
             lastInFrame = true;
         }
