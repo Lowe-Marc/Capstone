@@ -57,6 +57,11 @@ namespace Capstone.Controllers
             return View();
         }
 
+        public ActionResult AStarAddNode()
+        {
+            return PartialView();
+        }
+
         public ActionResult DynamicProgramming()
         {
             return View();

@@ -3236,6 +3236,7 @@
     <Content Include="Views\Configurations\Sync.cshtml" />
     <Content Include="Views\Home\Debug.cshtml" />
     <Content Include="Views\Configurations\AStarConfiguration.cshtml" />
+    <Content Include="Views\Home\AStarAddNode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

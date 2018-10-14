@@ -40,7 +40,7 @@ function simulationConfigBottomBorder() {
 }
 
 // Note that the keys in params must match the names used in Simulations/AStar
-function collectAStarParams(cy) {
+function collectAStarParams(deprecated) {
     console.log("collecting parameters")
     var params = new Object();
     var nodes = [];

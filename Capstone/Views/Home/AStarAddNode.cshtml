@@ -1,0 +1,55 @@
+﻿
+<div class="modal fade" id="add-relay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h1 class="modal-title" id="myModalLabel"><strong> Add a Relay Station</strong></h1>
+            </div>
+            <div class="modal-body">
+                <!--main content start-->
+                <section class="main-content-wrapper" style="padding:0">
+                    <section id="main-content" class="animated fadeInUp">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                <h2 style="text-align:center; margin: -10px 0 15px 0;">Relay Info</h2>
+                                            </div>
+                                        </div>
+                                        <div class="form-horizontal">
+                                            <div class="form-group">
+                                                <label for="relayWeight" class="col-sm-4 control-label">Weight</label>
+                                                <div class="col-sm-6">
+                                                    <input type="number" class="form-control" id="relayWeight" name="relayWeight" min="1" max="100" required onkeyup="if( value > 100){ value = 100; } else if (value < 1){ value =1 }" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="relayIpAddress" class="col-sm-4 control-label">IP Address</label>
+                                                <div class="col-sm-6">
+                                                    <select class="form-control" id="relayIpAddress" name="relayIpAddress" style="padding:0;"></select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="relayIpConnectedTo" class="col-sm-4 control-label">Connect To</label>
+                                                <div class="col-sm-6">
+                                                    <select class="form-control" id="relayIpConnectedTo" name="relayIpConnectedTo" style="padding:0;"></select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type="submit" class="btn btn-success btn-block" value="Add To Network" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+                <!--main content end-->
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,12 +15,80 @@
         List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
     }
 
+
+    <div id="myModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add a new node</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6 ml-auto">
+                                <label for="node-connection" style="vertical-align:sub" class="col-sm-4 control-label">Connection</label>
+                            </div>
+                            <div class="col-md-6 ml-auto">
+                                <input type="text" class="form-control disabled" id="node-connection-name" name="node-connection-name" readonly required="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 ml-auto">
+                                <label for="node-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
+                            </div>
+                            <div class="col-md-6 ml-auto">
+                                <input type="text" class="form-control" id="node-name" name="node-name" required="">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <br />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 ml-auto">
+                                <label for="node-distance" style="vertical-align:sub" class="col-sm-4 control-label">Distance</label>
+                            </div>
+                            <div class="col-md-6 ml-auto">
+                                <input type="number" class="form-control" id="node-distance" name="node-distance" min="1" required="" onkeyup="if (value < 1){ value =1 }">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="addNode()">Add Node</button>
+                    <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-connection-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="col-12 modal-title text-center" >Select the node to connect to
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </h5>
+                    <label style="display:none" id="connection-header"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div id="cy"></div>
     <script>
         $(function () { // on dom ready
 
             // Parse simulation configs
-            var configs = @Html.Raw(Json.Encode(AStarConfigs));
+            configs = @Html.Raw(Json.Encode(AStarConfigs));
             console.log("configs", configs)
             var possibleCytoscapeMaps = [];
             for (var i = 0; i < configs.length; i++) {
@@ -44,7 +112,7 @@
             $('#simulation-header').show();
             setAStarConfig();
             //setAStarPriorityQueue();
-            
+
 
             // Cytoscape initialization
             var cy = setCytoscape(currentConfig);
@@ -65,6 +133,14 @@
 
             $('#fullscreen-exit').click(function () {
                 closeFullscreen();
+            });
+
+            $('#lock-locked').click(function () {
+                lockNodes();
+            });
+
+            $('#lock-unlocked').click(function () {
+                unlockNodes();
             });
 
             // Run a simulation
@@ -113,7 +189,7 @@
             $('#forward').click(function () {
                 if (canPlay()) {
                     updateSimulationInfo();
-                    frameForward(simulationInfo);   
+                    frameForward(simulationInfo);
                 }
             });
 
@@ -167,6 +243,29 @@
                     currentAnimation['timestep'] = getDisplayedFrame() - 1;
                 }
                 simulationInfo['animation'] = currentAnimation;
+            }
+
+
+            // When the user clicks on <span> (x), close the modal
+            $('.close').click(function () {
+                $('#myModal').hide();
+                $('#add-connection-modal').hide();
+            });
+
+            $('.close-modal-button').click(function () {
+                $('#myModal').hide();
+                $('#add-connection-modal').hide();
+            });
+
+            $('#close-add-connection-modal').click(function () {
+                $('#add-connection-modal').hide();
+            });
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target.id == 'myModal') {
+                    $('#myModal').hide();
+                }
             }
 
         });

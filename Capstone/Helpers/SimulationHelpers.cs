@@ -36,7 +36,7 @@ namespace Capstone.Models
     {
         public int id;
         public string name;
-        public int f;
+        public double f;
 
         public AStarAnimationNode(int thisID)
         {

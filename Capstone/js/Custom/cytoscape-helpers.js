@@ -1,4 +1,6 @@
 var cy;
+var configs;
+var currentConfig;
 
 // Constants
 function inactiveColor() {
@@ -105,6 +107,18 @@ function canPlay() {
     return !$('#play').hasClass('disabled')
 }
 
+function lockNodes() {
+    cy.nodes().lock();
+    $('#lock-locked').hide();
+    $('#lock-unlocked').show();
+}
+
+function unlockNodes() {
+    cy.nodes().unlock();    
+    $('#lock-locked').show();
+    $('#lock-unlocked').hide();
+}
+
 // Renders the CY map and handles node specific properties such as clicking and locking
 function setCytoscape(currentConfig) {
     buildElementStructure(currentConfig);
@@ -153,7 +167,17 @@ function setCytoscape(currentConfig) {
 
     cy.nodes().each(function (node) {
         cy.$('#' + node.id()).qtip({
-            content: qtipContent(node, cy),
+            content: {
+                text: function(event, api) {
+                    console.log("clicking")
+                    var connecting; 
+                    if ($('#add-connection-modal').is(':visible')) {
+                        console.log("adding connection")
+                        connecting = true;
+                    }
+                    return qtipContent(node, connecting);
+                }
+            },
             position: {
                 my: 'top center',
                 at: 'bottom center'
@@ -171,17 +195,20 @@ function setCytoscape(currentConfig) {
     return cy
 }
 
-function qtipContent(node, cy) {
-    var content = "";
-
-    content  = "<div class='qtip-sub-div'>";
-    content += "<div id='make-start-div'>"
-    content += "<button id='make-start-button' class='btn' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>Start Here</button>";
-    content += "</div>"
-
-    content += "<div id='make-goal-div'>"
-    content += "<button id='make-goal-button' class='btn' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")>End Here</button>";
-    content += "</div>"
+function qtipContent(node, connecting) {
+    var content;
+    if (connecting) {
+        return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.data('label').replace(' ','_') + "\")'>Connect to this node</button>"
+    }
+    // Start and end buttons
+    // Add node and connection buttons
+    content  = "<div id='operation' class='qtip-sub-div'>"
+    content += "<div class='svg-expand pointer second'>"
+    content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='plus' data-glyph='plus' title='Add a new node' aria-hidden='true' onclick=promptAddNode(\"" + node.data('label').replace(' ','_') + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Add a new connection' aria-hidden='true' onclick=promptAddConnection(\"" + node.data('label').replace(' ','_') + "\")></span>"
+    content += "</div>";
     content += "</div>";
 
     content += "<br>";
@@ -189,12 +216,64 @@ function qtipContent(node, cy) {
     content += "<div class='qtip-sub-div' id='heuristic-div'>";
     content += "<div id='heuristic-input-div'>"
     content += "<label id='heuristic-label'>Heuristic:</label>"
-    content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "'></input>"
+    content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "' onkeyup='if (value < 0){ value = 0 }'></input>"
     content += "<div style='padding:2px'></div>"
     content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     content += "</div>"
     return content;
+}
+
+function promptAddNode(nodeToConnect) {
+    console.log("nodeToConnect", nodeToConnect)
+    $('#myModal').show();
+    $('#myModal').children().show();
+    $('#node-connection-name').val(nodeToConnect.replace('_', ' '));
+}
+
+function addNode() {
+    var nodeToConnect = $('#node-connection-name').val().replace(' ', '_');
+    var name = $('#node-name').val().replace(' ', '_');
+    var distance = $('#node-distance').val();
+    currentConfig.nodes.push({
+        id: name,
+        x: 0,
+        y: 0
+    });
+
+    currentConfig.edges.push({
+        source: nodeToConnect,
+        target: name,
+        distance: distance,
+    });
+    setCytoscape(currentConfig);
+    $('#myModal').hide();
+    console.log("adding node", currentConfig)
+}
+
+// TODO: disable other buttons
+function promptAddConnection(nodeToConnect) {
+    $('#add-connection-modal').show();
+    $('#add-connection-modal').children().show();
+    $('#connection-header').text(nodeToConnect.replace('_', ' '))
+}
+
+function confirmConnection(nodeOne) {
+    var nodeTwo = $('#connection-header').text()
+    addConnection(nodeOne, nodeTwo);
+    $('#add-connection-modal').hide();
+}
+
+function addConnection(nodeOne, nodeTwo) {
+    console.log("nodeOne - nodeTwo: ", nodeOne, nodeTwo)
+    console.log("configs again", configs)
+    console.log("currentConfig:", currentConfig)
+    currentConfig.edges.push({
+        source: nodeOne.replace(' ', '_'),
+        target: nodeTwo.replace(' ', '_'),
+        distance: 5,
+    });
+    setCytoscape(currentConfig);
 }
 
 function makeStartNode(id, simulationID) {
@@ -221,7 +300,9 @@ function setHeuristics() {
 }
 
 function checkHeuristic(id, simulationID) {
+    id = id.split(":")[0].replace(' ', '_');
     var node = cy.$('#' + id);
+    node.data('id', id)
     var heuristic = parseInt($('#heuristic-value-' + id).val());
     if (heuristic < 0 || !Number.isInteger(heuristic)) {
         $('#heuristic-value-' + id).addClass('has-error');
@@ -230,7 +311,7 @@ function checkHeuristic(id, simulationID) {
     $('#heuristic-value-' + id).val(heuristic);
     $('#heuristic-value-' + id).removeClass('has-error');
     node.data('heuristic', heuristic);
-    node.data('label', node.id() + ": " + heuristic);
+    node.data('label', node.id().replace('_', ' ') + ": " + heuristic);
     console.log("heuristic", heuristic)
     console.log("distanceToGoal", node.data('distanceToGoal'))
     console.log(node.data('distanceToGoal'))
