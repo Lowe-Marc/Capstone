@@ -109,14 +109,14 @@ function canPlay() {
 
 function lockNodes() {
     cy.nodes().lock();
-    $('#lock-locked').hide();
-    $('#lock-unlocked').show();
+    $('#lock-locked').show();
+    $('#lock-unlocked').hide();
 }
 
 function unlockNodes() {
     cy.nodes().unlock();    
-    $('#lock-locked').show();
-    $('#lock-unlocked').hide();
+    $('#lock-locked').hide();
+    $('#lock-unlocked').show();
 }
 
 // Renders the CY map and handles node specific properties such as clicking and locking
