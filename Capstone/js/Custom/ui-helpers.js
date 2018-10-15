@@ -78,3 +78,84 @@ function collectAStarParams(deprecated) {
     params.nodes = nodes;
     return params;
 }
+
+function saveAStarConfigurationPrompt() {
+    $('#save-config-modal').show();
+}
+
+function requestAStarConfigurationSave() {
+    var configName = $('#configuration-name').val();
+    // currentConfig.name = configName
+    // var newConfig = new Object(currentConfig);
+    // newConfig.name = configName;
+
+    var newConfig = jQuery.extend(true, {}, currentConfig)
+    newConfig.name = configName;
+
+    console.log("currentConfig:", currentConfig)
+    console.log("JSON.stringify:")
+    console.log(JSON.stringify(currentConfig));
+
+    // $.ajax({
+    //     method: "POST",
+    //     url: "/Simulations/SaveAStarConfiguration",
+    //     data: { "data": JSON.stringify(currentConfig) },
+    //     dataType: "json",
+    //     success: (result) => {
+    //         console.log("Successful save");
+    //         console.log("results:", result)
+    //     },
+    //     error: (result) => {
+    //         if (result.responseText == "True") {
+    //             console.log("Pseudo-Successful save");
+    //             console.log("results:", result);
+    //         } else {
+    //             console.log("Unsuccessful save");
+    //             console.log("results:", result);
+    //         }
+    //     }
+    // });
+
+    if (getCookie(configName) == "") {
+        setCookie(configName, newConfig, 180);
+    }
+
+    setConfigurationsInSelector(configs, [])
+
+    $('#save-config-modal').hide();
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + JSON.stringify(cvalue) + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function checkCookie() {
+    var username = getCookie("username");
+    if (username != "") {
+        alert("Welcome again " + username);
+    } else {
+        username = prompt("Please enter your name:", "");
+        if (username != "" && username != null) {
+            setCookie("username", username, 365);
+        }
+    }
+}

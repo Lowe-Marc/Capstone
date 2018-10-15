@@ -2,6 +2,7 @@ var cy;
 var configs;
 var currentConfig;
 
+
 // Constants
 function inactiveColor() {
     return 'black';
@@ -406,20 +407,47 @@ function buildElementStructure(currentConfig) {
 // the 'current' field needs to be false for all but the config that was just selected
 function setConfigurationsInSelector(configs, possibleCytoscapeMaps) {
     var configSelector = $('#configuration-selector');
+    configSelector.empty();
+    collectCookieConfigurations()
+    console.log("in select")
     for (var i = 0; i < configs.length; i++) {
-        configSelector.append($('<option></option>').val(i).html("Configuration " + i));
+        console.log(configs[i])
+        configSelector.append($('<option></option>').val(i).html(configs[i].name));
+        if (i > possibleCytoscapeMaps.length) {
+            possibleCytoscapeMaps.push({
+                map: null,
+                current: false
+            })
+        }
     }
+    console.log("configs in select")
+    console.log(configs)
+    currentConfig = configs[0];
     configSelector.on('change', function () {
         currentConfig = configs[this.value];
         for (var i = 0; i < configs.length; i++) {
             if (i == this.value) { // Make sure this one is active, inactivate the rest
                 possibleCytoscapeMaps[i]['map'] = setCytoscape(currentConfig);
                 possibleCytoscapeMaps[i]['current'] = true;
-            } else {
-                possibleCytoscapeMaps[i]['current'] = false;
             }
         }
     })
+}
+
+function collectCookieConfigurations() {
+    // console.log("cookies")
+    var cookies = document.cookie.split("; ")
+    // console.log(cookies)
+    if (cookies[0] == "" && cookies.length == 1) 
+        return;
+    var nameConfigPair;
+    var newConfig;
+    for (var i = 0; i < cookies.length; i++) {
+        nameConfigPair = cookies[i].split("=")
+        newConfig = JSON.parse(nameConfigPair[1]);
+        configs.push(newConfig)
+    }
+    return configs
 }
 
 function getCurrentMapObject(possibleCytoscapeMaps) {

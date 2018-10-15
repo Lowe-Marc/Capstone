@@ -34,5 +34,15 @@ namespace Capstone.Controllers
             animation = Models.AStar.runSimulation(cyParams.startID, cyParams.goalID, cyParams);
             return new JavaScriptSerializer().Serialize(animation);
         }
+
+        public Object SaveAStarConfiguration(FormCollection collection)
+        {
+            string s = collection["data"].ToString();
+            JObject json = JObject.Parse(s);
+            //CytoscapeParams cyParams = json.ToObject<CytoscapeParams>();
+
+            Response.Cookies.Add(new HttpCookie(json.Root.First().First().ToString(), json.ToString()));
+            return true;
+        }
     }
 }

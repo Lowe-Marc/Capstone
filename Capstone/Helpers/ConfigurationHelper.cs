@@ -24,6 +24,7 @@ namespace Capstone.Models
 
         public struct CytoscapeConfig
         {
+            public string name;
             public List<Object> nodes;
             public List<Object> edges;
         };
@@ -160,6 +161,7 @@ namespace Capstone.Models
                         }
                     }
                     CytoscapeConfig thisConfig = new CytoscapeConfig();
+                    thisConfig.name = fileName.Split('\\').Last().Split('.').First();
                     thisConfig.nodes = nodes;
                     thisConfig.edges = edges;
                     AStarConfigs.Add(thisConfig);
