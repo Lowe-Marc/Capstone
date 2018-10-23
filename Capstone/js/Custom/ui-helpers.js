@@ -18,20 +18,22 @@ function setAStarPriorityQueue() {
 }
 
 function updateAStarPriorityQueue(priorityQueue, cy) {
-    console.log("updating priority queue:", priorityQueue)
-    console.log("cy", cy)
     var content = '';
     var queueLength = priorityQueue.length;
     var displayLimit = 10;
     queueLength = priorityQueue.length > displayLimit ? displayLimit : priorityQueue.length;
     for (var i = 0; i < queueLength; i++) {
-        content += priorityQueue[i].name.replace('_', ' ') + '<br>';
+        content += priorityQueue[i].name.replace('_', ' ') + ': ' + priorityQueue[i].f + '<br>';
     }
     if (queueLength == displayLimit) {
         content += '...<br>'
     }
     
     $('#priority-queue-div').html(content);
+}
+
+function clearAStarPriorityQueue() {
+    $('#priority-queue-div').html('');
 }
 
 function simulationConfigBottomBorder() {
@@ -85,9 +87,6 @@ function saveAStarConfigurationPrompt() {
 
 function requestAStarConfigurationSave() {
     var configName = $('#configuration-name').val();
-    // currentConfig.name = configName
-    // var newConfig = new Object(currentConfig);
-    // newConfig.name = configName;
 
     var newConfig = jQuery.extend(true, {}, currentConfig)
     newConfig.name = configName;
@@ -123,6 +122,14 @@ function requestAStarConfigurationSave() {
     setConfigurationsInSelector(configs, [])
 
     $('#save-config-modal').hide();
+}
+
+function checkConfigName() {
+    var configName = $('#configuration-name').val();
+
+    if (getCookie(configName) != "") {
+        $('#saveConfigButton').disable();
+    }
 }
 
 function setCookie(cname, cvalue, exdays) {

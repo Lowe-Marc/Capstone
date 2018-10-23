@@ -99,13 +99,13 @@
                                 <label for="configuration-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
                             </div>
                             <div class="col-md-6 ml-auto">
-                                <input type="text" class="form-control" id="configuration-name" name="node-connection-name" required="">
+                                <input type="text" class="form-control" id="configuration-name" name="node-connection-name" required="" onkeyup="checkConfigName()">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="requestAStarConfigurationSave()">Save</button>
+                    <button type="button" id="saveConfigButton" class="btn btn-primary" onclick="requestAStarConfigurationSave()">Save</button>
                     <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -163,6 +163,10 @@
 
             $('#fullscreen-exit').click(function () {
                 closeFullscreen();
+            });
+
+            $('#sidenavToggler').click(function () {
+                cy.resize();
             });
 
             $('#lock-locked').click(function () {

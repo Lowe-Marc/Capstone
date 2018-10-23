@@ -43,7 +43,11 @@ function DONTPAUSE() {
     return -1;
 }
 
+// Need to manually save off original and fullscreen sizes,
+// because cy will not dynamically adjust sizes
 function toggleFullscreen() {
+    cy.originalWidth = cy.size()['width'];
+    cy.originalHeight = cy.size()['height'];
     var section = document.getElementById('simulation-area');
     if (section.requestFullscreen) {
         section.requestFullscreen();
@@ -56,9 +60,17 @@ function toggleFullscreen() {
     }
     $('#fullscreen-enter').hide();
     $('#fullscreen-exit').show();
+    if (cy.fullscreenHeight != undefined) {
+        $('#cy').css('height', cy.fullscreenHeight);
+        $('#cy').css('width', cy.fullscreenWidth);
+    }
+    
+    cy.resize();
 }
 
 function closeFullscreen() {
+    cy.fullscreenWidth = cy.size()['width'];
+    cy.fullscreenHeight = cy.size()['height'];
     if (document.exitFullscreen) {
       document.exitFullscreen();
     } else if (document.mozCancelFullScreen) { /* Firefox */
@@ -70,7 +82,9 @@ function closeFullscreen() {
     }
     $('#fullscreen-enter').show();
     $('#fullscreen-exit').hide();
-    configurationOverlayOff();
+    $('#cy').css('height', cy.originalHeight);
+    $('#cy').css('width', cy.originalWidth);
+    cy.resize();
 }
 
 // Simple helpers to disable/enable buttons
@@ -170,10 +184,8 @@ function setCytoscape(currentConfig) {
         cy.$('#' + node.id()).qtip({
             content: {
                 text: function(event, api) {
-                    console.log("clicking")
                     var connecting; 
                     if ($('#add-connection-modal').is(':visible')) {
-                        console.log("adding connection")
                         connecting = true;
                     }
                     return qtipContent(node, connecting);
@@ -185,10 +197,6 @@ function setCytoscape(currentConfig) {
             },
             style: {
                 classes: 'qtip-bootstrap',
-                // tip: {
-                //     width: 16,
-                //     height: 8
-                // }
             }
         });
     });
@@ -199,16 +207,16 @@ function setCytoscape(currentConfig) {
 function qtipContent(node, connecting) {
     var content;
     if (connecting) {
-        return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.data('label').replace(' ','_').split(':')[0] + "\")'>Connect to this node</button>"
+        return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.id().replace(' ','_').split(':')[0] + "\")'>Connect to this node</button>"
     }
     // Start and end buttons
     // Add node and connection buttons
     content  = "<div id='operation' class='qtip-sub-div'>"
     content += "<div class='svg-expand pointer second'>"
-    content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
-    content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
-    content += "<span class='fa oi icon' data-toggle='modal' id='plus' data-glyph='plus' title='Add a new node' aria-hidden='true' onclick=promptAddNode(\"" + node.data('label').replace(' ','_').split(':')[0] + "\")></span>"
-    content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Add a new connection' aria-hidden='true' onclick=promptAddConnection(\"" + node.data('label').replace(' ','_').split(':')[0] + "\")></span>"
+    content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='plus' data-glyph='plus' title='Add a new node' aria-hidden='true' onclick=promptAddNode(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+    content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Add a new connection' aria-hidden='true' onclick=promptAddConnection(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
     content += "</div>";
     content += "</div>";
 
@@ -219,14 +227,14 @@ function qtipContent(node, connecting) {
     content += "<label id='heuristic-label'>Heuristic:</label>"
     content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "' onkeyup='if (value < 0){ value = 0 }'></input>"
     content += "<div style='padding:2px'></div>"
-    content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='checkHeuristic(\"" + node.data('label').replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
+    content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='checkHeuristic(\"" + node.id().replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     content += "</div>"
     return content;
 }
 
 function promptAddNode(nodeToConnect) {
-    console.log("nodeToConnect", nodeToConnect)
+    $('.qtip').hide();
     $('#myModal').show();
     $('#myModal').children().show();
     $('#node-connection-name').val(nodeToConnect.replace('_', ' '));
@@ -249,11 +257,11 @@ function addNode() {
     });
     setCytoscape(currentConfig);
     $('#myModal').hide();
-    console.log("adding node", currentConfig)
 }
 
 // TODO: disable other buttons
 function promptAddConnection(nodeToConnect) {
+    $('.qtip').hide();
     $('#add-connection-modal').show();
     $('#add-connection-modal').children().show();
     $('#connection-header').text(nodeToConnect.replace('_', ' '))
@@ -268,9 +276,6 @@ function confirmConnection(nodeOne) {
 function addConnection(nodeOne, nodeTwo) {
     nodeOne = nodeOne.split(':')[0];
     nodeTwo = nodeTwo.split(':')[0];
-    console.log("nodeOne - nodeTwo: ", nodeOne, nodeTwo)
-    console.log("configs again", configs)
-    console.log("currentConfig:", currentConfig)
     currentConfig.edges.push({
         source: nodeOne,
         target: nodeTwo,
@@ -297,7 +302,6 @@ function makeGoalNode(id, simulationID) {
 
 function setHeuristics() {
     cy.nodes().each(function(node) {
-        console.log(node)
         node.data('label', node.id().replace('_', ' ') + ": " + node.data('heuristic'));
     });
 }
@@ -315,11 +319,7 @@ function checkHeuristic(id, simulationID) {
     $('#heuristic-value-' + id).removeClass('has-error');
     node.data('heuristic', heuristic);
     node.data('label', node.id().replace('_', ' ') + ": " + heuristic);
-    console.log("heuristic", heuristic)
-    console.log("distanceToGoal", node.data('distanceToGoal'))
-    console.log(node.data('distanceToGoal'))
     if (heuristic > node.data('distanceToGoal')) {
-        console.log("greater than")
         var nodeAnimation = node.animation({
             style: {
                 'background-color': errorColor()
@@ -328,7 +328,6 @@ function checkHeuristic(id, simulationID) {
         });
         nodeAnimation.play();
     } else {
-        console.log("less than")
         var nodeAnimation = node.animation({
             style: {
                 'background-color': inactiveColor()
@@ -342,7 +341,6 @@ function checkHeuristic(id, simulationID) {
 // TODO: If running into performance concerns, this calculation could probably be moved
 function calculateDistances(id, simulationID) {
     var dijkstra
-    console.log("nodes")
     for (var i = 0; i < cy.nodes()['length']; i++) {
         dijkstra = cy.elements().dijkstra('#' + cy.nodes()[i].id(), function(edge) {
             return edge.data('distance');
@@ -367,7 +365,7 @@ function buildElementStructure(currentConfig) {
                 id: currentConfig.nodes[i].id.replace(' ', '_'),
                 elementType: "node",
                 simulationID: i,
-                label: currentConfig.nodes[i].id,
+                label: currentConfig.nodes[i].id.replace('_', ' '),
                 distanceToGoal: -1,
                 heuristic: heuristic,
                 position: {
@@ -409,9 +407,7 @@ function setConfigurationsInSelector(configs, possibleCytoscapeMaps) {
     var configSelector = $('#configuration-selector');
     configSelector.empty();
     collectCookieConfigurations()
-    console.log("in select")
     for (var i = 0; i < configs.length; i++) {
-        console.log(configs[i])
         configSelector.append($('<option></option>').val(i).html(configs[i].name));
         if (i > possibleCytoscapeMaps.length) {
             possibleCytoscapeMaps.push({
@@ -420,11 +416,13 @@ function setConfigurationsInSelector(configs, possibleCytoscapeMaps) {
             })
         }
     }
-    console.log("configs in select")
-    console.log(configs)
+    
     currentConfig = configs[0];
     configSelector.on('change', function () {
         currentConfig = configs[this.value];
+        $('#sidenavToggler').click(function () {
+            cy.resize();
+        });
         for (var i = 0; i < configs.length; i++) {
             if (i == this.value) { // Make sure this one is active, inactivate the rest
                 possibleCytoscapeMaps[i]['map'] = setCytoscape(currentConfig);
@@ -435,9 +433,7 @@ function setConfigurationsInSelector(configs, possibleCytoscapeMaps) {
 }
 
 function collectCookieConfigurations() {
-    // console.log("cookies")
     var cookies = document.cookie.split("; ")
-    // console.log(cookies)
     if (cookies[0] == "" && cookies.length == 1) 
         return;
     var nameConfigPair;
@@ -460,7 +456,6 @@ function getCurrentMapObject(possibleCytoscapeMaps) {
 
 // Assembles each frame in a full animation
 function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
-    console.log('assembling full', simulationResults)
     var frames = simulationResults['frames']
     var simulationSpecific = simulationResults['simulationSpecific'];
     var fullAnimation = new Array(frames.length);
@@ -479,12 +474,10 @@ function assembleAnimationFrame(resultFrame, currentAnimation, c, fullAnimation,
         nodes.push(resultFrame[i]['id'])
     }
 
-    console.log("cy.nodes()", cy.nodes())
     var animationFrame = new Array(resultFrame.length);
     var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
         var elementToAnimate = cy.nodes()[nodes[i]]
-        console.log("elementToAnimate", elementToAnimate)
         if (i == nodes.length - 1) {
             lastInFrame = true;
         }
@@ -549,6 +542,7 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                                     currentAnimation["timestep"] = 0;
                                     currentAnimation["finished"] = true;
                                     $('#frame-tracker').text(0 + '/' + fullAnimation.length);
+                                    clearAStarPriorityQueue();
                                     $('#pause').addClass('disabled');
                                     $('#play').removeClass('disabled');
                                     $('#forward').removeClass('disabled');
