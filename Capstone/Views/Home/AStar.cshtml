@@ -120,13 +120,8 @@
             // Parse simulation configs
             configs = @Html.Raw(Json.Encode(AStarConfigs));
             console.log("configs", configs)
-            defaultConfigs = [];
-            for (var i = 0; i < configs.length; i++) {
-                defaultConfigs.push({
-                    map: null,
-                    current: false
-                });
-            }
+            defaultConfigs = Object.values(jQuery.extend(true, {}, configs));
+            console.log("defaultConfigs", defaultConfigs)
             var currentConfig = configs[0];
             var currentAnimation = {
                 timestep: 0,
@@ -147,8 +142,6 @@
             // Cytoscape initialization
             var cy = setCytoscape(currentConfig);
             setConfigurationsInSelector(configs, defaultConfigs);
-            defaultConfigs[0]['current'] = true;
-            defaultConfigs[0]['map'] = cy;
 
             // Master simulation object, useful since the JS functions are separated from the views
             var simulationInfo = {

@@ -95,7 +95,7 @@ function requestAStarConfigurationSave() {
         setCookie(configName, newConfig, 180);
     }
 
-    setConfigurationsInSelector(configs, [])
+    setConfigurationsInSelector()
     $('#save-config-modal').hide();
 }
 

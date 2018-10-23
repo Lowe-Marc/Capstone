@@ -401,17 +401,18 @@ function buildElementStructure(currentConfig) {
     }
 }
 
-function setConfigurationsInSelector(configs) {
+function setConfigurationsInSelector() {
     var configSelector = $('#configuration-selector');
     configSelector.empty();
-    collectCookieConfigurations();
+    configs = Object.values(jQuery.extend(true, {}, defaultConfigs))
+    configs = collectCookieConfigurations();
 
     // Push all configs into the dropbox options
     for (var i = 0; i < configs.length; i++) {
         configSelector.append($('<option></option>').val(i).html(configs[i].name));
     }
     
-    // When an options is selected, we need to update the currentConfig and cy
+    // When an option is selected, we need to update the currentConfig and cy
     currentConfig = configs[0];
     configSelector.on('change', function () {
         currentConfig = configs[this.value];
@@ -427,19 +428,18 @@ function setConfigurationsInSelector(configs) {
 }
 
 function collectCookieConfigurations() {
-    console.log("before cookie params:", configs)
     var cookies = document.cookie.split("; ")
     if (cookies[0] == "" && cookies.length == 1) 
-        return;
+        return configs;
     var nameConfigPair;
     var newConfig;
+
     for (var i = 0; i < cookies.length; i++) {
         nameConfigPair = cookies[i].split("=")
         newConfig = JSON.parse(nameConfigPair[1]);
         configs.push(newConfig)
     }
-    console.log("after cookie params:", configs)
-    return configs
+    return configs;
 }
 
 
@@ -464,7 +464,6 @@ function assembleAnimationFrame(resultFrame, currentAnimation, c, fullAnimation,
     }
 
     var animationFrame = new Array(resultFrame.length);
-    var lastInFrame = false;
     for(var i = 0; i < nodes.length; i++) {
         var elementToAnimate = cy.nodes()[nodes[i]]
         if (i == nodes.length - 1) {
