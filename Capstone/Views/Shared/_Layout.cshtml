@@ -95,6 +95,12 @@
             <script src="~/js/Custom/ui-helpers.js"></script>
             <!-- Full screen functionality -->
             <script src="~/js/fullscreen/jquery.fullscreen-min.js"></script>
+            <!-- Grid Snapping -->
+            <script src="~/js/GridSnapping/cytoscape.js-grid-guide-2.2.1/cytoscape-grid-guide.js"></script>
+            <!-- RequireJS -->
+            <script src="~/Scripts/require.js"></script>
+            <reference path="~/Scripts/require.js" start-page="/index.html" />
+
             <div class="jumbotron" style="height:3%">
                 <h1 id="simulation-title"></h1>
                 <p class="lead" id="simulation-description"></p>
@@ -111,6 +117,8 @@
                             <span class="fa oi icon" style="display: none" id="fullscreen-exit" data-glyph="fullscreen-exit" title="Fullscreen" aria-hidden="true"></span>
                             <span class="fa oi icon" style="display: none" id="lock-unlocked" data-glyph="lock-unlocked" title="Unlock Node Positions" aria-hidden="true"></span>
                             <span class="fa oi icon" id="lock-locked" data-glyph="lock-locked" title="Lock Node Positions" aria-hidden="true"></span>
+                            <span class="fa oi icon" id="disable-grid-snapping" data-glyph="move" title="Disable Grid Snapping" aria-hidden="true"></span>
+                            <span class="fa oi icon" style="display: none" id="enable-grid-snapping" data-glyph="grid-four-up" title="Enable Grid Snapping" aria-hidden="true"></span>
                             <span class="fa oi icon" id="save-config" data-glyph="cloud-upload" title="Save Configuration" aria-hidden="true"></span>
                             <span class="fa oi icon" id="simulate" data-glyph="calculator" title="Run Simulation" aria-hidden="true"></span>
                             <span class="fa oi icon disabled" id="play" data-glyph="media-play" title="Play Animation" aria-hidden="true"></span>

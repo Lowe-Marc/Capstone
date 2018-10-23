@@ -114,6 +114,7 @@
 
 
     <div id="cy"></div>
+    
     <script>
         $(function () { // on dom ready
 
@@ -133,7 +134,7 @@
 
             // Set page description
             $('#simulation-title').text("A* Search");
-            $('#simulation-description').text("An intelligent path finding algorithm.");
+            $('#simulation-description').html("<a href='https://en.wikipedia.org/wiki/A*_search_algorithm'>Link to information.</a>");
             $('#simulation-header').show();
             setAStarConfig();
             //setAStarPriorityQueue();
@@ -172,6 +173,14 @@
 
             $('#save-config').click(function () {
                 saveAStarConfigurationPrompt();
+            });
+
+            $('#disable-grid-snapping').click(function () {
+                disableGridSnapping();
+            });
+
+            $('#enable-grid-snapping').click(function () {
+                enableGridSnapping();
             });
 
             // Run a simulation
