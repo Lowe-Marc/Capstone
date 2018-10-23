@@ -120,9 +120,9 @@
             // Parse simulation configs
             configs = @Html.Raw(Json.Encode(AStarConfigs));
             console.log("configs", configs)
-            var possibleCytoscapeMaps = [];
+            defaultConfigs = [];
             for (var i = 0; i < configs.length; i++) {
-                possibleCytoscapeMaps.push({
+                defaultConfigs.push({
                     map: null,
                     current: false
                 });
@@ -146,9 +146,9 @@
 
             // Cytoscape initialization
             var cy = setCytoscape(currentConfig);
-            setConfigurationsInSelector(configs, possibleCytoscapeMaps);
-            possibleCytoscapeMaps[0]['current'] = true;
-            possibleCytoscapeMaps[0]['map'] = cy;
+            setConfigurationsInSelector(configs, defaultConfigs);
+            defaultConfigs[0]['current'] = true;
+            defaultConfigs[0]['map'] = cy;
 
             // Master simulation object, useful since the JS functions are separated from the views
             var simulationInfo = {
@@ -240,7 +240,7 @@
             });
 
             function runSimulation() {
-                cy = getCurrentMapObject(possibleCytoscapeMaps);
+                //cy = getCurrentMapObject(defaultConfigs);
                 var params = collectAStarParams(cy);
 
                 console.log("params")
@@ -257,7 +257,7 @@
                         simulationResults = result
                         console.log("simulationResults", simulationResults);
                         setDisplayedFrame(simulationResults['frames'].length);
-                        cy = getCurrentMapObject(possibleCytoscapeMaps);
+                        //cy = getCurrentMapObject(defaultConfigs);
                         assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
                         enablePlay();
                         updateSimulationInfo()

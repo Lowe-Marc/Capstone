@@ -43,7 +43,6 @@ function simulationConfigBottomBorder() {
 
 // Note that the keys in params must match the names used in Simulations/AStar
 function collectAStarParams(deprecated) {
-    console.log("collecting parameters")
     var params = new Object();
     var nodes = [];
     var node;
@@ -87,40 +86,16 @@ function saveAStarConfigurationPrompt() {
 
 function requestAStarConfigurationSave() {
     var configName = $('#configuration-name').val();
-
-    var newConfig = jQuery.extend(true, {}, currentConfig)
+    var newConfig = jQuery.extend(true, {}, currentConfig) // Deep copy of currentConfig
     newConfig.name = configName;
+    updatePositions(newConfig);
 
-    console.log("currentConfig:", currentConfig)
-    console.log("JSON.stringify:")
-    console.log(JSON.stringify(currentConfig));
-
-    // $.ajax({
-    //     method: "POST",
-    //     url: "/Simulations/SaveAStarConfiguration",
-    //     data: { "data": JSON.stringify(currentConfig) },
-    //     dataType: "json",
-    //     success: (result) => {
-    //         console.log("Successful save");
-    //         console.log("results:", result)
-    //     },
-    //     error: (result) => {
-    //         if (result.responseText == "True") {
-    //             console.log("Pseudo-Successful save");
-    //             console.log("results:", result);
-    //         } else {
-    //             console.log("Unsuccessful save");
-    //             console.log("results:", result);
-    //         }
-    //     }
-    // });
-
+    // Store the new config if it doesn't already exist
     if (getCookie(configName) == "") {
         setCookie(configName, newConfig, 180);
     }
 
     setConfigurationsInSelector(configs, [])
-
     $('#save-config-modal').hide();
 }
 
@@ -129,6 +104,17 @@ function checkConfigName() {
 
     if (getCookie(configName) != "") {
         $('#saveConfigButton').disable();
+    }
+}
+
+// Make sure the saved confg has the current positions as they are in the map
+function updatePositions(config) {
+    var configNode, cyNode;
+    for(var i = 0; i < config.nodes.length; i++) {
+        configNode = config.nodes[i];
+        cyNode = cy.$('#' + configNode.id.replace(' ', '_'))[0];
+        configNode.x = cyNode.position().x
+        configNode.y = cyNode.position().y
     }
 }
 
