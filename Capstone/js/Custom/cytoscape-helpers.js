@@ -13,8 +13,15 @@ function activeColor() {
     return 'blue';
 }
 
-function errorColor() {
+function inadmissibleColor() {
     return 'red';
+}
+
+function inconsistentColor() {
+    return 'orange';
+}
+function inadmissibleAndInconsistentColor() {
+    return 'brown';
 }
 
 // Time in ms it takes to reset after pausing
@@ -410,6 +417,7 @@ function setHeuristics() {
     });
 }
 
+// TODO: admissibility not calculated correctly, need to call dijkstras
 function checkHeuristic(id, simulationID) {
     id = id.split(":")[0].replace(' ', '_');
     var node = cy.$('#' + id);
@@ -421,12 +429,34 @@ function checkHeuristic(id, simulationID) {
     }
     $('#heuristic-value-' + id).val(heuristic);
     $('#heuristic-value-' + id).removeClass('has-error');
+    calculateDistances(node.id());
     node.data('heuristic', heuristic);
     node.data('label', node.id().replace('_', ' ') + ": " + heuristic);
-    if (heuristic > node.data('distanceToGoal')) {
+    var admissible = heuristic <= node.data('distanceToGoal');
+    var consistent = consistentHeuristic(node, heuristic);
+    
+    if (!admissible && !consistent) {
         var nodeAnimation = node.animation({
             style: {
-                'background-color': errorColor()
+                'background-color': inadmissibleAndInconsistentColor(),
+            },
+            duration: animationTime()
+        });
+        nodeAnimation.play();
+    } 
+    else if (!admissible) {
+        var nodeAnimation = node.animation({
+            style: {
+                'background-color': inadmissibleColor()
+            },
+            duration: animationTime()
+        });
+        nodeAnimation.play();
+    } 
+    else if (!consistent) {
+        var nodeAnimation = node.animation({
+            style: {
+                'background-color': inconsistentColor()
             },
             duration: animationTime()
         });
@@ -440,6 +470,20 @@ function checkHeuristic(id, simulationID) {
         });
         nodeAnimation.play();
     }
+}
+
+// Iterate through edges, grabbing the nodes on the other side
+// If heuristic > the edge distance + other nodes heuristic, it is inconsistent
+function consistentHeuristic(node, heuristic) {
+    var isConsistent = true;
+    var otherNode;
+    node.connectedEdges().each(function(edge){
+        otherNode = (edge.data('source') == node.id()) ? cy.$('#' + edge.data('target'))[0] : cy.$('#' + edge.data('source'))[0];
+        if (heuristic > (edge.data('distance') + otherNode.data('heuristic'))) {
+            isConsistent = false;
+        }
+    })
+    return isConsistent;
 }
 
 // TODO: If running into performance concerns, this calculation could probably be moved
