@@ -92,10 +92,10 @@ function enableGridSnapping() {
     cy.gridGuide({
         // On/Off Modules
         /* From the following four snap options, at most one should be true at a given time */
-        snapToGridOnRelease: true, // Snap to grid on release
+        snapToGridOnRelease: false, // Snap to grid on release
         snapToGridDuringDrag: true, // Snap to grid during drag
-        snapToAlignmentLocationOnRelease: true, // Snap to alignment location on release
-        snapToAlignmentLocationDuringDrag: true, // Snap to alignment location during drag
+        snapToAlignmentLocationOnRelease: false, // Snap to alignment location on release
+        snapToAlignmentLocationDuringDrag: false, // Snap to alignment location during drag
         drawGrid: true, // Draw grid background
     })
     $('#disable-grid-snapping').show();
@@ -202,7 +202,17 @@ function setCytoscape(currentConfig) {
                 selector: 'edge',
                 style: {
                     label: 'data(label)',
-                    'edge-text-rotation': 'autorotate'
+                    'color': 'white',
+                    'text-background-color': 'black',
+                    'text-background-opacity': 1,
+                    'text-background-padding': 4,
+                    'text-background-shape': 'roundrectangle',
+                    'line-style': 'dashed',
+                    // 'edge-text-rotation': 'autorotate',
+                    // 'curve-style': 'unbundled-bezier',
+                    // 'control-point-distances': '20',
+                    // 'control-point-weights': '0.5',
+                    // 'edge-distances': 'intersection',
                 },
             }
         ],
@@ -268,7 +278,7 @@ function setCytoscape(currentConfig) {
 
         // Draw Grid
         zoomDash: true, // Determines whether the size of the dashes should change when the drawing is zoomed in and out if grid is drawn.
-        panGrid: false, // Determines whether the grid should move then the user moves the graph if grid is drawn.
+        panGrid: true, // Determines whether the grid should move then the user moves the graph if grid is drawn.
         gridStackOrder: 4, // Namely z-index
         gridColor: '#dedede', // Color of grid lines
         lineWidth: 1.0, // Width of grid lines
