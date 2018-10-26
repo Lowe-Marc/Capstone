@@ -187,22 +187,24 @@
             // that frame is played
             //TODO: write displayFrame function
             $('#frame-tracker').keypress(function (e) {
-                //if (e.which == 13) {
-                //    updateSimulationInfo()
-                //    var frameToPlay = $('#frame-tracker').val();
-                //    var simulationResults = simulationInfo['results'];
-                //    console.log("Searching to frame number", frameToPlay)
-                //    console.log("simulationInfo", simulationInfo)
-                //    var cy = simulationInfo['cy'];
-                //    var currentAnimation = simulationInfo['animation'];
-                //    frameInfo = {
-                //        frame: currentAnimation['frames'][currentAnimation['timestep']],
-                //        timestep: currentAnimation['timestep'],
-                //        numFrames: currentAnimation['frames'].length,
-                //        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay]
-                //    }
-                //    resetFrame('TODO: remove this param', playFrame, frameInfo)
-                //}
+                if (e.which == 13) {
+                    updateSimulationInfo()
+                    var frameToPlay = $('#frame-tracker').val();
+                    var simulationResults = simulationInfo['results'];
+                    console.log("Searching to frame number", frameToPlay)
+                    console.log("simulationInfo", simulationInfo)
+                    var cy = simulationInfo['cy'];
+                    var currentAnimation = simulationInfo['animation'];
+                    frameInfo = {
+                        frame: currentAnimation['frames'][frameToPlay-1],
+                        timestep: frameToPlay,
+                        numFrames: currentAnimation['frames'].length,
+                        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay],
+                        frameToStopOn: frameToPlay,
+                        simulationInfo: simulationInfo
+                    }
+                    resetFrame('TODO: remove this param', displayFrame, frameInfo)
+                }
             })
 
             setAStarLegend();

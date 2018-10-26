@@ -733,6 +733,33 @@ function playFrame(frameInfo) {
     updateAStarPriorityQueue(frameInfo["simulationSpecific"], frameInfo['cy']);
 }
 
+function displayFrame(frameInfo) {
+    if (frameInfo['timestep'] > frameInfo['numFrames'] || frameInfo['timestep'] < 0) {
+        return
+    }
+    var frameSize = frameInfo['frame'].length - 1;
+    var simulationInfo = frameInfo.simulationInfo
+    var simulationResults = simulationInfo['results'];
+    var cy = simulationInfo['cy'];
+    var currentAnimation = simulationInfo['animation'];
+
+    currentAnimation['timestep']++;
+    currentAnimation = {
+        timestep: currentAnimation['timestep'],
+        frames: [],
+        paused: false,
+        finished: false
+    };
+    assembleFullAnimation(simulationResults, cy, currentAnimation, pauseOnThisFrame());
+    var frameInfo = {
+        timestep: currentAnimation.timestep - 1,
+        numFrames: currentAnimation.frames.length,
+        cy: cy,
+        frame: currentAnimation.frames[currentAnimation.timestep-1]
+    }
+    playFrame(frameInfo);
+}
+
 // This will reset all active elements back to inactive, then execute setFrameFunction
 // which rebuilds the animations and starts at a specific frame
 function resetFrame(frame, setFrameFunction, setFrameFunctionParameters) {
@@ -782,7 +809,7 @@ function frameForward(simulationInfo) {
     if (currentAnimation['timestep'] > 1) {
         frameToReset = currentAnimation['timestep'] - 1;
     }
-
+    
     resetFrame(currentAnimation['frames'][currentAnimation['timestep']], playFrame, frameInfo);
 }
 
@@ -797,6 +824,7 @@ function frameBackward(simulationInfo) {
     } else {
         currentAnimation['timestep']--;
     }
+    
     disablePlay();
     disablePause();
     var frameParam;
@@ -859,6 +887,7 @@ function playFromBeginning(simulationInfo) {
         simulationSpecific: simulationResults['simulationSpecific'][currentAnimation['timestep']],
         cy: cy
     }
+    
     playFrame(frameInfo);
 }
 
