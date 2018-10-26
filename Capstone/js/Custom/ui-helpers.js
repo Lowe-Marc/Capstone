@@ -1,10 +1,20 @@
 
 function setAStarConfig() {
     // $('#simulation-config-overlay').load('..\\Views\\Configurations\\AStarConfiguration.cshtml')
-    var content = '<div> Start: <label id="start-label"></label><label id="start-id" style="display:none">-1</label></div>';
-    content += '<div> Goal: <label id="goal-label"></label><label id="goal-id" style="display:none">-1<label></div>';
-    content += '<div><label id="priority-queue-label"><u>Priority Queue</u></label></div>';
-    content += '<div id="priority-queue-div"></div>';
+
+    var content = '';
+    content += '<div class="notation pull-right">'
+    content += '<ul class="list-inline list-unstyled">'
+    content += '<li class="legend-item"><span class="active-label"></span>Active</li>'
+    content += '<li class="legend-item"><span class="inconsistent-label"></span>Inconsistent</li>'
+    content += '<li class="legend-item"><span class="inadmissible-label"></span>Inadmissible</li>'
+    content += '<li class="legend-item"><span class="inadmissible-and-inconsistent-label"></span>Inconsistent & Inadmissible</li>'
+    content += '<li> Start: <label id="start-label"></label><label id="start-id" style="display:none">-1</label></li>';
+    content += '<li> Goal: <label id="goal-label"></label><label id="goal-id" style="display:none">-1<label></li>';
+    content += '<li><label id="priority-queue-label"><u>Priority Queue</u></label></li>';
+    content += '<li id="priority-queue-div"></li>';
+    content += '</ul>'
+    content += '</div>'
     $('#simulation-config').html(content)
     $('#simulation-config').show();
     $('#simulation-config').height($('#simulation-display').height() - simulationConfigBottomBorder());
@@ -164,5 +174,5 @@ function setAStarLegend() {
     legendHTML += '<li class="legend-item"><span class="inadmissible-and-inconsistent-label"></span>Inconsistent & Inadmissible</li>'
     legendHTML += '</ul>'
     legendHTML += '</div>'
-    $('#operation').append(legendHTML)
+    $('#simulation-config').append(legendHTML)
 }

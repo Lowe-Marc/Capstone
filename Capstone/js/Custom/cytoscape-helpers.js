@@ -46,6 +46,8 @@ function getDisplayedFrame() {
 
 function setDisplayedFrame(frameCount) {
     $('#frame-tracker').val(frameCount)
+    var numLength = (frameCount + '').length + 2;
+    $('#frame-tracker').width(numLength * 8 + 'px');
 }
 
 function setMaxFrameCount(frameCount) {
@@ -260,7 +262,7 @@ function setCytoscape(currentConfig) {
             content: {
                 text: function(event, api) {
                     var connecting; 
-                    if ($('#add-connection-modal').is(':visible')) {
+                    if ($('#add-connection-label').is(':visible')) {
                         connecting = true;
                     }
                     return qtipContent(node, connecting);
@@ -384,15 +386,15 @@ function addNode() {
 // TODO: disable other buttons
 function promptAddConnection(nodeToConnect) {
     $('.qtip').hide();
-    $('#add-connection-modal').show();
-    $('#add-connection-modal').children().show();
+    $('#add-connection-label').show();
+    $('#add-connection-label').children().show();
     $('#connection-header').text(nodeToConnect.replace('_', ' '))
 }
 
 function confirmConnection(nodeOne) {
     var nodeTwo = $('#connection-header').text()
     addConnection(nodeOne, nodeTwo);
-    $('#add-connection-modal').hide();
+    $('#add-connection-label').hide();
 }
 
 function addConnection(nodeOne, nodeTwo) {
@@ -496,6 +498,7 @@ function calculateDistances(id, simulationID) {
             return edge.data('distance');
         })
         cy.nodes()[i].data('distanceToGoal', dijkstra.distanceTo(cy.$('#' + id)))
+        cy.nodes()[i].data('heuristic', dijkstra.distanceTo(cy.$('#' + id)))
     }
 }
 
@@ -533,15 +536,16 @@ function buildElementStructure(currentConfig) {
     }
 
     var heuristic = 1;
-    var actualDistance = 1.0;
-    label = "g: " + actualDistance;
+    var realDistance;
     for (var i = 0; i < currentConfig.edges.length; i++) {
+        realDistance = currentConfig.edges[i].distance
+        label = "g: " + realDistance;
         elements.push({
             data: {
                 id: currentConfig.edges[i].id,
                 elementType: "edge",
                 simulationID: i,
-                distance: actualDistance,
+                distance: realDistance,
                 label: label,
                 source: currentConfig.edges[i].source.replace(' ','_'),
                 target: currentConfig.edges[i].target.replace(' ','_'),
@@ -683,14 +687,14 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                             thisFrame[i].promise('completed').then(function() { // Frame finishing
                                 currentAnimation["timestep"]++;
                                 if (currentAnimation["timestep"] < fullAnimation.length) {
-                                    $('#frame-tracker').val(currentIndex + 2);
+                                    setDisplayedFrame(currentIndex + 2);
                                     console.log("Frame finishing, updating frame-tracker to:", currentIndex + 2)
                                     updateAStarPriorityQueue(simulationSpecific[currentAnimation["timestep"]])
                                     fullAnimation[currentAnimation["timestep"]][0].play();
                                 } else { // Last frame has finished - animation is complete
                                     currentAnimation["timestep"] = 0;
                                     currentAnimation["finished"] = true;
-                                    $('#frame-tracker').val(0);
+                                    setDisplayedFrame(0);
                                     clearAStarPriorityQueue();
                                     $('#pause').addClass('disabled');
                                     $('#play').removeClass('disabled');
@@ -728,7 +732,7 @@ function playFrame(frameInfo) {
     if (frameInfo['timestep'] > frameInfo['numFrames'] || frameInfo['timestep'] < 0) {
         return
     }
-    $('#frame-tracker').val(frameInfo['timestep'] + 1);
+    setDisplayedFrame(frameInfo['timestep'] + 1)
     frameInfo['frame'][0].play();
     updateAStarPriorityQueue(frameInfo["simulationSpecific"], frameInfo['cy']);
 }
@@ -751,13 +755,14 @@ function displayFrame(frameInfo) {
         finished: false
     };
     assembleFullAnimation(simulationResults, cy, currentAnimation, pauseOnThisFrame());
-    var frameInfo = {
+    var playframeInfo = {
         timestep: currentAnimation.timestep - 1,
         numFrames: currentAnimation.frames.length,
         cy: cy,
         frame: currentAnimation.frames[currentAnimation.timestep-1]
     }
-    playFrame(frameInfo);
+    updateAStarPriorityQueue(frameInfo["simulationSpecific"], frameInfo['cy']);
+    playFrame(playframeInfo);
 }
 
 // This will reset all active elements back to inactive, then execute setFrameFunction

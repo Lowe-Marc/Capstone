@@ -199,16 +199,14 @@
                         frame: currentAnimation['frames'][frameToPlay-1],
                         timestep: frameToPlay,
                         numFrames: currentAnimation['frames'].length,
-                        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay],
+                        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay-1],
                         frameToStopOn: frameToPlay,
                         simulationInfo: simulationInfo
                     }
                     resetFrame('TODO: remove this param', displayFrame, frameInfo)
                 }
             })
-
-            setAStarLegend();
-
+            
             // Run a simulation
             $('#simulate').click(function () {
                 //setAStarConfig();

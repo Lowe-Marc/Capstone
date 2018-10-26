@@ -198,6 +198,10 @@
     edge-text-rotation: 'autorotate';
 }
 
+#add-connection-label {
+    float: right;
+}
+
 /* AStar qtip menu */
 .qtip-sub-div {
     height: 100%;
@@ -291,10 +295,6 @@
 
 
 /* Legend styles */
-
-.legend-item {
-    float: left;
-}
 
 .notation ul li .active-label {
     background: cornflowerblue ;

@@ -1,0 +1,19 @@
+# name latitude longitude
+A 20 -300
+B 180 220
+C 20 20
+D -140 -60
+E -300 20
+F -500 20
+# distances
+A, B: 1
+A, C: 6
+A, D: 9
+A, E: 11
+B, C: 1
+C, D: 1
+D, E: 1
+E, F: 19
+B, D: 4
+B, E: 6
+C, E: 3
