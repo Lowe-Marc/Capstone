@@ -183,6 +183,30 @@
                 enableGridSnapping();
             });
 
+            // When enter is clicked in frame tracker,
+            // that frame is played
+            //TODO: write displayFrame function
+            $('#frame-tracker').keypress(function (e) {
+                //if (e.which == 13) {
+                //    updateSimulationInfo()
+                //    var frameToPlay = $('#frame-tracker').val();
+                //    var simulationResults = simulationInfo['results'];
+                //    console.log("Searching to frame number", frameToPlay)
+                //    console.log("simulationInfo", simulationInfo)
+                //    var cy = simulationInfo['cy'];
+                //    var currentAnimation = simulationInfo['animation'];
+                //    frameInfo = {
+                //        frame: currentAnimation['frames'][currentAnimation['timestep']],
+                //        timestep: currentAnimation['timestep'],
+                //        numFrames: currentAnimation['frames'].length,
+                //        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay]
+                //    }
+                //    resetFrame('TODO: remove this param', playFrame, frameInfo)
+                //}
+            })
+
+            setAStarLegend();
+
             // Run a simulation
             $('#simulate').click(function () {
                 //setAStarConfig();
@@ -199,10 +223,6 @@
                 updateSimulationInfo();
                 disablePlay();
                 enablePause();
-                console.log("currentAnimation")
-                console.log(currentAnimation)
-                console.log("getDisplayedFrame")
-                console.log(getDisplayedFrame())
                 if (getDisplayedFrame() == 0) {
                     playFromBeginning(simulationInfo);
                 } else {
@@ -215,8 +235,6 @@
                 if ($('#pause').hasClass('disabled')) {
                     return;
                 }
-                console.log("PAUSE - currentAnimation")
-                console.log(currentAnimation)
                 updateSimulationInfo();
                 pauseFrame(currentAnimation['frames'][currentAnimation['timestep']]);
                 currentAnimation['paused'] = true;
@@ -244,11 +262,6 @@
             function runSimulation() {
                 //cy = getCurrentMapObject(defaultConfigs);
                 var params = collectAStarParams(cy);
-
-                console.log("params")
-                console.log(params);
-                console.log("JSON.stringify")
-                console.log(JSON.stringify(params));
                 $.ajax({
                     method: "POST",
                     url: "/Simulations/AStar",
@@ -258,7 +271,7 @@
                         console.log("Simulation has completed successfully.");
                         simulationResults = result
                         console.log("simulationResults", simulationResults);
-                        setDisplayedFrame(simulationResults['frames'].length);
+                        setMaxFrameCount(simulationResults['frames'].length);
                         //cy = getCurrentMapObject(defaultConfigs);
                         assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
                         enablePlay();

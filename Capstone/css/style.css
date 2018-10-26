@@ -288,3 +288,44 @@
     height: 20%;
     background-color: rgba(0,0,0,0); /* Black w/ opacity */
 }
+
+
+/* Legend styles */
+
+.legend-item {
+    float: left;
+}
+
+.notation ul li .active-label {
+    background: cornflowerblue ;
+    width: 25px!important;
+    height: 25px!important;
+    border-radius: 50%;
+}
+
+.notation ul li .inconsistent-label {
+    background: red ;
+    width: 25px!important;
+    height: 25px!important;
+    border-radius: 50%;
+}
+
+.notation ul li .inadmissible-label {
+    background: darkorange ;
+    width: 25px!important;
+    height: 25px!important;
+    border-radius: 50%;
+}
+
+.notation ul li .inadmissible-and-inconsistent-label {
+    background: silver ;
+    width: 25px!important;
+    height: 25px!important;
+    border-radius: 50%;
+}
+
+/* Legend styles */
+
+#frame-tracker {
+    width: 20px;
+}

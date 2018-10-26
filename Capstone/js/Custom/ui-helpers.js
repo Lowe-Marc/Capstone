@@ -152,3 +152,17 @@ function checkCookie() {
         }
     }
 }
+
+
+function setAStarLegend() {
+    var legendHTML = '';
+    legendHTML += '<div class="notation pull-right">'
+    legendHTML += '<ul class="list-inline list-unstyled">'
+    legendHTML += '<li class="legend-item"><span class="active-label"></span>Active</li>'
+    legendHTML += '<li class="legend-item"><span class="inconsistent-label"></span>Inconsistent</li>'
+    legendHTML += '<li class="legend-item"><span class="inadmissible-label"></span>Inadmissible</li>'
+    legendHTML += '<li class="legend-item"><span class="inadmissible-and-inconsistent-label"></span>Inconsistent & Inadmissible</li>'
+    legendHTML += '</ul>'
+    legendHTML += '</div>'
+    $('#operation').append(legendHTML)
+}
