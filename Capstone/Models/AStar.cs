@@ -24,10 +24,10 @@ namespace Capstone.Models
             List<List<AStarAnimationNode>> frontierOvertime = new List<List<AStarAnimationNode>>();
             List<AnimationFrame> frames = new List<AnimationFrame>();
             bool goalFound = false;
-            Dictionary<int, CytoscapeNode> map = initializeInternalNodes(cyParams.nodes);
+            CytoscapeMap map = new CytoscapeMap(initializeInternalNodes(cyParams.nodes));
             IntervalHeap<CytoscapeNode> frontier = new IntervalHeap<CytoscapeNode>();
 
-            CytoscapeNode current = map[startID];
+            CytoscapeNode current = map.getNode(startID);
             while (!goalFound)
             {
                 //Add new frontier to priority queue
@@ -57,15 +57,15 @@ namespace Capstone.Models
             return results;
         }
 
-        private static void addToFrontier(Dictionary<int, CytoscapeNode> map, IntervalHeap<CytoscapeNode> frontier, CytoscapeNode node)
+        private static void addToFrontier(CytoscapeMap map, IntervalHeap<CytoscapeNode> frontier, CytoscapeNode node)
         {
             CytoscapeNode tempNode;
             foreach (CytoscapeConnection connection in node.connections)
             {
-                int undirectedTarget = connection.undirectedTarget(node);
-                tempNode = map[undirectedTarget];
+                int undirectedTargetID = connection.undirectedTarget(node);
+                tempNode = map.getNode(undirectedTargetID);
                 // Discard cyclic paths
-                if (undirectedTarget != node.previous().id)
+                if (undirectedTargetID != node.previous().id)
                 {
                     // Keep track of the path taken
                     if (node.path == null || !node.path.Any())
@@ -77,7 +77,7 @@ namespace Capstone.Models
                     tempNode.path = new List<CytoscapeNode>(node.path);
                     tempNode.path.Add(tempNode);
                     // Add on heuristic value
-                    tempNode.distance = node.distance + connection.distance;
+                    tempNode.f = tempNode.heuristic + connection.distance;
                     frontier.Add(tempNode);
                 }
             }
@@ -97,7 +97,7 @@ namespace Capstone.Models
                 cyNode = frontierCopy.DeleteMax();
                 animationNode = new AStarAnimationNode(cyNode.id);
                 animationNode.name = cyNode.name;
-                animationNode.f = cyNode.heuristic + cyNode.distance;
+                animationNode.f = cyNode.f;
                 currentFrontier.Add(animationNode);
             }
 

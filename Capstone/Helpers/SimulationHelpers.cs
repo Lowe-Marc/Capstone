@@ -118,11 +118,19 @@ namespace Capstone.Models
         // Below will not be set in UI
         public double distance { get; set; }
         public List<CytoscapeNode> path { get; set; }
+        public double f { get; set; }
 
         public CytoscapeNode()
         {
             path = new List<CytoscapeNode>();
             path.Add(this);
+        }
+        
+        public CytoscapeNode(CytoscapeNode copy)
+        {
+            this.id = copy.id;
+            this.name = copy.name;
+            this.heuristic = copy.heuristic;
         }
 
         // A CytoscapeNode is "greater than" another node if its distance + heuristic is
@@ -131,7 +139,7 @@ namespace Capstone.Models
         // NOTE: Will throw an exception if compared to any other type
         public int CompareTo(Object node)
         {
-            return -1 * (distance + heuristic).CompareTo(((CytoscapeNode)node).distance + ((CytoscapeNode)node).heuristic);
+            return -1 * (f).CompareTo(((CytoscapeNode)node).f);
         }
 
         public CytoscapeNode previous()
@@ -142,6 +150,21 @@ namespace Capstone.Models
                 path.Add(this);
             }
             return path.First();
+        }
+    }
+
+    public class CytoscapeMap
+    {
+        Dictionary<int, CytoscapeNode> contents;
+
+        public CytoscapeMap(Dictionary<int, CytoscapeNode> map)
+        {
+            this.contents = map;
+        }
+
+        public CytoscapeNode getNode(int id)
+        {
+            return new CytoscapeNode(contents[id]);
         }
     }
 
