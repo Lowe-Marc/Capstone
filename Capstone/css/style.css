@@ -304,14 +304,14 @@
 }
 
 .notation ul li .inconsistent-label {
-    background: red ;
+    background: darkorange ;
     width: 25px!important;
     height: 25px!important;
     border-radius: 50%;
 }
 
 .notation ul li .inadmissible-label {
-    background: darkorange ;
+    background: red ;
     width: 25px!important;
     height: 25px!important;
     border-radius: 50%;

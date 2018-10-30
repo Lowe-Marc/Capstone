@@ -131,6 +131,8 @@ namespace Capstone.Models
             this.id = copy.id;
             this.name = copy.name;
             this.heuristic = copy.heuristic;
+            this.connections = copy.connections;
+            this.path = copy.path;
         }
 
         // A CytoscapeNode is "greater than" another node if its distance + heuristic is
@@ -150,6 +152,18 @@ namespace Capstone.Models
                 path.Add(this);
             }
             return path.First();
+        }
+
+        public bool hasVisitedNode(int id)
+        {
+            foreach (CytoscapeNode node in this.path)
+            {
+                if (node.id == id)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

@@ -351,7 +351,7 @@ function qtipContent(node, connecting) {
     content += "<label id='heuristic-label'>Heuristic:</label>"
     content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "' onkeyup='if (value < 0){ value = 0 }'></input>"
     content += "<div style='padding:2px'></div>"
-    content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='checkHeuristic(\"" + node.id().replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
+    content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='setHeuristic(\"" + node.id().replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
     content += "</div>"
     content += "</div>"
     return content;
@@ -422,16 +422,26 @@ function makeGoalNode(id, simulationID) {
     cy.$('#' + id).data('heuristic', 0);
     calculateDistances(id, simulationID);
     setHeuristics();
+    checkHeuristics()
 }
 
 function setHeuristics() {
-    cy.nodes().each(function(node) {
+    var dijkstra
+    var goalID = $('#goal-label').text();
+    var nodes = cy.nodes(), node;
+    // var goalNodeId = 
+    for (var i = 0; i < nodes['length']; i++) {
+        node = nodes[i]
+        dijkstra = cy.elements().dijkstra('#' + node.id(), function(edge) {
+            return edge.data('distance');
+        })
+        node.data('heuristic', dijkstra.distanceTo(cy.$('#' + goalID)))
         node.data('label', node.id().replace('_', ' ') + ": " + node.data('heuristic'));
-    });
+    }
 }
 
-// TODO: admissibility not calculated correctly, need to call dijkstras
-function checkHeuristic(id, simulationID) {
+// Called when the heuristic of a single node is changed
+function setHeuristic(id) {
     id = id.split(":")[0].replace(' ', '_');
     var node = cy.$('#' + id);
     node.data('id', id)
@@ -445,24 +455,40 @@ function checkHeuristic(id, simulationID) {
     calculateDistances(node.id());
     node.data('heuristic', heuristic);
     node.data('label', node.id().replace('_', ' ') + ": " + heuristic);
-    var admissible = heuristic <= node.data('distanceToGoal');
-    var consistent = consistentHeuristic(node, heuristic);
-    var nodeAnimation;
+    checkHeuristics();
+}
 
-    if (!admissible && !consistent) {
-        nodeAnimation = animateNodeToColor(node, inadmissibleAndInconsistentColor())
-        nodeAnimation.play();
-    } 
-    else if (!admissible) {
-        nodeAnimation = animateNodeToColor(node, inadmissibleColor())
-        nodeAnimation.play();
-    } 
-    else if (!consistent) {
-        nodeAnimation = animateNodeToColor(node, inconsistentColor())
-        nodeAnimation.play();
-    } else {
-        nodeAnimation = animateNodeToColor(node, inactiveColor())
-        nodeAnimation.play();
+// Verifies the admissibility and consistency of all nodes
+function checkHeuristics() {
+    var nodeAnimation;
+    var heuristic;
+    var nodes = cy.nodes(), node;
+    // var goalNodeId = 
+    for (var i = 0; i < nodes['length']; i++) {
+        node = nodes[i]
+        dijkstra = cy.elements().dijkstra('#' + node.id(), function(edge) {
+            return edge.data('distance');
+        })
+
+        heuristic = node.data('heuristic')
+        var admissible = heuristic <= node.data('distanceToGoal');
+        var consistent = consistentHeuristic(node, heuristic);
+
+        if (!admissible && !consistent) {
+            nodeAnimation = animateNodeToColor(node, inadmissibleAndInconsistentColor())
+            nodeAnimation.play();
+        } 
+        else if (!admissible) {
+            nodeAnimation = animateNodeToColor(node, inadmissibleColor())
+            nodeAnimation.play();
+        } 
+        else if (!consistent) {
+            nodeAnimation = animateNodeToColor(node, inconsistentColor())
+            nodeAnimation.play();
+        } else {
+            nodeAnimation = animateNodeToColor(node, inactiveColor())
+            nodeAnimation.play();
+        }
     }
 }
 
@@ -491,14 +517,15 @@ function consistentHeuristic(node, heuristic) {
 }
 
 // TODO: If running into performance concerns, this calculation could probably be moved
-function calculateDistances(id, simulationID) {
+function calculateDistances() {
     var dijkstra
+    var goalID = $('#goal-label').text();
+    // var goalNodeId = 
     for (var i = 0; i < cy.nodes()['length']; i++) {
         dijkstra = cy.elements().dijkstra('#' + cy.nodes()[i].id(), function(edge) {
             return edge.data('distance');
         })
-        cy.nodes()[i].data('distanceToGoal', dijkstra.distanceTo(cy.$('#' + id)))
-        cy.nodes()[i].data('heuristic', dijkstra.distanceTo(cy.$('#' + id)))
+        cy.nodes()[i].data('distanceToGoal', dijkstra.distanceTo(cy.$('#' + goalID)))
     }
 }
 
@@ -600,10 +627,6 @@ function collectCookieConfigurations() {
 
 // Assembles each frame in a full animation
 function assembleFullAnimation(simulationResults, cy, currentAnimation, frameToPauseOn) {
-    console.log("assembling full animation:")
-    console.log("simulationResults", simulationResults)
-    console.log("currentAnimation:", currentAnimation)
-    console.log("frameToPauseOn", frameToPauseOn)
     var frames = simulationResults['frames']
     var simulationSpecific = simulationResults['simulationSpecific'];
     var fullAnimation = new Array(frames.length);
@@ -638,11 +661,6 @@ function assembleAnimationFrame(resultFrame, currentAnimation, c, fullAnimation,
 
 // Creates a single animation i.e. a single node transitioning between two single states
 function assembleAnimation(elementToAnimate, currentAnimation, currentIndex, thisFrame, fullAnimation, frameToPauseOn, simulationSpecific, lastInFrame, nodeNumberInFrame) {
-        // var lastInFrame = (currentIndex >= thisFrame.length - 1);
-        if (lastInFrame) {
-            console.log("detected last in frame, currentIndex, thisFrame.length-1:", currentIndex, thisFrame.length-1)
-            console.log("thisFrame:", thisFrame);
-        }
         var nodeAnimation = elementToAnimate.animation({
             style: {
                 'background-color': activeColor()
@@ -666,9 +684,6 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
         // i.e. go back to their original color.
         // When the last animation in this frame is back to its original, start the next frame
         if (lastInFrame) {
-            console.log("lastInFrame")
-            console.log("thisFrame:", thisFrame)
-            console.log("currentIndex:", currentIndex)
             // When moving forward or backward, the frame should auto-pause
             if (currentAnimation['timestep'] == frameToPauseOn || frameToPauseOn == pauseOnThisFrame()) {
                 var frame = currentAnimation['frames'][currentAnimation['timestep']]
@@ -688,7 +703,6 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                                 currentAnimation["timestep"]++;
                                 if (currentAnimation["timestep"] < fullAnimation.length) {
                                     setDisplayedFrame(currentIndex + 2);
-                                    console.log("Frame finishing, updating frame-tracker to:", currentIndex + 2)
                                     updateAStarPriorityQueue(simulationSpecific[currentAnimation["timestep"]])
                                     fullAnimation[currentAnimation["timestep"]][0].play();
                                 } else { // Last frame has finished - animation is complete

@@ -262,6 +262,7 @@
             function runSimulation() {
                 //cy = getCurrentMapObject(defaultConfigs);
                 var params = collectAStarParams(cy);
+                console.log("running simulation:", params)
                 $.ajax({
                     method: "POST",
                     url: "/Simulations/AStar",

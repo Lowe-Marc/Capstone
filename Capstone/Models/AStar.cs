@@ -65,7 +65,7 @@ namespace Capstone.Models
                 int undirectedTargetID = connection.undirectedTarget(node);
                 tempNode = map.getNode(undirectedTargetID);
                 // Discard cyclic paths
-                if (undirectedTargetID != node.previous().id)
+                if (!node.hasVisitedNode(undirectedTargetID))
                 {
                     // Keep track of the path taken
                     if (node.path == null || !node.path.Any())
@@ -76,8 +76,9 @@ namespace Capstone.Models
                     // Make sure to be duplicating the path instead of pointing at node's path field
                     tempNode.path = new List<CytoscapeNode>(node.path);
                     tempNode.path.Add(tempNode);
-                    // Add on heuristic value
-                    tempNode.f = tempNode.heuristic + connection.distance;
+                    // f is the heuristic plus the distance traveled so far
+                    tempNode.distance = node.distance + connection.distance;
+                    tempNode.f = tempNode.heuristic + tempNode.distance;
                     frontier.Add(tempNode);
                 }
             }
