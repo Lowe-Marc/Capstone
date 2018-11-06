@@ -32,6 +32,14 @@ namespace Capstone.Controllers
 
         public ActionResult DynamicProgramming()
         {
+            ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR);
+
+            List<ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
+                AStarConfigs = ConfigurationHelper.CONFIGURATIONS["AStar"];
+
+            ViewData["Configs"] = AStarConfigs;
+
             return View();
         }
 
