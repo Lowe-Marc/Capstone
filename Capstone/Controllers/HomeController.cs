@@ -22,8 +22,8 @@ namespace Capstone.Controllers
             ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR);
 
             List <ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
-            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
-                AStarConfigs = ConfigurationHelper.CONFIGURATIONS["AStar"];
+            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey(ConfigurationHelper.A_STAR))
+                AStarConfigs = ConfigurationHelper.CONFIGURATIONS[ConfigurationHelper.A_STAR];
 
             ViewData["Configs"] = AStarConfigs;
 
@@ -32,13 +32,13 @@ namespace Capstone.Controllers
 
         public ActionResult DynamicProgramming()
         {
-            ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.A_STAR);
+            ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.DYNAMIC_PROGRAMMING);
 
-            List<ConfigurationHelper.CytoscapeConfig> AStarConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
-            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey("AStar"))
-                AStarConfigs = ConfigurationHelper.CONFIGURATIONS["AStar"];
+            List<ConfigurationHelper.CytoscapeConfig> DPConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey(ConfigurationHelper.DYNAMIC_PROGRAMMING))
+                DPConfigs = ConfigurationHelper.CONFIGURATIONS[ConfigurationHelper.DYNAMIC_PROGRAMMING];
 
-            ViewData["Configs"] = AStarConfigs;
+            ViewData["Configs"] = DPConfigs;
 
             return View();
         }

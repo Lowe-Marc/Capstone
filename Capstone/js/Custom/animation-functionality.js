@@ -31,6 +31,16 @@ var AnimationHandler = {
         return 'silver';
     },
 
+    DPNodeColor: function(cellType) {
+        if (cellType == 0) {
+            return 'silver';
+        } else if (cellType == 1) {
+            return 'black';
+        } else {
+            return 'blue';
+        }
+    },
+
     // Time in ms it takes to reset after pausing
     resetTime: function() {
         return 500;
@@ -70,50 +80,70 @@ var AnimationHandler = {
         return -2;
     },
 
+    lockNodes: function() {
+        AnimationHandler.cy.nodes().lock();
+        $('#lock-locked').show();
+        $('#lock-unlocked').hide();
+    },
+    
+    unlockNodes: function() {
+        AnimationHandler.cy.nodes().unlock();    
+        $('#lock-locked').hide();
+        $('#lock-unlocked').show();
+    },
+
+    AStarNodeStyle: function() {
+        return {
+            shape: 'ellipse',
+            'background-color': inactiveColor(),
+            label: 'data(label)',
+            height: nodeHeight(),
+            width: nodeWidth(),
+            'border-width': 2,
+            'border-color': inactiveColor()
+        }
+    },
+
+    AStarEdgeStyle: function() {
+        return {
+            label: 'data(label)',
+            'color': 'white',
+            'text-background-color': 'black',
+            'text-background-opacity': 1,
+            'text-background-padding': 4,
+            'text-background-shape': 'roundrectangle',
+            'line-style': 'dashed',
+            // 'edge-text-rotation': 'autorotate',
+        }
+    },
+
+    DPNodeStyle: function(cellType) {
+        return {
+            shape: 'roundrectangle',
+            'background-color': AnimationHandler.DPNodeColor(cellType),
+            height: nodeHeight(),
+            width: nodeWidth(),
+        }
+    },
+
+    DPEdgeStyle: function() {
+        return {
+        }
+    },
+
     // Renders the CY map and handles node specific properties such as clicking and locking
     setCytoscape: function() {
         AnimationHandler.buildElementStructure();
 
-        // find the center point and offset all the points so the center is at 0,0
-        cy = cytoscape({
-            container: document.getElementById('cy'),
-            style: [
-                {
-                    selector: 'node',
-                    style: {
-                        shape: 'ellipse',
-                        'background-color': inactiveColor(),
-                        label: 'data(label)',
-                        height: nodeHeight(),
-                        width: nodeWidth(),
-                        'border-width': 2,
-                        'border-color': inactiveColor()
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        label: 'data(label)',
-                        'color': 'white',
-                        'text-background-color': 'black',
-                        'text-background-opacity': 1,
-                        'text-background-padding': 4,
-                        'text-background-shape': 'roundrectangle',
-                        'line-style': 'dashed',
-                        // 'edge-text-rotation': 'autorotate',
-                    },
-                }
-            ],
-            layout: {
-                name: 'preset'
-            },
-            elements: AnimationHandler.elements,
-            zoom: 1,
-            pan: { x: 0, y: 0 },
-            minZoom: 1e-1,
-            maxZoom: 1,
-            wheelSensitivity: 0.2,
-        });
+        var cy;
+        if (this.currentSimulation == "AStar") {
+            cy = this.AStarCY();
+        } else if (this.currentSimulation == "DynamicProgramming") {
+            cy = this.DPCY();
+        } else if (this.currentSimulation == "ReinforcementLearning") {
+            cy = this.RLCY();
+        }
+        AnimationHandler.cy = cy;
 
         cy.ready(function () {
             cy.nodes().positions(function (ele, i) {
@@ -122,7 +152,7 @@ var AnimationHandler = {
                     y: AnimationHandler.positionsArr[i].y
                 }
             });
-            lockNodes();
+            AnimationHandler.lockNodes();
         });
 
         cy.nodes().each(function (node) {
@@ -196,61 +226,152 @@ var AnimationHandler = {
         AnimationHandler.cy = cy;
     },
 
+    AStarCY: function() {
+        return cytoscape({
+            container: document.getElementById('cy'),
+            style: [
+                {
+                    selector: 'node',
+                    style: this.AStarNodeStyle()
+                },
+                {
+                    selector: 'edge',
+                    style: AnimationHandler.DPEdgeStyle(),
+                }
+            ],
+            layout: {
+                name: 'preset'
+            },
+            elements: AnimationHandler.elements,
+            zoom: 1,
+            pan: { x: 0, y: 0 },
+            minZoom: 1e-1,
+            maxZoom: 1,
+            wheelSensitivity: 0.2,
+        })
+    },
+
+    DPCY: function() {
+        return cytoscape({
+            container: document.getElementById('cy'),
+            style: [
+                {
+                    selector: 'node[cellType = 0]',
+                    style: this.DPNodeStyle(0)
+                },
+                {
+                    selector: 'node[cellType = 1]',
+                    style: this.DPNodeStyle(1)
+                },
+                {
+                    selector: 'edge',
+                    style: AnimationHandler.DPEdgeStyle(),
+                }
+            ],
+            layout: {
+                name: 'preset'
+            },
+            elements: AnimationHandler.elements,
+            zoom: 1,
+            pan: { x: 0, y: 0 },
+            minZoom: 1e-1,
+            maxZoom: 1,
+            wheelSensitivity: 0.2,
+        })
+    },
+
+    RLCY: function() {
+
+    },
+
+    AStarNodeData: function(node, i) {
+        this.positionsArr.push({
+            x: node.x,
+            y: node.y
+        })
+        return {
+            id: node.id.replace(' ', '_'),
+            elementType: "node",
+            simulationID: i,
+            label: node.id.replace('_', ' '),
+            distanceToGoal: -1,
+            heuristic: 1,
+            position: {
+                x: node.x,
+                y: node.y
+            }
+        }
+    },
+
+    AStarEdgeData: function(edge, i, nodeMap) {
+        return {
+            id: edge.id,
+            elementType: "edge",
+            simulationID: i,
+            distance: edge.distance,
+            label: "g: " + edge.distance,
+            source: edge.source.replace(' ','_'),
+            target: edge.target.replace(' ','_'),
+            sourceID: nodeMap[edge.source.replace(' ','_')],
+            targetID: nodeMap[edge.target.replace(' ','_')]
+        }
+    },
+
+    DPNodeData: function(node) {
+        // console.log("setting node: " + node.coords.Item1 + "_" + node.coords.Item2 + " to position: " + node.coords.Item1*this.nodeWidth() + ", " + node.coords.Item2*this.nodeHeight())
+        this.positionsArr.push({
+            x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth(),
+            y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight()
+        })
+        var data = {
+            id: node.coords.Item1 + "_" + node.coords.Item2,
+            elementType: "node",
+            cellType: node.cellType,
+            position: {
+                x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth(),
+                y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight()
+            }
+        }
+        return Object.assign(this.DPNodeStyle(node.cellType), data);
+    },
+
+    DPEdgeData: function(edge) {
+        return {
+            elementType: "edge",
+            distance: 1,
+            source: edge.source.Item1 + "_" + edge.source.Item2,
+            target: edge.target.Item1 + "_" + edge.target.Item2,
+        }
+    },
+
     // Assembles the object used to render the CY map
     buildElementStructure: function() {
         var nodeMap = {};
-        var label;
-        var heuristic = 1;
-        var realDistance;
         var i;
 
         var elements = [];
-        var positionsArr = [];
+        this.positionsArr = [];
         var currentConfig = AnimationHandler.currentConfig;
         // Collect informaiton on nodes
         for (i = 0; i < currentConfig.nodes.length; i++) {
             heuristic = 1;
             elements.push({
-                data: {
-                    id: currentConfig.nodes[i].id.replace(' ', '_'),
-                    elementType: "node",
-                    simulationID: i,
-                    label: currentConfig.nodes[i].id.replace('_', ' '),
-                    distanceToGoal: -1,
-                    heuristic: heuristic,
-                    position: {
-                        x: currentConfig.nodes[i].x,
-                        y: currentConfig.nodes[i].y
-                    }
-                },
+                data: this.DPNodeData(currentConfig.nodes[i]),
                 classes: 'multiline-manual'
             })
-            nodeMap[currentConfig.nodes[i].id.replace(' ', '_')] = i;
-            positionsArr.push({
-                x: currentConfig.nodes[i].x,
-                y: currentConfig.nodes[i].y
-            })
+            if (this.currentSimulation == "AStar") {
+                nodeMap[currentConfig.nodes[i].id.replace(' ', '_')] = i;
+            }
         }
         // Collect informaiton on connections
         for (i = 0; i < currentConfig.edges.length; i++) {
             realDistance = currentConfig.edges[i].distance
             label = "g: " + realDistance;
             elements.push({
-                data: {
-                    id: currentConfig.edges[i].id,
-                    elementType: "edge",
-                    simulationID: i,
-                    distance: realDistance,
-                    label: label,
-                    source: currentConfig.edges[i].source.replace(' ','_'),
-                    target: currentConfig.edges[i].target.replace(' ','_'),
-                    sourceID: nodeMap[currentConfig.edges[i].source.replace(' ','_')],
-                    targetID: nodeMap[currentConfig.edges[i].target.replace(' ','_')]
-                }
+                data: this.DPEdgeData(currentConfig.edges[i]),
             })
         }
-        AnimationHandler.elements = elements;
-        AnimationHandler.positionsArr = positionsArr;
+        this.elements = elements;
     },
 
     setConfigurationsInSelector: function() {

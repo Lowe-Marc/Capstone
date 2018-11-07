@@ -61,6 +61,24 @@ namespace Capstone.Models
         public double heuristicValue;
     }
 
+    public class DPNode
+    {
+        public Tuple<int, int> coords;
+        public bool start;
+        public bool goal;
+        public DPCellType cellType;
+    }
+
+    public class DPEdge
+    {
+        public Tuple<int, int> source;
+        public Tuple<int, int> target;
+    }
+
+    public enum DPCellType { Empty, Wall, Ice}
+
+
+
 
     // Params coming from the view, built in javascript
     public class CytoscapeParams
