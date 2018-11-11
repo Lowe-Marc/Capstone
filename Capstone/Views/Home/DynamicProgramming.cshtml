@@ -16,17 +16,14 @@
 <body>
 
     <div id="cy"></div>
-
+    <script src="~/js/Custom/DynamicProgramming/configuration-module.js"></script>
+    <script src="~/js/Custom/DynamicProgramming/toolbar-module.js"></script>
+    <script src="~/js/Custom/DynamicProgramming/animation-module.js"></script>
     <script>
         $(function () { // on dom ready
-            AnimationHandler.currentSimulation = "DynamicProgramming";
-            AnimationHandler.configs = @Html.Raw(Json.Encode(AStarConfigs));
-            console.log("configs", AnimationHandler.configs);
-            AnimationHandler.defaultConfigs = Object.values(jQuery.extend(true, {}, AnimationHandler.configs));
-            console.log("defaultConfigs", AnimationHandler.defaultConfigs);
-            AnimationHandler.setConfigurationsInSelector();
-            UIHandler.setConfig()
-            UIHandler.enableToolbar();
+            var configs = @Html.Raw(Json.Encode(AStarConfigs))
+            console.log("configs", configs);
+            SimulationInterface.setCurrentSimulation("DynamicProgramming", configs);
 
             $('#simulation-title').text("Dynamic Programming");
             $('#simulation-description').html("<a href='https://en.wikipedia.org/wiki/Dynamic_programming'>Link to information.</a>");
