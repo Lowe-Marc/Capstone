@@ -29,7 +29,6 @@
         }
 
         this.lockNodes = function() {
-            console.log("locking:", this)
             this.cy.nodes().lock();
             $('#lock-locked').show();
             $('#lock-unlocked').hide();
@@ -59,24 +58,7 @@
             });
 
             cy.nodes().each(function (node) {
-                cy.$('#' + node.id()).qtip({
-                    content: {
-                        text: function(event, api) {
-                            var connecting; 
-                            if ($('#add-connection-label').is(':visible')) {
-                                connecting = true;
-                            }
-                            return qtipContent(node, connecting);
-                        }
-                    },
-                    position: {
-                        my: 'top center',
-                        at: 'bottom center'
-                    },
-                    style: {
-                        classes: 'qtip-bootstrap',
-                    }
-                });
+                cy.$('#' + node.id()).qtip(self.qtipStructure(node));
             });
 
             cy.gridGuide(this.gridInfo())
@@ -179,7 +161,7 @@
                 drawGrid: true, // Draw grid background
 
                 // General
-                gridSpacing: gridHeight(), // Distance between the lines of the grid.
+                gridSpacing: self.gridHeight(), // Distance between the lines of the grid.
 
                 // Draw Grid
                 zoomDash: true, // Determines whether the size of the dashes should change when the drawing is zoomed in and out if grid is drawn.
