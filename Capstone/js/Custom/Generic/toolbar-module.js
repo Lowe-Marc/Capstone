@@ -3,7 +3,14 @@
     function genericToolbarModule() {
         var self = this;
 
+        this.simulationConfigBottomBorder = function() {
+            var bordercss = $('#simulation-config').css('border-bottom');
+            return bordercss.split("px")[0]
+        }
+
         this.enableToolbar = function() {
+            self.setConfig();
+
             $('#fullscreen-enter').click(function () {
                 self.toggleFullscreen();
             });

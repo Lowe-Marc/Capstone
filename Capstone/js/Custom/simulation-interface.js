@@ -15,9 +15,9 @@ var SimulationInterface = {
         this.toolbarModule = this.availableModules[simulationName].toolbar;
         this.animationModule = this.availableModules[simulationName].animation;
 
-        this.toolbarModule.enableToolbar();
         this.configurationModule.defaultConfigs = configs;
         this.configurationModule.setConfigurationsInSelector(configs);
+        this.toolbarModule.enableToolbar();
     },
 
     runSimulation: function() {

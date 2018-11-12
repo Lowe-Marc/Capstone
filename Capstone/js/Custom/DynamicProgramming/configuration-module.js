@@ -7,8 +7,8 @@
         this.PASSABLE = 0;
         this.WALL = 1;
         this.SLIPPERY = 2;
-        this.GOAL = -1;
-        this.START = -2;
+        this.GOAL = 3;
+        this.START = 4;
 
         this.LEFT = function() {
             return 'data:image/png;base64,' + this.images[0];
@@ -57,10 +57,13 @@
             }
         }
 
+        // Positions need the offset to keep the cells contained within the grid,
+        // scaling to the grid size, and offset to center the maze
         this.nodeData = function(node) {
+            var centerOffset = this.gridWidth()*4;
             this.positionsArr.push({
-                x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth(),
-                y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight()
+                x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth() - centerOffset,
+                y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight() - centerOffset
             })
             var data = {
                 id: node.coords.Item1 + "_" + node.coords.Item2,
@@ -94,6 +97,18 @@
                     {
                         selector: 'node[cellType = 1]',
                         style: this.nodeStyle(1)
+                    },
+                    {
+                        selector: 'node[cellType = 2]',
+                        style: this.nodeStyle(2)
+                    },
+                    {
+                        selector: 'node[cellType = 3]',
+                        style: this.nodeStyle(3)
+                    },
+                    {
+                        selector: 'node[cellType = 4]',
+                        style: this.nodeStyle(4)
                     },
                     {
                         selector: 'edge',

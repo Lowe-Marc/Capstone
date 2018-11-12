@@ -42,7 +42,9 @@
 
         // Renders the CY map and handles node specific properties such as clicking and locking
         this.setCytoscape = function() {
+            console.log("before:", this.currentConfig)
             this.buildElementStructure();
+            console.log("after:", this.currentConfig)
             this.cy = this.cyConstructor();
             var cy = this.cy;
             var self = this;
@@ -93,7 +95,7 @@
                     data: this.edgeData(currentConfig.edges[i]),
                 })
             }
-            this.elements = elements;
+            self.elements = elements;
         }
 
         this.setConfigurationsInSelector = function() {
@@ -114,8 +116,8 @@
             // When an option is selected, we need to update the currentConfig and cy
             this.currentConfig = configs[0];
             configSelector.on('change', function () {
-                this.currentConfig = configs[this.value];
-                console.log("on change:", this.currentConfig)
+                self.currentConfig = configs[this.value];
+                console.log("on change:", self.currentConfig)
                 $('#sidenavToggler').click(function () {
                     this.cy.resize();
                 });
