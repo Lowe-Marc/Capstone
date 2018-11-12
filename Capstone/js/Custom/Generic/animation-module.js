@@ -1,12 +1,22 @@
 (function() {
 
     function genericAnimationModule() {
-        this.animateNodeToColor  = function(node, color) {
+        this.animateNodeToColor = function(node, color) {
             var anim = node.animation({
                 style: {
                     'background-color': color,
                 },
                 duration: this.animationTime()
+            });
+            return anim;
+        }
+
+        this.animateNodeToImage = function(node, image) {
+            var anim = node.animation({
+                style: {
+                    'background-image': image,
+                },
+                duration: 0
             });
             return anim;
         }

@@ -8,7 +8,23 @@
         this.WALL = 1;
         this.SLIPPERY = 2;
         this.GOAL = -1;
-        this.START = -2
+        this.START = -2;
+
+        this.LEFT = function() {
+            return 'data:image/png;base64,' + this.images[0];
+        }
+
+        this.RIGHT = function() {
+            return 'data:image/png;base64,' + this.images[1];
+        }
+
+        this.TOP = function() {
+            return 'data:image/png;base64,' + this.images[2];
+        }
+
+        this.BOTTOM = function() {
+            return 'data:image/png;base64,' + this.images[3];
+        }
 
         this.nodeColor = function(cellType) {
             switch (cellType) {
@@ -128,9 +144,14 @@
             content += "<div class='svg-expand pointer second'>"
             content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=self.makeStartNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
             content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=self.makeGoalNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
-            content += "<span class='fa oi icon' data-toggle='modal' id='transfer' data-glyph='transfer' title='Make passable' aria-hidden='true' onclick=self.makeCellPassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-            content += "<span class='fa oi icon' data-toggle='modal' id='shield' data-glyph='shield' title='Make impassable' aria-hidden='true' onclick=self.makeCellImpassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-            content += "<span class='fa oi icon' data-toggle='modal' id='droplet' data-glyph='droplet' title='Make slippery' aria-hidden='true'onclick=self.makeCellSlippery(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='transfer' data-glyph='transfer' title='Make passable' aria-hidden='true' onclick=self.makeCellPassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='shield' data-glyph='shield' title='Make impassable' aria-hidden='true' onclick=self.makeCellImpassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='droplet' data-glyph='droplet' title='Make slippery' aria-hidden='true'onclick=self.makeCellSlippery(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+
+            content += "<span class='fa oi icon' id='arrow-left' data-glyph='arrow-left' title='Make Left' aria-hidden='true'onclick=self.makeLeft(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='arrow-right' data-glyph='arrow-right' title='Make Right' aria-hidden='true'onclick=self.makeRight(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='arrow-top' data-glyph='arrow-top' title='Make Top' aria-hidden='true'onclick=self.makeTop(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
+            content += "<span class='fa oi icon' id='arrow-bottom' data-glyph='arrow-bottom' title='Make Bottom' aria-hidden='true'onclick=self.makeBottom(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
             content += "</div>";
             content += "</div>";
 
@@ -169,6 +190,34 @@
             var node = SimulationInterface.cy.$('#' + nodeID);
             node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
+            anim.play();
+        }
+
+        this.makeLeft = function(nodeID) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            node.cellType = this.START;
+            var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.LEFT())
+            anim.play();
+        }
+
+        this.makeRight = function(nodeID) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            node.cellType = this.START;
+            var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.RIGHT())
+            anim.play();
+        }
+
+        this.makeBottom = function(nodeID) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            node.cellType = this.START;
+            var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.BOTTOM())
+            anim.play();
+        }
+
+        this.makeTop = function(nodeID) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            node.cellType = this.START;
+            var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.TOP())
             anim.play();
         }
     }

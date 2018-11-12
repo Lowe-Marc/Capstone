@@ -11,9 +11,13 @@
     }
 
     List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
+    List<String> Images = (List<String>)ViewData["Images"];
 }
 
 <body>
+
+    <div id="arrow-left-div" data-image='@Url.Content("~/images/add.png")'></div>
+    <img id="arrow-left-img" src="~/vendor/open-iconic-master/png/arrow-left.png" style="display:none"/>
 
     <div id="cy"></div>
     <script src="~/js/Custom/DynamicProgramming/configuration-module.js"></script>
@@ -23,7 +27,11 @@
         $(function () { // on dom ready
             var configs = @Html.Raw(Json.Encode(AStarConfigs))
             console.log("configs", configs);
+
+            var images = @Html.Raw(Json.Encode(Images));
+            console.log("images", images)
             SimulationInterface.setCurrentSimulation("DynamicProgramming", configs);
+            SimulationInterface.configurationModule.images = images;
 
             $('#simulation-title').text("Dynamic Programming");
             $('#simulation-description').html("<a href='https://en.wikipedia.org/wiki/Dynamic_programming'>Link to information.</a>");
