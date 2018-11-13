@@ -4,7 +4,6 @@
         SimulationInterface.genericConstructors.toolbar.call(this);
 
         this.setConfig = function() {
-            console.log("currentConfig:", SimulationInterface.configurationModule.currentConfig)
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var numNodes = currentConfig.nodes.length;
             var i = 0, currentRow = 0, currentCol = 0;
@@ -27,10 +26,8 @@
             content += '</div>'
             $('#simulation-config').html(content)
             $('#simulation-config').show();
-            console.log("display:",$('#simulation-display').height())
             // $('#simulation-config').height($('#simulation-display').height() - this.simulationConfigBottomBorder());
             $('#simulation-config').height(600 - this.simulationConfigBottomBorder());
-            console.log("after:",$('#simulation-config').height())
         }
     }
 

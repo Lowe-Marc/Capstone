@@ -26,10 +26,7 @@
     <script>
         $(function () { // on dom ready
             var configs = @Html.Raw(Json.Encode(AStarConfigs))
-            console.log("configs", configs);
-
             var images = @Html.Raw(Json.Encode(Images));
-            console.log("images", images)
             SimulationInterface.setCurrentSimulation("DynamicProgramming", configs);
             SimulationInterface.configurationModule.images = images;
 

@@ -42,9 +42,7 @@
 
         // Renders the CY map and handles node specific properties such as clicking and locking
         this.setCytoscape = function() {
-            console.log("before:", this.currentConfig)
             this.buildElementStructure();
-            console.log("after:", this.currentConfig)
             this.cy = this.cyConstructor();
             var cy = this.cy;
             var self = this;
@@ -66,6 +64,7 @@
             cy.gridGuide(this.gridInfo())
 
             SimulationInterface.cy = cy;
+            SimulationInterface.toolbarModule.setConfig();
         }
 
         // Assembles the object used to render the CY map
@@ -117,7 +116,6 @@
             this.currentConfig = configs[0];
             configSelector.on('change', function () {
                 self.currentConfig = configs[this.value];
-                console.log("on change:", self.currentConfig)
                 $('#sidenavToggler').click(function () {
                     this.cy.resize();
                 });
