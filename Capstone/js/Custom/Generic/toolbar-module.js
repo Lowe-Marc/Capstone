@@ -11,6 +11,11 @@
         this.enableToolbar = function() {
             self.setConfig();
 
+            // Run a simulation
+            $('#simulate').click(function () {
+                SimulationInterface.runSimulation();
+            });
+
             $('#fullscreen-enter').click(function () {
                 self.toggleFullscreen();
             });

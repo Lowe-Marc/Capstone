@@ -161,6 +161,7 @@
     <Compile Include="Helpers\ConfigurationHelper.cs" />
     <Compile Include="Helpers\SimulationHelpers.cs" />
     <Compile Include="Models\AStar.cs" />
+    <Compile Include="Models\DynamicProgramming.cs" />
     <Compile Include="Models\Simulations.cs" />
     <Compile Include="Models\TestModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

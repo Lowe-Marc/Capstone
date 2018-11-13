@@ -44,5 +44,18 @@ namespace Capstone.Controllers
             Response.Cookies.Add(new HttpCookie(json.Root.First().First().ToString(), json.ToString()));
             return true;
         }
+
+        public Object DynamicProgramming(FormCollection collection)
+        {
+            string s = collection["data"].ToString();
+            JObject json = JObject.Parse(s);
+            CytoscapeParams cyParams = json.ToObject<CytoscapeParams>();
+            Animation animation = new Animation();
+            if (cyParams.startID == cyParams.goalID)
+                return new JavaScriptSerializer().Serialize(animation);
+
+            animation = Models.DynamicProgramming.runSimulation(cyParams);
+            return new JavaScriptSerializer().Serialize(animation);
+        }
     }
 }
