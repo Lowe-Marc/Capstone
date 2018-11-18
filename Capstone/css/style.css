@@ -9,7 +9,7 @@
     border-bottom: 2px solid #e6e6e6;
 }
 
-#operation {
+.operation {
     border-top: 2px solid #e6e6e6;
     border-bottom: 2px solid #e6e6e6;
     border-left: 2px solid #e6e6e6;
@@ -17,30 +17,30 @@
     background-color: #e6e6e64d;
 }
 
-#operation .first {
+.operation .first {
     float: left;
     padding: 8.0px;
 }
 
-#operation .second {
+.operation .second {
     overflow: hidden;
     /* float: right; */
 }
 
-#operation .svg-expand {
+.operation .svg-expand {
     display: inline;
     min-width: 10px;
     min-height: 10px;
 }
 
-#operation .svg-expand .fa{
+.operation .svg-expand .fa{
     color: #000000;
     padding:12.5px;
     width: 40px;
     height: 40px;
 }
 
-#operation .svg-expand  :hover{
+.operation .svg-expand  :hover{
     background-color: #e6e6e6;
 }
 
