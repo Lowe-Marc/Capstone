@@ -6,30 +6,32 @@
         var self = this;
         this.currentIterationIndex = 0;
         this.currentIteration = [];
+        this.simulationResults = [];
+        this.currentIterationNumber = 0;
 
         this.setConfig = function() {
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var numNodes = currentConfig.nodes.length;
             var i = 0, currentRow = 0, currentCol = 0;
             var content = '';
-            content += '<div class="notation pull-right dp-config-div">'
+            content += '<div class="notation pull-right dp-config-div">';
             content += this.animationMenu();
-            content += '<table class="table">'
-            content += '<tr>'
+            content += '<table class="table">';
+            content += '<tr>';
             for (i = 0; i < numNodes; i++) {
                 if (currentConfig.nodes[i].coords.Item2 > currentRow) {
-                    currentCol = 0
+                    currentCol = 0;
                     currentRow++;
-                    content += '</tr>'
-                    content += '<tr>'
+                    content += '</tr>';
+                    content += '<tr>';
                 }
-                content += '<td id="iteration-cell-' + i + '">' + currentCol + '</td>'
+                content += '<td id="iteration-cell-' + i + '">-</td>';
                 currentCol++;
             }
-            content += '</tr>'
-            content += '</table>'
-            content += '</div>'
-            $('#simulation-config').html(content)
+            content += '</tr>';
+            content += '</table>';
+            content += '</div>';
+            $('#simulation-config').html(content);
             $('#simulation-config').show();
             // $('#simulation-config').height($('#simulation-display').height() - this.simulationConfigBottomBorder());
             $('#simulation-config').height(600 - this.simulationConfigBottomBorder());
@@ -51,30 +53,74 @@
 
         this.setCalculationAnimations = function() {
             $('#iteration-forward').click(function() {
-                self.forwardIterationIndex();
+                if (!$('#iteration-forward').hasClass('disabled')) {
+                    self.forwardIterationIndex();
+                }
             });
 
             $('#iteration-backward').click(function() {
-                self.backwardIterationIndex();
+                if (!$('#iteration-backward').hasClass('disabled')) {
+                    self.backwardIterationIndex();
+                }
             });
         }
 
         this.forwardIterationIndex = function() {
-            console.log(this.currentIterationIndex, this.currentIteration[this.currentIterationIndex])
             if (this.currentIterationIndex < this.currentIteration.length) {
                 if (this.currentIterationIndex > 0) {
-                    console.log("HERE")
-                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', '')    
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', '');
                 }
-                $('#iteration-cell-' + this.currentIterationIndex).css('background-color', 'LightSteelBlue')
-                $('#iteration-cell-' + this.currentIterationIndex).text(this.currentIteration[this.currentIterationIndex])
+                $('#iteration-cell-' + this.currentIterationIndex).css('background-color', 'LightSteelBlue');
+                $('#iteration-cell-' + this.currentIterationIndex).text(this.currentIteration[this.currentIterationIndex]);
                 this.currentIterationIndex++;
+            } else { // Wrap to next iteration
+                // Can't wrap if at final value
+                if (this.currentIterationNumber != this.simulationResults.length - 1) {
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', '');
+                    this.currentIterationNumber += 1;
+                    this.currentIterationIndex = 1;
+                    this.currentIteration = this.simulationResults[this.currentIterationNumber];
+                    $('#iteration-cell-0').css('background-color', 'LightSteelBlue');
+                    $('#iteration-cell-0').text(this.currentIteration[this.currentIterationIndex]);
+                }
             }
         }
 
         this.backwardIterationIndex = function() {
-            if (currentIterationIndex > 0) {
-                this.currentIterationIndex--;
+            if (this.currentIterationIndex > 0) {
+                // If in the first iteration, set back to default, otherwise set to previous value
+                if (this.currentIterationNumber == 0) {
+                    this.currentIterationIndex--;
+                    $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
+                    $('#iteration-cell-' + this.currentIterationIndex).text('-')
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue');
+                } else if (this.currentIterationIndex == 1) { // Also need to wrap backwards if this is the case
+                    $('#iteration-cell-0').css('background-color', '');
+                    this.currentIterationNumber--;
+                    this.currentIteration = this.simulationResults[this.currentIterationNumber];
+                    $('#iteration-cell-0').text(this.currentIteration[0]);
+                    this.currentIterationIndex = this.currentIteration.length;
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue')
+                } else {
+                    this.currentIterationIndex--;
+                    $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
+                    $('#iteration-cell-' + this.currentIterationIndex).text(this.simulationResults[this.currentIterationNumber-1][this.currentIterationIndex]);
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue');
+                }
+            } else { // Need to wrap backwards
+                // Can't wrap backwards if on first iteration
+                if (this.currentIterationNumber != 0) {
+                    this.currentIterationNumber--;
+                    // Need to reset entire list of values to previous iteration
+                    this.currentIteration = this.simulationResults[this.currentIterationNumber];
+                    $('#iteration-cell-' + 0).text(this.currentIteration[0]);
+                    $('#iteration-cell-' + this.currentIterationIndex).css('background-color', '');
+                    this.currentIterationIndex = this.currentIteration.length;
+                    $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue');
+                } else {
+                    $('#iteration-cell-' + this.currentIterationIndex).text('-')
+                    $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
+                }
             }
         }
 
@@ -87,13 +133,13 @@
             for (j = 0; j < 3; j++) {
                 iteration = [];
                 for (i = 0; i < numNodes; i++) {
-                    iteration.push(10);
+                    iteration.push(j);
                 }
                 results.push(iteration);
             }
 
             this.currentIteration = results[0];
-
+            this.simulationResults = results;
             SimulationInterface.simulationResults = results;
         }
     }

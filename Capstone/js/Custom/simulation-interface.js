@@ -40,5 +40,6 @@ var SimulationInterface = {
 
         this.toolbarModule.testResults();
         $('#iteration-forward').removeClass('disabled');
+        $('#iteration-backward').removeClass('disabled');
     },
 }
