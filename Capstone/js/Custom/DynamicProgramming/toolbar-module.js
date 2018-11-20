@@ -10,6 +10,8 @@
         this.currentIterationNumber = 0;
         this.configAnimPaused = false;
 
+        this.currentPolicy = [];
+
         this.setConfig = function() {
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var numNodes = currentConfig.nodes.length;
@@ -55,6 +57,12 @@
         }
 
         this.setCalculationAnimations = function() {
+            $('#forward').click(function() {
+                if (!$('#forward').hasClass('disabled')) {
+                    self.newPolicy();
+                }
+            });
+
             $('#iteration-forward').click(function() {
                 if (!$('#iteration-forward').hasClass('disabled')) {
                     self.forwardIterationIndex();
@@ -160,6 +168,9 @@
                         self.forwardIterationIndex();
                         self.playIterations();
                     }, self.iterationTime());
+                } else { // Finished
+                    $('#iteration-pause').addClass('disabled');
+                    $('#iteration-play').removeClass('disabled');
                 }
             }
         }
@@ -181,6 +192,36 @@
             this.currentIteration = results[0];
             this.simulationResults = results;
             SimulationInterface.simulationResults = results;
+        }
+
+        this.newPolicy = function() {
+            var currentConfig = SimulationInterface.configurationModule.currentConfig;
+            var numNodes = currentConfig.nodes.length;
+            var i;
+
+            var currentCol = 0;
+            var currentRow = 0;
+            for (i = 0; i < numNodes; i++) {
+                if (currentConfig.nodes[i].coords.Item2 > currentRow) {
+                    currentCol = 0;
+                    currentRow++;
+                }
+                var id = currentRow + "_" + currentCol;
+                var num = Math.random();
+                if (num <= 0.25) {
+                    SimulationInterface.configurationModule.makeLeft(id);
+                } else if (num <= 0.5) {
+                    SimulationInterface.configurationModule.makeRight(id);
+                } else if (num <= 0.75) {
+                    SimulationInterface.configurationModule.makeTop(id);
+                } else {
+                    SimulationInterface.configurationModule.makeBottom(id);
+                }
+                currentCol++;
+            }
+            this.currentIterationIndex = 0;
+            this.currentIterationNumber = 0;
+            this.testResults();
         }
     }
 

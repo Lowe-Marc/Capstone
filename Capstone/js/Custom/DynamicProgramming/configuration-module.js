@@ -210,28 +210,24 @@
 
         this.makeLeft = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
-            node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.LEFT())
             anim.play();
         }
 
         this.makeRight = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
-            node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.RIGHT())
             anim.play();
         }
 
         this.makeBottom = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
-            node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.BOTTOM())
             anim.play();
         }
 
         this.makeTop = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
-            node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.TOP())
             anim.play();
         }
