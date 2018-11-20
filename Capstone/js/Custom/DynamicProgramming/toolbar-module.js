@@ -8,11 +8,14 @@
         this.currentIteration = [];
         this.simulationResults = [];
         this.currentIterationNumber = 0;
+        this.configAnimPaused = false;
 
         this.setConfig = function() {
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var numNodes = currentConfig.nodes.length;
             var i = 0, currentRow = 0, currentCol = 0;
+            this.currentIterationIndex = 0;
+            this.currentIterationNumber = 0;
             var content = '';
             content += '<div class="notation pull-right dp-config-div">';
             content += this.animationMenu();
@@ -63,6 +66,23 @@
                     self.backwardIterationIndex();
                 }
             });
+
+            $('#iteration-play').click(function() {
+                if (!$('#iteration-play').hasClass('disabled')) {
+                    $('#iteration-play').addClass('disabled');
+                    $('#iteration-pause').removeClass('disabled');
+                    self.configAnimPaused = false;
+                    self.playIterations();
+                }
+            });
+
+            $('#iteration-pause').click(function() {
+                if (!$('#iteration-pause').hasClass('disabled')) {
+                    self.configAnimPaused = true;
+                    $('#iteration-pause').addClass('disabled');
+                    $('#iteration-play').removeClass('disabled');
+                }
+            });
         }
 
         this.forwardIterationIndex = function() {
@@ -83,6 +103,11 @@
                     $('#iteration-cell-0').css('background-color', 'LightSteelBlue');
                     $('#iteration-cell-0').text(this.currentIteration[this.currentIterationIndex]);
                 }
+            }
+
+            // Flag finished
+            if (this.currentIterationNumber == (this.simulationResults.length - 1) && this.currentIterationIndex == (this.currentIteration.length - 1) ) {
+                this.currentIterationNumber++;
             }
         }
 
@@ -120,6 +145,21 @@
                 } else {
                     $('#iteration-cell-' + this.currentIterationIndex).text('-')
                     $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
+                }
+            }
+        }
+
+        this.iterationTime = function() {
+            return 5;
+        }
+
+        this.playIterations = function() {
+            if (!this.configAnimPaused) {
+                if (self.currentIterationNumber < self.simulationResults.length || self.currentIterationIndex < self.currentIteration.length) {
+                    setTimeout(function() {
+                        self.forwardIterationIndex();
+                        self.playIterations();
+                    }, self.iterationTime());
                 }
             }
         }
