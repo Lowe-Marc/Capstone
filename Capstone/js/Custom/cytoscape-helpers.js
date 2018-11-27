@@ -704,7 +704,6 @@ function connectAnimations(nodeAnimation, lastInFrame, thisFrame, currentIndex, 
                                 if (currentAnimation["timestep"] < fullAnimation.length) {
                                     setDisplayedFrame(currentIndex + 2);
                                     console.log("simulationSpecific:", simulationSpecific)
-                                    updateAStarPriorityQueue(simulationSpecific.frontierOverTime[currentAnimation["timestep"]])
                                     fullAnimation[currentAnimation["timestep"]][0].play();
                                 } else { // Last frame has finished - animation is complete
                                     currentAnimation["timestep"] = 0;

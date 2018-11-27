@@ -24,9 +24,14 @@ namespace Capstone.Models
 
     public class AnimationFrame
     {
+
+    }
+
+    public class AStarAnimationFrame : AnimationFrame
+    {
         public List<AStarAnimationNode> frame;
 
-        public AnimationFrame()
+        public AStarAnimationFrame()
         {
             frame = new List<AStarAnimationNode>();
         }
@@ -59,6 +64,12 @@ namespace Capstone.Models
         public string target;
         public double distance;
         public double heuristicValue;
+    }
+
+    public class DPAnimationFrame : AnimationFrame
+    {
+        public List<int> values;
+        public List<int> policy;
     }
 
     public class DPNode
@@ -130,8 +141,11 @@ namespace Capstone.Models
     {
         public int id { get; set; }
         public string name { get; set; }
-        public double heuristic { get; set; }
+        public double heuristic { get; set; } // Used in AStar
         public List<CytoscapeConnection> connections { get; set; }
+        public int x { get; set; }
+        public int y { get; set; }
+        public DPCellType cellType;
 
         // Below will not be set in UI
         public double distance { get; set; }

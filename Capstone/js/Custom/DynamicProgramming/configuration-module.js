@@ -231,6 +231,31 @@
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.TOP())
             anim.play();
         }
+
+        this.collectConfig = function() {
+            var params = {};
+            var nodes = [];
+            var index = 0;
+            
+            SimulationInterface.cy.nodes().each(function(element) {
+                node = {
+                    x: element.id().split("_")[0],
+                    y: element.id().split("_")[1],
+                    cellType: element.data('cellType')
+                }
+                if (node.cellType == self.START) {
+                    params.startID = index;
+                } else if (node.cellType == self.GOAL) {
+                    params.goalID = index;
+                }
+                nodes.push(node);
+                index += 1;
+            });
+
+            params.nodes = nodes;
+            console.log("params:", params)
+            return params;
+        }
     }
 
     // Give the simulation interface an instance of the module

@@ -26,12 +26,12 @@ var SimulationInterface = {
         $.ajax({
             method: "POST",
             url: "/Simulations/" + this.currentSimulation,
-            data: { "data": JSON.stringify({}) },
+            data: { "data": JSON.stringify(this.configurationModule.collectConfig()) },
             dataType: "json",
             success: (result) => {
                 console.log("Simulation has completed successfully.");
                 SimulationInterface.simulationResults = result
-                console.log("simulationResults", simulationResults);
+                console.log("simulationResults", SimulationInterface.simulationResults);
             },
             error: (result) => {
                 console.log("Simulation has completed unsuccessfully.");
@@ -39,7 +39,7 @@ var SimulationInterface = {
             }
         });
 
-        this.toolbarModule.testResults();
+        // this.toolbarModule.testResults();
         // $('#iteration-forward').removeClass('disabled');
         // $('#iteration-backward').removeClass('disabled');
         // $('#iteration-play').removeClass('disabled');
