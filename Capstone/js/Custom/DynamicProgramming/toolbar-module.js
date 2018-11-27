@@ -192,6 +192,7 @@
             this.currentIteration = results[0];
             this.simulationResults = results;
             SimulationInterface.simulationResults = results;
+            console.log("results", results)
         }
 
         this.newPolicy = function() {

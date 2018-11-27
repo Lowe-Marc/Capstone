@@ -6,6 +6,7 @@ var SimulationInterface = {
     configurationModule: null,
     toolbarModule: null,
     animationModule: null,
+    simulationResults: null,
 
     cy: null,
 
@@ -22,26 +23,26 @@ var SimulationInterface = {
 
     runSimulation: function() {
         console.log("running simulation:")
-        // $.ajax({
-        //     method: "POST",
-        //     url: "/Simulations/" + this.currentSimulation,
-        //     data: { "data": JSON.stringify([]) },
-        //     dataType: "json",
-        //     success: (result) => {
-        //         console.log("Simulation has completed successfully.");
-        //         simulationResults = result
-        //         console.log("simulationResults", simulationResults);
-        //     },
-        //     error: (result) => {
-        //         console.log("Simulation has completed unsuccessfully.");
-        //         console.log(result);
-        //     }
-        // });
+        $.ajax({
+            method: "POST",
+            url: "/Simulations/" + this.currentSimulation,
+            data: { "data": JSON.stringify({}) },
+            dataType: "json",
+            success: (result) => {
+                console.log("Simulation has completed successfully.");
+                SimulationInterface.simulationResults = result
+                console.log("simulationResults", simulationResults);
+            },
+            error: (result) => {
+                console.log("Simulation has completed unsuccessfully.");
+                console.log(result);
+            }
+        });
 
         this.toolbarModule.testResults();
-        $('#iteration-forward').removeClass('disabled');
-        $('#iteration-backward').removeClass('disabled');
-        $('#iteration-play').removeClass('disabled');
-        $('#forward').removeClass('disabled');
+        // $('#iteration-forward').removeClass('disabled');
+        // $('#iteration-backward').removeClass('disabled');
+        // $('#iteration-play').removeClass('disabled');
+        // $('#forward').removeClass('disabled');
     },
 }

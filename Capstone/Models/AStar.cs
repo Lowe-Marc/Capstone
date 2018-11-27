@@ -21,7 +21,8 @@ namespace Capstone.Models
         {
             //return testAnim(startID, goalID);
             Animation results = new Animation();
-            List<List<AStarAnimationNode>> frontierOvertime = new List<List<AStarAnimationNode>>();
+            AStarSpecificAnimation aStarSpecific = new AStarSpecificAnimation();
+            aStarSpecific.frontierOverTime = new List<List<AStarAnimationNode>>();
             List<AnimationFrame> frames = new List<AnimationFrame>();
             bool goalFound = false;
             CytoscapeMap map = new CytoscapeMap(initializeInternalNodes(cyParams.nodes));
@@ -37,7 +38,7 @@ namespace Capstone.Models
                 trackAnimationFrame(frames, current);
 
                 //Store the frontier every iteration for animation
-                storeFrontierOverTime(frontierOvertime, frontier);
+                storeFrontierOverTime(aStarSpecific, frontier);
 
                 //Get the next node to expand
                 current = frontier.DeleteMax();
@@ -47,12 +48,12 @@ namespace Capstone.Models
                 {
                     goalFound = true;
                     trackAnimationFrame(frames, current);
-                    storeFrontierOverTime(frontierOvertime, frontier);
+                    storeFrontierOverTime(aStarSpecific, frontier);
                 }
             }
 
             results.frames = frames;
-            results.simulationSpecific = frontierOvertime;
+            results.simulationSpecific = aStarSpecific;
 
             return results;
         }
@@ -87,7 +88,7 @@ namespace Capstone.Models
         // Converts the Cytoscape nodes into animation nodes and pushes them onto the list that tracks frontiers
         // We have to clone the frontier and then delete the elements from the copy because there is no way
         // to iterate through the frontier ordered by priority.
-        private static void storeFrontierOverTime(List<List<AStarAnimationNode>> frontierOverTime, IntervalHeap<CytoscapeNode> frontier)
+        private static void storeFrontierOverTime(AStarSpecificAnimation frontierOverTime, IntervalHeap<CytoscapeNode> frontier)
         {
             IntervalHeap<CytoscapeNode> frontierCopy = cloneFrontier(frontier);
             AStarAnimationNode animationNode;
@@ -101,8 +102,8 @@ namespace Capstone.Models
                 animationNode.f = cyNode.f;
                 currentFrontier.Add(animationNode);
             }
-
-            frontierOverTime.Add(currentFrontier);
+            
+            frontierOverTime.frontierOverTime.Add(currentFrontier);
         }
 
         // Helper method to duplicate an interval heap

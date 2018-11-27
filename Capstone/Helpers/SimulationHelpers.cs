@@ -9,7 +9,7 @@ namespace Capstone.Models
     public class Animation
     {
         public List<AnimationFrame> frames;
-        public List<List<AStarAnimationNode>> simulationSpecific;
+        public SimulationSpecificAnimation simulationSpecific;
     }
 
     public class SimulationSpecificAnimation
@@ -19,7 +19,7 @@ namespace Capstone.Models
 
     public class AStarSpecificAnimation : SimulationSpecificAnimation
     {
-        List<List<AStarAnimationNode>> priorityQueue;
+        public List<List<AStarAnimationNode>> frontierOverTime;
     }
 
     public class AnimationFrame
