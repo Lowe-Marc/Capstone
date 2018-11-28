@@ -68,7 +68,7 @@ namespace Capstone.Models
 
     public class DPAnimationFrame : AnimationFrame
     {
-        public List<int> values;
+        public List<List<int>> values;
         public List<int> policy;
     }
 

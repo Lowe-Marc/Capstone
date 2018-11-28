@@ -9,7 +9,6 @@
         }
 
         this.enableToolbar = function() {
-            self.setConfig();
 
             // Run a simulation
             $('#simulate').click(function () {

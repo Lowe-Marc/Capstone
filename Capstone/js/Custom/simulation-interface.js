@@ -32,6 +32,7 @@ var SimulationInterface = {
                 console.log("Simulation has completed successfully.");
                 SimulationInterface.simulationResults = result
                 console.log("simulationResults", SimulationInterface.simulationResults);
+                this.animationModule.loadResults(result);
             },
             error: (result) => {
                 console.log("Simulation has completed unsuccessfully.");
@@ -39,10 +40,10 @@ var SimulationInterface = {
             }
         });
 
-        // this.toolbarModule.testResults();
-        // $('#iteration-forward').removeClass('disabled');
-        // $('#iteration-backward').removeClass('disabled');
-        // $('#iteration-play').removeClass('disabled');
-        // $('#forward').removeClass('disabled');
+        $('#iteration-forward').removeClass('disabled');
+        $('#iteration-backward').removeClass('disabled');
+        $('#iteration-play').removeClass('disabled');
+        $('#forward').removeClass('disabled');
+        $('#backward').removeClass('disabled');
     },
 }
