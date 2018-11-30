@@ -27,7 +27,14 @@ namespace Capstone.Models
                 currentPolicy = new List<int>();
                 for (int i = 0; i < cyParams.nodes.Count; i++)
                 {
-                    currentPolicy.Add(rng.Next(0, 4));
+                    // Ensure walls are not given a valid policy
+                    if (cyParams.nodes[i].cellType != DPCellType.Wall)
+                    {
+                        currentPolicy.Add(rng.Next(0, 4));
+                    } else
+                    {
+                        currentPolicy.Add(-1);
+                    }
                 }
 
                 // Populate the values for this round
@@ -38,7 +45,13 @@ namespace Capstone.Models
                     currentIteration = new List<int>();
                     for (int l = 0; l < cyParams.nodes.Count; l++)
                     {
-                        currentIteration.Add(iterationNum);
+                        if (cyParams.nodes[l].cellType != DPCellType.Wall)
+                        {
+                            currentIteration.Add(iterationNum);
+                        } else
+                        {
+                            currentIteration.Add(-1);
+                        }
                     }
                     calculationRound.Add(currentIteration);
                 }

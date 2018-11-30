@@ -108,7 +108,7 @@
                     SimulationInterface.configurationModule.makeRight(id);
                 } else if (policyNum == self.TOP()) {
                     SimulationInterface.configurationModule.makeTop(id);
-                } else {
+                } else if (policyNum == self.BOTTOM() ){
                     SimulationInterface.configurationModule.makeBottom(id);
                 }
                 currentCol++;
@@ -129,7 +129,7 @@
                     $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', '');
                 }
                 $('#iteration-cell-' + this.currentIterationIndex).css('background-color', 'LightSteelBlue');
-                $('#iteration-cell-' + this.currentIterationIndex).text(this.currentIteration[this.currentIterationIndex]);
+                $('#iteration-cell-' + this.currentIterationIndex).text(this.currentIterationCellText(this.currentIterationIndex));
                 this.currentIterationIndex++;
             } else if (this.currentIterationNumber < (this.currentValues.length - 1)) { // Wrap to next iteration
                 // Can't wrap if at final value
@@ -139,7 +139,7 @@
                     this.currentIterationIndex = 1;
                     this.currentIteration = this.currentValues[this.currentIterationNumber];
                     $('#iteration-cell-0').css('background-color', 'LightSteelBlue');
-                    $('#iteration-cell-0').text(this.currentIteration[this.currentIterationIndex]);
+                    $('#iteration-cell-0').text(this.currentIterationCellText(this.currentIterationIndex));
                 }
             } else {
                 this.pauseIterations();
@@ -164,7 +164,7 @@
                 } else {
                     this.currentIterationIndex--;
                     $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
-                    $('#iteration-cell-' + this.currentIterationIndex).text(this.currentValues[this.currentIterationNumber-1][this.currentIterationIndex]);
+                    $('#iteration-cell-' + this.currentIterationIndex).text(this.previousIterationCellText(this.currentIterationIndex));
                     $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue');
                 }
             } else { // Need to wrap backwards
@@ -182,6 +182,20 @@
                     $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
                 }
             }
+        }
+
+        this.currentIterationCellText = function(index) {
+            if (this.currentIteration[index] == -1) { // This is a wall
+                return '-'
+            } 
+            return this.currentIteration[index];
+        }
+
+        this.previousIterationCellText = function(index) {
+            if (this.currentValues[this.currentIterationNumber-1][index] == -1) {
+                return '-';
+            }
+            return this.currentValues[this.currentIterationNumber-1][index];
         }
 
         this.iterationTime = function() {
