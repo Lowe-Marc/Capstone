@@ -188,14 +188,14 @@
             if (this.currentIteration[index] == -1) { // This is a wall
                 return '-'
             } 
-            return this.currentIteration[index];
+            return parseFloat(this.currentIteration[index]).toFixed(2);
         }
 
         this.previousIterationCellText = function(index) {
             if (this.currentValues[this.currentIterationNumber-1][index] == -1) {
                 return '-';
             }
-            return this.currentValues[this.currentIterationNumber-1][index];
+            return parseFloat(this.currentValues[this.currentIterationNumber-1][index]).toFixed(2);
         }
 
         this.iterationTime = function() {

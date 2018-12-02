@@ -239,6 +239,7 @@
             
             SimulationInterface.cy.nodes().each(function(element) {
                 node = {
+                    id: index,
                     x: element.id().split("_")[0],
                     y: element.id().split("_")[1],
                     cellType: element.data('cellType')

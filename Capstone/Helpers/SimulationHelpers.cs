@@ -68,7 +68,7 @@ namespace Capstone.Models
 
     public class DPAnimationFrame : AnimationFrame
     {
-        public List<List<int>> values;
+        public List<List<double>> values;
         public List<int> policy;
     }
 
@@ -86,7 +86,7 @@ namespace Capstone.Models
         public Tuple<int, int> target;
     }
 
-    public enum DPCellType { Empty, Wall, Ice}
+    public enum DPCellType { Empty, Wall, Ice, Goal, Start }
 
 
 
