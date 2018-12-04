@@ -28,12 +28,19 @@
             }
             content += '</tr>';
             content += '</table>';
+            // Add in delta display
+            content += '<div> <label>Delta: <label id="delta-value"></label></label> </div>';
+            content += '<div> <label>Theta: <label id="theta-value"></label></label> </div>';
+            content += '<div> <label>Gamma: <label id="gamma-value"></label></label> </div>';
             content += '</div>';
+            content += '</div>';
+
             $('#simulation-config').html(content);
             $('#simulation-config').show();
             // $('#simulation-config').height($('#simulation-display').height() - this.simulationConfigBottomBorder());
             $('#simulation-config').height(600 - this.simulationConfigBottomBorder());
             this.setCalculationAnimations();
+            this.adjustDefaultToolbar();
         }
 
         this.animationMenu = function() {
@@ -67,8 +74,8 @@
                 if (!$('#play').hasClass('disabled')) {
                     $('#play').addClass('disabled');
                     $('#pause').removeClass('disabled');
-                    // SimulationInterface.animationModule.configAnimPaused = false;
-                    // SimulationInterface.animationModule.playIterations();
+                    SimulationInterface.animationModule.learningPaused = false;
+                    SimulationInterface.animationModule.automateLearning();
                 }
             });
 
@@ -77,6 +84,7 @@
                     // SimulationInterface.animationModule.configAnimPaused = true;
                     $('#pause').addClass('disabled');
                     $('#play').removeClass('disabled');
+                    SimulationInterface.animationModule.learningPaused = true;
                 }
             });
 
@@ -106,6 +114,11 @@
                     SimulationInterface.animationModule.pauseIterations();
                 }
             });
+        }
+
+        this.adjustDefaultToolbar = function() {
+            $('#lock-locked').hide();
+            $('#disable-grid-snapping').hide();
         }
 
     }

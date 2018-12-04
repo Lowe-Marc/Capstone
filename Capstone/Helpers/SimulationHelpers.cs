@@ -66,9 +66,16 @@ namespace Capstone.Models
         public double heuristicValue;
     }
 
+    public class DPSpecific : SimulationSpecificAnimation
+    {
+        public double theta;
+        public double gamma;
+    }
+
     public class DPAnimationFrame : AnimationFrame
     {
         public List<List<double>> values;
+        public List<List<double>> deltas;
         public List<int> policy;
     }
 

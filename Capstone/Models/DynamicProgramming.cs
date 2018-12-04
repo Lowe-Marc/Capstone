@@ -11,6 +11,7 @@ namespace Capstone.Models
         const int RIGHT = 1;
         const int TOP = 2;
         const int BOTTOM = 3;
+        const int WALL_VALUE = 100;
 
         public static Animation runSimulation(int startID, int goalID, CytoscapeParams cyParams)
         {
@@ -20,9 +21,12 @@ namespace Capstone.Models
             List<AnimationFrame> frames = new List<AnimationFrame>();
             List<int> currentPolicy, previousPolicy;
             List<double> currentIteration = new List<double>();
+            List<double> deltaForIteration = new List<double>();
             List<List<double>> calculation;
+            List<List<double>> deltaForCalculation;
             currentPolicy = initializePolicy(cyParams);
 
+            DPSpecific simulationSpecific = new DPSpecific();
 
             // Maps the id of a location to the utility value associated with it
             Dictionary<int, double> utilityFunction = new Dictionary<int, double>();
@@ -48,51 +52,62 @@ namespace Capstone.Models
             double currentValue = 0.0;
             bool policyHasChanged = true;
             DPAnimationFrame frame;
+            CytoscapeNode newState;
             while (policyHasChanged && iterationNumber < timeHorizon)
             {
                 frame = new DPAnimationFrame();
                 delta = theta;
                 // Perform a Bellman calculation
                 calculation = new List<List<double>>();
+                deltaForCalculation = new List<List<double>>();
                 while (delta >= theta)
                 {
                     currentIteration = new List<double>();
+                    deltaForIteration = new List<double>();
                     delta = 0.0;
                     // Loop through every state (location in the maze)
                     for (int i = 0; i < cyParams.nodes.Count; i++)
                     {
+                        // Walls default to the value WALL_VALUE
+                        if (cyParams.nodes[i].cellType == DPCellType.Wall)
+                        {
+                            deltaForIteration.Add(delta);
+                            currentIteration.Add(WALL_VALUE);
+                            continue;
+                        }
                         // Get the value of the current utility function for that state
                         currentValue = utilityFunction[i];
                         // Update the utility function for that state to be prob(oldState, policyAction, newState)*(reward(newState) + gamma*utility(newState))
-                        utilityFunction[i] = probabilityOfTransition(cyParams.nodes[i]) * (rewardForState(getNewState(nodeMap, currentPolicy, cyParams.nodes[i]), goalID) + gamma*utilityFunction[i]);
-                        delta = Math.Abs(currentValue - utilityFunction[i]);
+                        newState = getNewState(nodeMap, currentPolicy, cyParams.nodes[i]);
+                        utilityFunction[i] = probabilityOfTransition(cyParams.nodes[i]) * (rewardForState(newState, goalID) + gamma*utilityFunction[newState.id]);
+                        if (Math.Abs(currentValue - utilityFunction[i]) > delta)
+                            delta = Math.Abs(currentValue - utilityFunction[i]);
+
+                        deltaForIteration.Add(delta);
                         currentIteration.Add(utilityFunction[i]);
                     }
-                    iterationNumber++;
+                    // Store the values for this iteration
                     calculation.Add(currentIteration);
+                    deltaForCalculation.Add(deltaForIteration);
                 }
+                // Store the values for this calculation
                 frame.policy = new List<int>(currentPolicy);
                 frame.values = calculation;
+                frame.deltas = deltaForCalculation;
 
                 // Update the policy
                 previousPolicy = new List<int>(currentPolicy);
                 currentPolicy = updatePolicy(currentPolicy, currentIteration, nodeMap, nodeIDMap);
-                if (previousPolicy.Equals(currentPolicy))
+                if (previousPolicy.SequenceEqual(currentPolicy))
                     policyHasChanged = false;
                 frames.Add(frame);
+                iterationNumber++;
             }
 
-            // Iterate through nodes, calculate the value for taking the policy action at each node
-            // For each node, if the change from its previous value is large than the current delta, update delta
-            // At the end of the iteration, if delta < theta, finish the calculation and update the policy
+            simulationSpecific.gamma = gamma;
+            simulationSpecific.theta = theta;
 
-            // Updating policy:
-            // Loop over the nodes
-            // Update the policy for that node to be the direction that points at the neighbor node with lowest value
-            // If there is a tie, choose to update the policy to left
-            // If the policy does not change, the algorithm is finished
-
-            // Will have to account for slipping when evaluating the value
+            results.simulationSpecific = simulationSpecific;
             results.frames = frames;
 
             return results;
@@ -100,13 +115,15 @@ namespace Capstone.Models
 
         // If the node is slippery there is a chance of failing to move where desired,
         // if it is not slippery it is a guaranteed move
-        public static double probabilityOfTransition(CytoscapeNode node)
+        private static double probabilityOfTransition(CytoscapeNode node)
         {
+            //if (node.cellType == DPCellType.Ice)
+            //    return 0.5;
             return 1.0;
         }
 
         // The current reward model is 0 if arriving in the goal state, else -1
-        public static int rewardForState(CytoscapeNode node, int goalID)
+        private static int rewardForState(CytoscapeNode node, int goalID)
         {
             if (node.id == goalID)
                 return 0;
@@ -115,7 +132,7 @@ namespace Capstone.Models
 
         // Determine the new state if the current policy is applied to the current node
         // Will return the same node if the current policy instructs to move into a wall
-        public static CytoscapeNode getNewState(Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, List<int> currentPolicy, CytoscapeNode currentNode)
+        private static CytoscapeNode getNewState(Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, List<int> currentPolicy, CytoscapeNode currentNode)
         {
             // Ignore walls, goal state is absorbing
             if (currentNode.cellType == DPCellType.Wall || currentNode.cellType == DPCellType.Goal)
@@ -158,7 +175,7 @@ namespace Capstone.Models
 
         // Look at each policy entry, update it to make sure it is pointing in the direction
         // of the highest value element next to it
-        public static List<int> updatePolicy(List<int> policy, List<double> values, Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, Dictionary<int, CytoscapeNode> nodeIDMap)
+        private static List<int> updatePolicy(List<int> policy, List<double> values, Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, Dictionary<int, CytoscapeNode> nodeIDMap)
         {
             List<int> newPolicy = new List<int>();
 
@@ -184,31 +201,31 @@ namespace Capstone.Models
 
                 // Check Left
                 tempNextNode = nodeMap[new Tuple<int,int>(node.x - 1, node.y)];
-                if (values[tempNextNode.id] > max)
+                if (tempNextNode.cellType != DPCellType.Wall && values[tempNextNode.id] > max)
                 {
                     action = LEFT;
                     max = values[tempNextNode.id];
                 }
 
                 // Check Right
-                tempNextNode = nodeMap[new Tuple<int, int>(node.x - 1, node.y)];
-                if (values[tempNextNode.id] > max)
+                tempNextNode = nodeMap[new Tuple<int, int>(node.x + 1, node.y)];
+                if (tempNextNode.cellType != DPCellType.Wall && values[tempNextNode.id] > max)
                 {
                     action = RIGHT;
                     max = values[tempNextNode.id];
                 }
 
                 // Check Top
-                tempNextNode = nodeMap[new Tuple<int, int>(node.x - 1, node.y)];
-                if (values[tempNextNode.id] > max)
+                tempNextNode = nodeMap[new Tuple<int, int>(node.x, node.y - 1)];
+                if (tempNextNode.cellType != DPCellType.Wall && values[tempNextNode.id] > max)
                 {
                     action = TOP;
                     max = values[tempNextNode.id];
                 }
 
                 // Check Bottom
-                tempNextNode = nodeMap[new Tuple<int, int>(node.x - 1, node.y)];
-                if (values[tempNextNode.id] > max)
+                tempNextNode = nodeMap[new Tuple<int, int>(node.x, node.y + 1)];
+                if (tempNextNode.cellType != DPCellType.Wall && values[tempNextNode.id] > max)
                 {
                     action = BOTTOM;
                     max = values[tempNextNode.id];
@@ -221,7 +238,7 @@ namespace Capstone.Models
         }
 
         // Returns a random policy
-        public static List<int> initializePolicy(CytoscapeParams cyParams)
+        private static List<int> initializePolicy(CytoscapeParams cyParams)
         {
             List<int> initialPolicy = new List<int>();
             Random rng = new Random();
@@ -242,7 +259,7 @@ namespace Capstone.Models
             return initialPolicy;
         }
 
-        public static Animation sampleData(int startID, int goalID, CytoscapeParams cyParams)
+        private static Animation sampleData(int startID, int goalID, CytoscapeParams cyParams)
         {
             Animation results = new Animation();
             List<AnimationFrame> frames = new List<AnimationFrame>();

@@ -45,5 +45,6 @@ var SimulationInterface = {
         $('#iteration-play').removeClass('disabled');
         $('#forward').removeClass('disabled');
         $('#backward').removeClass('disabled');
+        $('#play').removeClass('disabled');
     },
 }

@@ -8,10 +8,14 @@
         this.currentIterationNumber = 0;
         this.currentPolicyNumber = 0;
         this.currentIteration = [];
+        this.deltasForCurrentIteration = [];
         this.currentValues = [];
+        this.deltasForCurrentValues = [];
         this.currentPolicy = [];
         this.simulationResults = {};
+
         this.configAnimPaused = false;
+        this.learningPaused = false;
 
         this.LEFT = function() {
             return 0;
@@ -27,6 +31,10 @@
 
         this.BOTTOM = function() {
             return 3;
+        }
+
+        this.WALLVALUE = function() {
+            return 100;
         }
 
         this.getDisplayedFrame = function() {
@@ -47,16 +55,28 @@
             $('#frame-tracker').val(frameNumber);
         }
 
+        this.setTheta = function(theta) {
+            $('#theta-value').text(parseFloat(theta).toFixed(2));
+        }
+
+        this.setGamma = function(gamma) {
+            $('#gamma-value').text(parseFloat(gamma).toFixed(2));
+        }
+
         this.loadResults = function(results) {
             this.currentIterationIndex = 0;
             this.currentIterationNumber = 0;
             this.currentPolicyNumber = 0;
             this.currentIteration = [];
+            this.deltasForCurrentIteration = [];
             this.currentValues = [];
+            this.deltasForCurrentValues = [];
             this.currentPolicy = [];
 
             this.simulationResults = results.frames;
             this.setMaxFrameCount(this.simulationResults.length);
+            this.setTheta(SimulationInterface.simulationResults.simulationSpecific.theta);
+            this.setGamma(SimulationInterface.simulationResults.simulationSpecific.gamma);
         }
 
         this.forwardPolicy = function() {
@@ -87,7 +107,6 @@
         }
 
         this.displayCurrentPolicy = function() {
-            console.log("current policy num:", self.currentPolicyNumber)
             self.currentPolicy = self.simulationResults[self.currentPolicyNumber].policy;
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var i, policyLength = self.currentPolicy.length;
@@ -100,7 +119,7 @@
                     currentCol = 0;
                     currentRow++;
                 }
-                id = currentRow + "_" + currentCol;
+                id = currentCol + "_" + currentRow;
                 policyNum = self.currentPolicy[i];
                 if (policyNum == self.LEFT()) {
                     SimulationInterface.configurationModule.makeLeft(id);
@@ -117,10 +136,12 @@
 
         this.updateValues = function() {
             this.currentValues = this.simulationResults[this.currentPolicyNumber].values;
+            this.deltasForCurrentValues = this.simulationResults[this.currentPolicyNumber].deltas;
             $('#iteration-cell-' + (this.currentIterationIndex)).css('background-color', '');
             this.currentIterationIndex = 0;
             this.currentIterationNumber = 0;
             this.currentIteration = this.currentValues[0];
+            this.deltasForCurrentIteration = this.deltasForCurrentValues[0];
         }
 
         this.forwardIterationIndex = function() {
@@ -138,6 +159,7 @@
                     this.currentIterationNumber += 1;
                     this.currentIterationIndex = 1;
                     this.currentIteration = this.currentValues[this.currentIterationNumber];
+                    this.deltasForCurrentIteration = this.deltasForCurrentValues[this.currentIterationNumber];
                     $('#iteration-cell-0').css('background-color', 'LightSteelBlue');
                     $('#iteration-cell-0').text(this.currentIterationCellText(this.currentIterationIndex));
                 }
@@ -158,6 +180,7 @@
                     $('#iteration-cell-0').css('background-color', '');
                     this.currentIterationNumber--;
                     this.currentIteration = this.currentValues[this.currentIterationNumber];
+                    this.deltasForCurrentIteration = this.deltasForCurrentValues[this.currentIterationNumber];
                     $('#iteration-cell-0').text(this.currentIteration[0]);
                     this.currentIterationIndex = this.currentIteration.length;
                     $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', 'LightSteelBlue');
@@ -173,6 +196,7 @@
                     this.currentIterationNumber--;
                     // Need to reset entire list of values to previous iteration
                     this.currentIteration = this.currentValues[this.currentIterationNumber];
+                    this.deltasForCurrentIteration = this.deltasForCurrentValues[this.currentIterationNumber];
                     $('#iteration-cell-' + 0).text(this.currentIteration[0]);
                     $('#iteration-cell-' + this.currentIterationIndex).css('background-color', '');
                     this.currentIterationIndex = this.currentIteration.length;
@@ -185,21 +209,23 @@
         }
 
         this.currentIterationCellText = function(index) {
-            if (this.currentIteration[index] == -1) { // This is a wall
+            if (this.currentIteration[index] == this.WALLVALUE()) { // This is a wall
                 return '-'
             } 
+            $('#delta-value').text(parseFloat(this.deltasForCurrentIteration[index]).toFixed(2));
             return parseFloat(this.currentIteration[index]).toFixed(2);
         }
 
         this.previousIterationCellText = function(index) {
-            if (this.currentValues[this.currentIterationNumber-1][index] == -1) {
+            if (this.currentValues[this.currentIterationNumber-1][index] == this.WALLVALUE()) { // This is a wall
                 return '-';
             }
+            $('#delta-value').text(parseFloat(this.deltasForCurrentValues[this.currentIterationNumber-1][index]).toFixed(2));
             return parseFloat(this.currentValues[this.currentIterationNumber-1][index]).toFixed(2);
         }
 
         this.iterationTime = function() {
-            return 5;
+            return 10;
         }
 
         this.pauseIterations = function() {
@@ -226,6 +252,32 @@
 
         this.atEndOfCalculationRound = function() {
             return (self.currentIterationNumber == (self.currentValues.length-1)) && (self.currentIterationIndex == self.currentIteration.length);
+        }
+
+        self.learningTime = function() {
+            return (self.iterationTime() + 2) * self.currentIteration.length;
+        }
+
+        // Automated learning is basically just advancing a policy, then playing its iterations
+        // and repeating until the policy is finished
+        this.automateLearning = function() {
+            if (!self.learningPaused) {
+                if (!self.atEndOfPolicy()) {
+                    SimulationInterface.animationModule.forwardPolicy();
+                    SimulationInterface.animationModule.configAnimPaused = false;
+                    SimulationInterface.animationModule.playIterations();
+                    setTimeout(function() {
+                        self.automateLearning();
+                    }, self.learningTime())
+                } else {
+                    $('#pause').addClass('disabled');
+                    $('#play').removeClass('disabled');
+                }
+            }
+        }
+
+        this.atEndOfPolicy = function() {
+            return (this.getDisplayedFrame() == this.simulationResults.length);
         }
     }
 
