@@ -150,9 +150,6 @@
 
         this.qtipContent = function(node, connecting) {
             var content;
-            if (connecting) {
-                return "<button id='confirm-connection' class='btn' onclick='confirmConnection(\"" +  node.id().replace(' ','_').split(':')[0] + "\")'>Connect to this node</button>"
-            }
             // Start and end buttons
             // Add node and connection buttons
             content  = "<div id='operation' class='qtip-sub-div'>"

@@ -58,6 +58,9 @@
             });
 
             cy.nodes().each(function (node) {
+                if (node.connectedEdges().length != 4) {
+                    return {};
+                }
                 cy.$('#' + node.id()).qtip(self.qtipStructure(node));
             });
 
