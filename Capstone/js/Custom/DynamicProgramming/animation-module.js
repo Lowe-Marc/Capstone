@@ -76,7 +76,7 @@
             this.simulationResults = results.frames;
             this.setMaxFrameCount(this.simulationResults.length);
             this.setTheta(SimulationInterface.simulationResults.simulationSpecific.theta);
-            this.setGamma(SimulationInterface.simulationResults.simulationSpecific.gamma);
+            this.setCurrentFrame(0);
         }
 
         this.forwardPolicy = function() {

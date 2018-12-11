@@ -175,6 +175,7 @@
             node.cellType = this.PASSABLE;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
             anim.play();
+            SimulationInterface.cy.$('#' + nodeID).data('cellType', this.PASSABLE)
         }
 
         this.makeCellImpassable = function(nodeID) {
@@ -182,6 +183,7 @@
             node.cellType = this.WALL;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
             anim.play();
+            SimulationInterface.cy.$('#' + nodeID).data('cellType', this.WALL)
         }
 
         this.makeCellSlippery = function(nodeID) {
@@ -189,6 +191,7 @@
             node.cellType = this.SLIPPERY;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
             anim.play();
+            SimulationInterface.cy.$('#' + nodeID).data('cellType', this.SLIPPERY)
         }
 
         this.makeGoalNode = function(nodeID) {
@@ -196,6 +199,7 @@
             node.cellType = this.GOAL;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
             anim.play();
+            SimulationInterface.cy.$('#' + nodeID).data('cellType', this.GOAL)
         }
 
         this.makeStartNode = function(nodeID) {
@@ -203,6 +207,7 @@
             node.cellType = this.START;
             var anim = SimulationInterface.animationModule.animateNodeToColor(node, this.nodeColor(node.cellType))
             anim.play();
+            SimulationInterface.cy.$('#' + nodeID).data('cellType', this.START)
         }
 
         this.makeLeft = function(nodeID) {
@@ -233,6 +238,16 @@
             var params = {};
             var nodes = [];
             var index = 0;
+
+            if ($('#theta-value').val() < 0.0001) {
+                $('#theta-value').val(0.1)
+            }
+            params.theta = parseFloat($('#theta-value').val());
+
+            if ($('#slipping-value').val() == "") {
+                $('#slipping-value').val(0.8)
+            }
+            params.probOfSlipping = parseFloat($('#slipping-value').val());
             
             SimulationInterface.cy.nodes().each(function(element) {
                 node = {

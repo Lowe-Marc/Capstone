@@ -54,7 +54,7 @@ namespace Capstone.Controllers
             if (cyParams.startID == cyParams.goalID)
                 return new JavaScriptSerializer().Serialize(animation);
 
-            animation = Models.DynamicProgramming.runSimulation(cyParams.startID, cyParams.goalID, cyParams);
+            animation = Models.DynamicProgramming.runSimulation(cyParams);
             return new JavaScriptSerializer().Serialize(animation);
         }
     }

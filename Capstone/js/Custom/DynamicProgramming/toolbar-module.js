@@ -5,6 +5,13 @@
 
         var self = this;
 
+        this.validateTheta = function(value) {
+            console.log("value", value)
+            if (value < 0.0001) {
+                // $('#theta-value').
+            }
+        }
+
         this.setConfig = function() {
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var numNodes = currentConfig.nodes.length;
@@ -29,9 +36,10 @@
             content += '</tr>';
             content += '</table>';
             // Add in delta display
+            content += '<div> <label>Gamma: <label id="gamma-value"></label>0.9</label> </div>';
+            content += '<div> <label>Theta: <input id="theta-value" type="number" min="0.0001" max="5" step="0.1" onkeyup="if (this.value > 5) {this.value = 5;} else if (this.value < 0.0001 && this.value != 0) {this.value = 0.0001;}"></input></label> </div>';
+            content += '<div> <label>Probability of Slipping: <input id="slipping-value" type="number" min="0" max="1.0" step="0.1" onkeyup="if (this.value > 1.0) {this.value = 1.0} else if (this.value < 0) {this.value = 0.0;}"></input></label> </div>';
             content += '<div> <label>Delta: <label id="delta-value"></label></label> </div>';
-            content += '<div> <label>Theta: <label id="theta-value"></label></label> </div>';
-            content += '<div> <label>Gamma: <label id="gamma-value"></label></label> </div>';
             content += '</div>';
             content += '</div>';
 
@@ -42,6 +50,8 @@
             this.setCalculationAnimations();
             this.adjustDefaultToolbar();
         }
+
+        
 
         this.animationMenu = function() {
             var menu = '';

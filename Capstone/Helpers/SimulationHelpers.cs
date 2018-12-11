@@ -104,6 +104,8 @@ namespace Capstone.Models
         public int startID { get; set; }
         public int goalID { get; set; }
         public List<CytoscapeNode> nodes { get; set; }
+        public double theta;
+        public double probOfSlipping;
         
         public CytoscapeNode getStart()
         {

@@ -11,12 +11,18 @@ namespace Capstone.Models
         const int RIGHT = 1;
         const int TOP = 2;
         const int BOTTOM = 3;
+        const int DIDNTMOVE = 4;
         const int WALL_VALUE = 100;
 
-        public static Animation runSimulation(int startID, int goalID, CytoscapeParams cyParams)
+        private static double SLIPPING_PROB = 0.8;
+
+        public static Animation runSimulation(CytoscapeParams cyParams)
         {
             //return sampleData(startID, goalID, cyParams);
-
+            int startID = cyParams.startID;
+            int goalID = cyParams.goalID;
+            double theta = cyParams.theta;
+            SLIPPING_PROB = cyParams.probOfSlipping;
             Animation results = new Animation();
             List<AnimationFrame> frames = new List<AnimationFrame>();
             List<int> currentPolicy, previousPolicy;
@@ -40,19 +46,18 @@ namespace Capstone.Models
                 nodeIDMap.Add(i, cyParams.nodes[i]);
             }
 
-            // Initialize theta, the threshold for finishing the iterations for a single bellman calculation
             // Initialize delta
             // Initialize random policy
-            double theta = 0.1;
             double delta = 0.0;
             double gamma = 0.9;
-            int timeHorizon = 100;
+            int timeHorizon = cyParams.nodes.Count;
             int iterationNumber = 0;
 
             double currentValue = 0.0;
             bool policyHasChanged = true;
             DPAnimationFrame frame;
             CytoscapeNode newState;
+            int action;
             while (policyHasChanged && iterationNumber < timeHorizon)
             {
                 frame = new DPAnimationFrame();
@@ -78,8 +83,18 @@ namespace Capstone.Models
                         // Get the value of the current utility function for that state
                         currentValue = utilityFunction[i];
                         // Update the utility function for that state to be prob(oldState, policyAction, newState)*(reward(newState) + gamma*utility(newState))
-                        newState = getNewState(nodeMap, currentPolicy, cyParams.nodes[i]);
-                        utilityFunction[i] = probabilityOfTransition(cyParams.nodes[i]) * (rewardForState(newState, goalID) + gamma*utilityFunction[newState.id]);
+                        action = currentPolicy[cyParams.nodes[i].id];
+                        //newState = getNewState(nodeMap, action, cyParams.nodes[i]);
+
+
+                        double newFunctionVal = 0.0;
+                        for (int j = 0; j < 5; j++)
+                        {
+                            newState = getNewState(nodeMap, j, cyParams.nodes[i]);
+                            newFunctionVal += probabilityOfTransition(cyParams.nodes[i], nodeMap, j, action) * (rewardForState(newState, goalID) + gamma * utilityFunction[newState.id]);
+                        }
+                        utilityFunction[i] = newFunctionVal;
+                        //utilityFunction[i] = probabilityOfTransition(cyParams.nodes[i], nodeMap) * (rewardForState(newState, goalID) + gamma * utilityFunction[newState.id]);
                         if (Math.Abs(currentValue - utilityFunction[i]) > delta)
                             delta = Math.Abs(currentValue - utilityFunction[i]);
 
@@ -113,13 +128,24 @@ namespace Capstone.Models
             return results;
         }
 
-        // If the node is slippery there is a chance of failing to move where desired,
-        // if it is not slippery it is a guaranteed move
-        private static double probabilityOfTransition(CytoscapeNode node)
+        // If the cell is slippery, there is a 80% chance of staying in the same cell
+        // Otherwise, if there is a 100% chance of going in the direction of the policy
+        private static double probabilityOfTransition(CytoscapeNode node, Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, int action, int actionAccordingToPolicy)
         {
-            //if (node.cellType == DPCellType.Ice)
-            //    return 0.5;
-            return 1.0;
+            double probability = 1.0;
+
+            if (node.cellType == DPCellType.Ice && action == DIDNTMOVE)
+            {
+                probability = SLIPPING_PROB;
+            } else if (node.cellType == DPCellType.Ice && action == actionAccordingToPolicy)
+            {
+                probability = 1.0 - SLIPPING_PROB;
+            } else if (action != actionAccordingToPolicy)
+            {
+               probability = 0.0;
+            }
+
+            return probability;
         }
 
         // The current reward model is 0 if arriving in the goal state, else -1
@@ -132,15 +158,13 @@ namespace Capstone.Models
 
         // Determine the new state if the current policy is applied to the current node
         // Will return the same node if the current policy instructs to move into a wall
-        private static CytoscapeNode getNewState(Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, List<int> currentPolicy, CytoscapeNode currentNode)
+        private static CytoscapeNode getNewState(Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap, int action, CytoscapeNode currentNode)
         {
             // Ignore walls, goal state is absorbing
-            if (currentNode.cellType == DPCellType.Wall || currentNode.cellType == DPCellType.Goal)
+            if (currentNode.cellType == DPCellType.Wall || currentNode.cellType == DPCellType.Goal || action == DIDNTMOVE)
             {
                 return currentNode;
             }
-
-            int action = currentPolicy[currentNode.id];
 
             // First determine what direction the action is. If the new state is a wall then return the current node
             // otherwise return the new state

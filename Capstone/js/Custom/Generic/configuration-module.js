@@ -195,6 +195,12 @@
                 parentSpacing: -1 // -1 to set paddings of parents to gridSpacing
             }
         }
+
+        this.validateMin = function(value, validValue) {
+            if (value < validValue) {
+                return validValue;
+            }
+        }
     }
 
     // Give interface a handle to the generic configuration module constructor
