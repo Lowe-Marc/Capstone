@@ -152,18 +152,13 @@
             var content;
             // Start and end buttons
             // Add node and connection buttons
-            content  = "<div id='operation' class='qtip-sub-div'>"
+            content  = "<div class='operation qtip-sub-div'>"
             content += "<div class='svg-expand pointer second'>"
             content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=self.makeStartNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
             content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=self.makeGoalNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
             content += "<span class='fa oi icon' id='transfer' data-glyph='transfer' title='Make passable' aria-hidden='true' onclick=self.makeCellPassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
             content += "<span class='fa oi icon' id='shield' data-glyph='shield' title='Make impassable' aria-hidden='true' onclick=self.makeCellImpassable(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
             content += "<span class='fa oi icon' id='droplet' data-glyph='droplet' title='Make slippery' aria-hidden='true'onclick=self.makeCellSlippery(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-
-            content += "<span class='fa oi icon' id='arrow-left' data-glyph='arrow-left' title='Make Left' aria-hidden='true'onclick=self.makeLeft(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-            content += "<span class='fa oi icon' id='arrow-right' data-glyph='arrow-right' title='Make Right' aria-hidden='true'onclick=self.makeRight(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-            content += "<span class='fa oi icon' id='arrow-top' data-glyph='arrow-top' title='Make Top' aria-hidden='true'onclick=self.makeTop(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
-            content += "<span class='fa oi icon' id='arrow-bottom' data-glyph='arrow-bottom' title='Make Bottom' aria-hidden='true'onclick=self.makeBottom(\"" + node.id().replace(' ','_').split(':')[0] + "\")></span>"
             content += "</div>";
             content += "</div>";
 

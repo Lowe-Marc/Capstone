@@ -6,6 +6,8 @@ using C5;
 
 namespace Capstone.Models
 {
+
+    // General Structures
     public class Animation
     {
         public List<AnimationFrame> frames;
@@ -26,6 +28,8 @@ namespace Capstone.Models
     {
 
     }
+
+    // AStar Search
 
     public class AStarAnimationFrame : AnimationFrame
     {
@@ -66,6 +70,8 @@ namespace Capstone.Models
         public double heuristicValue;
     }
 
+    // Dynamic Programming
+
     public class DPSpecific : SimulationSpecificAnimation
     {
         public double theta;
@@ -93,10 +99,20 @@ namespace Capstone.Models
         public Tuple<int, int> target;
     }
 
-    public enum DPCellType { Empty, Wall, Ice, Goal, Start }
+    public enum DPCellType { Empty, Wall, Ice, Goal, Start, Hole }
 
+    // Reinforcement Learning
 
+    public class RLSpecific : SimulationSpecificAnimation
+    {
+        
+    }
 
+    public class RLAnimationFrame : AnimationFrame
+    {
+        public List<List<int>> SARSA;
+        public List<List<int>> QLearning;
+    }
 
     // Params coming from the view, built in javascript
     public class CytoscapeParams
@@ -221,9 +237,5 @@ namespace Capstone.Models
         {
             return new CytoscapeNode(contents[id]);
         }
-    }
-
-    public class SimulationHelpers
-    {
     }
 }

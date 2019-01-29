@@ -48,6 +48,15 @@ namespace Capstone.Controllers
 
         public ActionResult ReinforcementLearning()
         {
+            ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.REINFORCEMENT_LEARNING);
+
+            List<ConfigurationHelper.CytoscapeConfig> DPConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey(ConfigurationHelper.REINFORCEMENT_LEARNING))
+                DPConfigs = ConfigurationHelper.CONFIGURATIONS[ConfigurationHelper.REINFORCEMENT_LEARNING];
+
+            ViewData["Configs"] = DPConfigs;
+            ViewData["Images"] = getDPImages();
+
             return View();
         }
 

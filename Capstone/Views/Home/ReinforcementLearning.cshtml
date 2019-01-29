@@ -2,78 +2,37 @@
     ViewBag.Title = "Home Page";
 }
 
+@{
+    if (ViewData["ConfigurationException"] != null && !ViewData["ConfigurationException"].Equals(""))
+    {
+        <script>
+            alert("An exception was thrown parsing the configuration file. Please see the /Home/Debug endpoint for a stacktrace.")
+        </script>
+    }
+
+    List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> RLConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
+    List<String> Images = (List<String>)ViewData["Images"];
+}
+
 <body>
 
-    <div id="cy"></div>
+    <div id="arrow-left-div" data-image='@Url.Content("~/images/add.png")'></div>
+    <img id="arrow-left-img" src="~/vendor/open-iconic-master/png/arrow-left.png" style="display:none" />
 
+    <div id="cy"></div>
+    <script src="~/js/Custom/ReinforcementLearning/configuration-module.js"></script>
+    <script src="~/js/Custom/ReinforcementLearning/toolbar-module.js"></script>
+    <script src="~/js/Custom/ReinforcementLearning/animation-module.js"></script>
     <script>
         $(function () { // on dom ready
+            var configs = @Html.Raw(Json.Encode(RLConfigs))
+            var images = @Html.Raw(Json.Encode(Images));
+            SimulationInterface.setCurrentSimulation("ReinforcementLearning", configs);
+            SimulationInterface.configurationModule.images = images;
 
-            // Set page description
-            $('#simulation-title').text("Reinforcement Learning")
-            $('#simulation-description').text("An summary of reinforcement learning.")
+            $('#simulation-title').text("Reinforcement Learning");
+            $('#simulation-description').html("<a href='https://en.wikipedia.org/wiki/Reinforcement_learning'>Link to information.</a>");
             $('#simulation-header').show();
-
-            var cy = cytoscape({
-                container: document.getElementById('cy'),
-                style: [
-                    {
-                        selector: 'node',
-                        style: {
-                            shape: 'hexagon',
-                            'background-color': 'red',
-                            label: 'data(id)'
-                        }
-                    }],
-                layout: {
-                    name: 'grid'
-                },
-                elements: [
-                    // nodes
-                    { data: { id: 'a' } },
-                    { data: { id: 'b' } },
-                    { data: { id: 'c' } },
-                    { data: { id: 'd' } },
-                    { data: { id: 'e' } },
-                    { data: { id: 'f' } },
-                    // edges
-                    {
-                        data: {
-                            id: 'ab',
-                            source: 'a',
-                            target: 'b'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'cd',
-                            source: 'c',
-                            target: 'd'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ef',
-                            source: 'e',
-                            target: 'f'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'ac',
-                            source: 'a',
-                            target: 'd'
-                        }
-                    },
-                    {
-                        data: {
-                            id: 'be',
-                            source: 'b',
-                            target: 'e'
-                        }
-                    }
-                ]
-            });
-        })
+        });
     </script>
 </body>

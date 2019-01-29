@@ -335,7 +335,7 @@ function qtipContent(node, connecting) {
     }
     // Start and end buttons
     // Add node and connection buttons
-    content  = "<div id='operation' class='qtip-sub-div'>"
+    content  = "<div class='operation qtip-sub-div'>"
     content += "<div class='svg-expand pointer second'>"
     content += "<span class='fa oi icon' id='home' data-glyph='home' title='Start Here' aria-hidden='true' onclick=makeStartNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
     content += "<span class='fa oi icon' id='map-marker' data-glyph='map-marker' title='End Here' aria-hidden='true' onclick=makeGoalNode(\"" + node.id().replace(' ','_').split(':')[0] + "\",\"" + node.data('simulationID') + "\")></span>"
