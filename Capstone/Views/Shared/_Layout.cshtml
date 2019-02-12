@@ -128,7 +128,7 @@
                             <span class="fa oi icon disabled" id="play" data-glyph="media-play" title="Play Animation" aria-hidden="true"></span>
                             <span class="fa oi icon disabled" id="pause" data-glyph="media-pause" title="Pause Animation" aria-hidden="true"></span>
                             <span class="fa oi icon disabled" id="backward" data-glyph="media-skip-backward" title="Move Back a Frame" aria-hidden="true"></span>
-                            <input id="frame-tracker" value="0" onkeypress="this.style.width = ((this.value.length + 2) * 8) + 'px';">
+                            <input id="frame-tracker" value="0" oninput="this.style.width = ((this.value.length + 2) * 8) + 'px';">
                             <label id="max-frame-count">/0</label>
                             <span class="fa oi icon disabled" id="forward" data-glyph="media-skip-forward" title="Move Forward a Frame" aria-hidden="true"></span>
                             <label id="add-connection-label" style="display:none">Click a node to connect to</label>

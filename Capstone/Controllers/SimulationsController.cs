@@ -67,7 +67,8 @@ namespace Capstone.Controllers
             if (cyParams.startID == cyParams.goalID)
                 return new JavaScriptSerializer().Serialize(animation);
 
-            animation = Models.DynamicProgramming.runSimulation(cyParams);
+            Models.ReinforcementLearning simulationObject = new Models.ReinforcementLearning();
+            animation = simulationObject.runSimulation(cyParams);
             return new JavaScriptSerializer().Serialize(animation);
         }
     }

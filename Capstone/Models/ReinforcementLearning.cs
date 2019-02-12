@@ -12,22 +12,26 @@ namespace Capstone.Models
         const int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, DIDNTMOVE = 4;
         const double GAMMA = 0.9;
         const double ALPHA = 1.0;
-        static int startID, goalID;
-        static CytoscapeNode startNode, goalNode;
-        static double epsilon;
-        static int timeHorizon;
+        private int startID, goalID;
+        private CytoscapeNode startNode, goalNode;
+        private double epsilon;
+        private int timeHorizon;
         // Q maps a state action pair to a value
-        static Dictionary<Tuple<CytoscapeNode, int>, double> Q;
+        private Dictionary<Tuple<CytoscapeNode, int>, double> QLearningQ = new Dictionary<Tuple<CytoscapeNode, int>, double>();
+        private Dictionary<Tuple<CytoscapeNode, int>, double> SARSAQ = new Dictionary<Tuple<CytoscapeNode, int>, double>();
         // Map the coordinates of a node to itself
-        static Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap;
+        private Dictionary<Tuple<int, int>, CytoscapeNode> nodeMap;
         // Map the ID of a node to itself
-        static Dictionary<int, CytoscapeNode> nodeIDMap;
+        private Dictionary<int, CytoscapeNode> nodeIDMap;
 
-        public static Animation runSimulation(CytoscapeParams cyParams)
+        private Random randomGenerator;
+
+        public Animation runSimulation(CytoscapeParams cyParams)
         {
             Animation results = new Animation();
             List<List<int>> QLearning = new List<List<int>>();
             List<List<int>> SARSA = new List<List<int>>();
+            randomGenerator = new Random();
 
             int numEpisodes = cyParams.nodes.Count * 3;
             timeHorizon = cyParams.nodes.Count * 3;
@@ -62,7 +66,7 @@ namespace Capstone.Models
                 // Epsilon will die off over time
                 if (episodeNumber >= 10 && episodeNumber % 10 == 0)
                 {
-                    epsilon = 0.9 / (episodeNumber / 10);
+                    epsilon = 0.9 / episodeNumber;
                     if (epsilon <= 0.009)
                         epsilon = 0.0;
                 }
@@ -73,12 +77,41 @@ namespace Capstone.Models
 
                 // An animation frame will be either the QLearning or SARSA policy over time
                 RLAnimationFrame frame = new RLAnimationFrame();
-                frame.QLearning = QLearningActionRewardPair.Item1;
-                frame.SARSA = SARSAActionRewardPair.Item1;
+                frame.QLearning = collectCurrentOptimalPolicy(cyParams.nodes, QLEARNING_EPISODE);
+                frame.SARSA = collectCurrentOptimalPolicy(cyParams.nodes, SARSA_EPISODE);
                 results.frames.Add(frame);
             }
 
             return results;
+        }
+
+        private List<int> collectCurrentOptimalPolicy(List<CytoscapeNode> nodes, int algorithm)
+        {
+            List<int> policy = new List<int>();
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                policy.Add(getOptimalActionForState(nodes[i], algorithm));
+            }
+            return policy;
+        }
+
+        private int getOptimalActionForState(CytoscapeNode node, int algorithm)
+        {
+            double max = Double.MinValue;
+            int action = 0;
+            double QValue;
+            //4 possible actions
+            for (int i = 0; i < 4; i++)
+            {
+                QValue = getQValue(node, i, algorithm);
+                // If the QValue is 0, that means the state-action pair was never actually taken
+                if (QValue > max && QValue != 0)
+                {
+                    max = QValue;
+                    action = i;
+                }
+            }
+            return action;
         }
 
         /*
@@ -88,7 +121,7 @@ namespace Capstone.Models
 
          This will return the reward gained in the episode and the sequence of actions taken
         */
-        private static Tuple<List<int>, int> runEpisode(int algorithm)
+        private Tuple<List<int>, int> runEpisode(int algorithm)
         {
             int a, aPrime, episodeIteration, reward;
             CytoscapeNode s, sPrime;
@@ -96,7 +129,7 @@ namespace Capstone.Models
 
             bool goalFound = false;
             s = startNode;
-            a = epsilonGreedyAction(s, s);
+            a = epsilonGreedyAction(s, algorithm);
             reward = 0;
             episodeIteration = 0;
 
@@ -109,7 +142,7 @@ namespace Capstone.Models
                 goalFound = (sPrime == goalNode);
                 reward += getStateReward(sPrime);
                 //Determine the next action
-                aPrime = epsilonGreedyAction(sPrime, s);
+                aPrime = epsilonGreedyAction(sPrime, algorithm);
                 //Adjust Q
                 if (algorithm == SARSA_EPISODE)
                     sarsaBellmanCalculation(s, a, sPrime, aPrime, reward);
@@ -117,7 +150,11 @@ namespace Capstone.Models
                     qLearningBellmanCalculation(s, a, reward);
                 //Assign new state-action pair
                 a = aPrime;
-                s = sPrime;
+                // If the agent fell into a hole, it will always restart at the beginning
+                if (s.cellType == DPCellType.Hole)
+                    s = startNode;
+                else
+                    s = sPrime;
 
                 if (s == goalNode)
                     goalFound = true;
@@ -131,10 +168,9 @@ namespace Capstone.Models
         /*
          Chooses an action that is random with probability epsilon, otherwise it is chosen greedily.
         */
-        private static int epsilonGreedyAction(CytoscapeNode currentPos, CytoscapeNode previousPos)
+        private int epsilonGreedyAction(CytoscapeNode currentPos, int algorithm)
         {
-            Random random = new Random();
-            double prob = random.NextDouble();
+            double prob = randomGenerator.NextDouble();
             int temp;
             if (prob < epsilon)
             {
@@ -142,7 +178,7 @@ namespace Capstone.Models
             }
             else
             {
-                temp = greedyAction(currentPos);
+                temp = greedyAction(currentPos, algorithm);
             }
             return temp;
         }
@@ -150,10 +186,9 @@ namespace Capstone.Models
         /*
          Helper method to generate a random action
         */
-        private static int randomAction()
+        private int randomAction()
         {
-            Random random = new Random();
-            double prob = random.NextDouble();
+            double prob = randomGenerator.NextDouble();
             if (prob < 0.25)
                 return UP;
             else if (prob < 0.5)
@@ -168,18 +203,17 @@ namespace Capstone.Models
          Chooses the most greedy action (action towards highest Q) based off the current 
          position and the surrounding locations. Ties are broken randomly.
         */
-        private static int greedyAction(CytoscapeNode currentPos)
+        private int greedyAction(CytoscapeNode currentPos, int algorithm)
         {
-            Random random = new Random();
-            int action = (int)(random.NextDouble()*4);
-            double max = Q[new Tuple<CytoscapeNode, int>(currentPos, action)];
+            int action = (int)(randomGenerator.NextDouble()*4);
+            double max = getQValue(currentPos, action, algorithm);
             double QValue;
             List<int> tiedActions = new List<int>();
 
             // Look at each direction
             for (int i = 0; i < 4; i++)
             {
-                QValue = Q[new Tuple<CytoscapeNode, int>(currentPos, i)];
+                QValue = getQValue(currentPos, i, algorithm);
                 if (QValue > max)
                 {
                     max = QValue;
@@ -195,7 +229,7 @@ namespace Capstone.Models
             int tieBreakerIndex = 0;
             if (tiedActions.Count > 1)
             {
-                tieBreakerIndex = (int)(random.NextDouble() * tiedActions.Count);
+                tieBreakerIndex = (int)(randomGenerator.NextDouble() * tiedActions.Count);
                 action = tiedActions[tieBreakerIndex];
             }
 
@@ -207,7 +241,7 @@ namespace Capstone.Models
         /* Determine the new state if the current policy is applied to the current node
          * Will return the same node if the current policy instructs to move into a wall
          */
-        private static CytoscapeNode getNewState(CytoscapeNode currentNode, int action)
+        private CytoscapeNode getNewState(CytoscapeNode currentNode, int action)
         {
             // Ignore walls, goal state is absorbing
             if (currentNode.cellType == DPCellType.Wall || currentNode.cellType == DPCellType.Goal || action == DIDNTMOVE)
@@ -246,7 +280,7 @@ namespace Capstone.Models
             }
         }
 
-        private static int getStateReward(CytoscapeNode newNode)
+        private int getStateReward(CytoscapeNode newNode)
         {
             if (newNode.cellType == DPCellType.Hole)
             {
@@ -264,30 +298,30 @@ namespace Capstone.Models
          Position and action here are the state action pair (s',a')
          Q(s, a) = Q(s, a) + alpha*[r + gamma*Q(s', a') - Q(s, a)]
         */
-        private static void sarsaBellmanCalculation(CytoscapeNode s, int a, CytoscapeNode sPrime, int aPrime, int reward)
+        private void sarsaBellmanCalculation(CytoscapeNode s, int a, CytoscapeNode sPrime, int aPrime, int reward)
         {
             Tuple<CytoscapeNode, int> stateActionPair = new Tuple<CytoscapeNode, int>(s, a);
             Tuple<CytoscapeNode, int> stateActionPairPrime = new Tuple<CytoscapeNode, int>(sPrime, aPrime);
-            Q[stateActionPair] = Q[stateActionPair] + ALPHA * (reward + GAMMA * Q[stateActionPairPrime] - Q[stateActionPair]);
+            SARSAQ[stateActionPair] = getQValue(stateActionPair, SARSA_EPISODE) + ALPHA * (reward + GAMMA * getQValue(stateActionPairPrime, SARSA_EPISODE) - getQValue(stateActionPair, SARSA_EPISODE));
         }
 
         /*
          Position and action here are the state action pair (s',a')
          Q(s, a) = Q(s, a) + gamma[r + argMaxa'Q(s', a')Q(s, a)]
         */
-        private static void qLearningBellmanCalculation(CytoscapeNode s, int a, int reward)
+        private void qLearningBellmanCalculation(CytoscapeNode s, int a, int reward)
         {
             Tuple<CytoscapeNode, int> stateActionPair = new Tuple<CytoscapeNode, int>(s, a);
             int aPrime = argMax(s);
             CytoscapeNode sPrime = getNewState(s, a);
             Tuple<CytoscapeNode, int> stateActionPairPrime = new Tuple<CytoscapeNode, int>(sPrime, aPrime);
-            Q[stateActionPair] = Q[stateActionPair] + ALPHA * (reward + GAMMA * Q[stateActionPairPrime] - Q[stateActionPair]);
+            QLearningQ[stateActionPair] = getQValue(stateActionPair, QLEARNING_EPISODE) + ALPHA * (reward + GAMMA * getQValue(stateActionPairPrime, QLEARNING_EPISODE) - getQValue(stateActionPair, QLEARNING_EPISODE));
         }
 
         /*
          Returns the action that will provide the highest reward given position
         */
-        private static int argMax(CytoscapeNode currentPosition)
+        private int argMax(CytoscapeNode currentPosition)
         {
             int max = Int32.MinValue;
             CytoscapeNode possiblePosition;
@@ -305,6 +339,47 @@ namespace Capstone.Models
                 }
             }
             return action;
+        }
+
+        private double getQValue(CytoscapeNode s, int a, int algorithm)
+        {
+            Tuple<CytoscapeNode, int> stateActionPair = new Tuple<CytoscapeNode, int>(s, a);
+            if (algorithm == QLEARNING_EPISODE)
+            {
+                if (!QLearningQ.ContainsKey(stateActionPair))
+                {
+                    QLearningQ.Add(stateActionPair, 0.0);
+                }
+                return QLearningQ[stateActionPair];
+            }
+            else
+            {
+                if (!SARSAQ.ContainsKey(stateActionPair))
+                {
+                    SARSAQ.Add(stateActionPair, 0.0);
+                }
+                return SARSAQ[stateActionPair];
+            }
+        }
+
+        private double getQValue(Tuple<CytoscapeNode, int> stateActionPair, int algorithm)
+        {
+            if (algorithm == QLEARNING_EPISODE)
+            {
+                if (!QLearningQ.ContainsKey(stateActionPair))
+                {
+                    QLearningQ.Add(stateActionPair, 0.0);
+                }
+                return QLearningQ[stateActionPair];
+            }
+            else
+            {
+                if (!SARSAQ.ContainsKey(stateActionPair))
+                {
+                    SARSAQ.Add(stateActionPair, 0.0);
+                }
+                return SARSAQ[stateActionPair];
+            }
         }
     }
 }

@@ -68,14 +68,14 @@
         this.setCalculationAnimations = function() {
             $('#forward').click(function() {
                 if (!$('#forward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.forwardPolicy();
+                    SimulationInterface.animationModule.displayNextEpisode();
                 }
             });
 
 
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.backwardPolicy();
+                    SimulationInterface.animationModule.displayPreviousEpisode();
                 }
             });
 

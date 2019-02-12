@@ -244,6 +244,12 @@
             anim.play();
         }
 
+        this.removeImage = function(nodeID) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            var anim = SimulationInterface.animationModule.animateNodeToRemoveImage(node, this.TOP())
+            anim.play();
+        }
+
         this.collectConfig = function() {
             var params = {};
             var nodes = [];

@@ -4,34 +4,34 @@
         SimulationInterface.genericConstructors.animation.call(this);
 
         var self = this;
-        this.currentIterationIndex = 0;
-        this.currentIterationNumber = 0;
-        this.currentPolicyNumber = 0;
-        this.currentIteration = [];
-        this.deltasForCurrentIteration = [];
-        this.currentValues = [];
-        this.deltasForCurrentValues = [];
         this.currentPolicy = [];
+        this.episodes = [];
         this.simulationResults = {};
+        this.numEpisodes = 0;
+        this.currentEpisodeNumber = 0;
+        this.config = {};
+        this.startNode = {};
+        this.goalNode = {};
 
         this.configAnimPaused = false;
         this.learningPaused = false;
 
-        this.LEFT = function() {
+        this.TOP = function() {
             return 0;
         }
 
-        this.RIGHT = function() {
+        this.BOTTOM = function() {
             return 1;
         }
 
-        this.TOP = function() {
+        this.LEFT = function() {
             return 2;
         }
 
-        this.BOTTOM = function() {
+        this.RIGHT = function() {
             return 3;
         }
+
 
         this.WALLVALUE = function() {
             return 100;
@@ -53,10 +53,7 @@
         
         this.setCurrentFrame = function(frameNumber) {
             $('#frame-tracker').val(frameNumber);
-        }
-
-        this.setTheta = function(theta) {
-            $('#theta-value').text(parseFloat(theta).toFixed(2));
+            $('#frame-tracker').width((($('#frame-tracker').val().length + 2) * 8) + 'px');
         }
 
         this.setGamma = function(gamma) {
@@ -64,18 +61,17 @@
         }
 
         this.loadResults = function(results) {
-            this.currentIterationIndex = 0;
-            this.currentIterationNumber = 0;
-            this.currentPolicyNumber = 0;
-            this.currentIteration = [];
-            this.deltasForCurrentIteration = [];
-            this.currentValues = [];
-            this.deltasForCurrentValues = [];
+            this.simulationResults = results;
             this.currentPolicy = [];
-
-            this.simulationResults = results.frames;
-            this.setMaxFrameCount(this.simulationResults.length);
-            this.setTheta(SimulationInterface.simulationResults.simulationSpecific.theta);
+            this.config = this.simulationResults.config;
+            var startID = this.config.nodes[this.config.startID].x + "_" + this.config.nodes[this.config.startID].y;
+            var goalID = this.config.nodes[this.config.goalID].x + "_" + this.config.nodes[this.config.goalID].y;
+            this.startNode = SimulationInterface.cy.$("#" + startID);
+            this.goalNode = SimulationInterface.cy.$("#" + goalID);
+            
+            this.episodes = results.frames;
+            this.numEpisodes = this.episodes.length;
+            this.setMaxFrameCount(this.numEpisodes);
             this.setCurrentFrame(0);
         }
 
@@ -142,6 +138,122 @@
             this.currentIterationNumber = 0;
             this.currentIteration = this.currentValues[0];
             this.deltasForCurrentIteration = this.deltasForCurrentValues[0];
+        }
+
+        this.displayNextEpisode = function() {
+            if (this.currentEpisodeNumber < this.numEpisodes) {
+                this.displayCurrentPolicy(this.currentEpisodeNumber);
+                this.currentEpisodeNumber++;
+                this.setCurrentFrame(this.currentEpisodeNumber);
+            }
+        }
+
+        this.displayPreviousEpisode = function() {
+            if (this.currentEpisodeNumber > 0) {
+                this.currentEpisodeNumber--;
+                this.displayCurrentPolicy(this.currentEpisodeNumber - 1);
+                this.setCurrentFrame(this.currentEpisodeNumber);
+            }
+        }
+
+        this.displayCurrentPolicy = function(episodeNumber) {
+            var policy = self.episodes[episodeNumber].QLearning;
+            var currentConfig = SimulationInterface.configurationModule.currentConfig;
+            var i, policyLength = policy.length;
+            var currentCol = 0;
+            var currentRow = 0;
+            var id, policyNum;
+
+            for (i = 0; i < policyLength; i++) {
+                if (currentConfig.nodes[i].coords.Item2 > currentRow) {
+                    currentCol = 0;
+                    currentRow++;
+                }
+                id = currentCol + "_" + currentRow;
+                policyNum = policy[i];
+                if (policyNum == self.LEFT()) {
+                    SimulationInterface.configurationModule.makeLeft(id);
+                } else if (policyNum == self.RIGHT()) {
+                    SimulationInterface.configurationModule.makeRight(id);
+                } else if (policyNum == self.TOP()) {
+                    SimulationInterface.configurationModule.makeTop(id);
+                } else if (policyNum == self.BOTTOM() ){
+                    SimulationInterface.configurationModule.makeBottom(id);
+                }
+                currentCol++;
+            }
+        }
+
+        // Get node
+        // Get action
+        // Display action on node
+        // Apply action to node to get new node
+        // Repeat
+        this.displayPolicy = function(episodeNumber) {
+            this.removePolicyDisplay();
+            setTimeout(function() {
+                var policy = self.episodes[episodeNumber].QLearning;
+                var action;
+                var index = 0;
+                var currentCell = self.startNode;
+                console.log("start:", self.startNode)
+                while (index < policy.length) {
+                    action = policy[index];
+                    self.displayAction(currentCell, action);
+                    currentCell = self.applyAction(currentCell, action);
+                    index++;
+                }
+            }, 100);
+        }
+
+        this.applyAction = function(cell, action) {
+            var x = cell.id().split("_")[0]
+            var y = cell.id().split("_")[1]
+            var newX = parseInt(x);
+            var newY = parseInt(y);
+            var isInHole = (cell.data('cellType') == SimulationInterface.configurationModule.HOLE);
+            // Falling in a hole will always return you to the startNode
+            if (isInHole) 
+                return this.startNode;
+            
+            switch (action) {
+                case this.LEFT():
+                    newX--;
+                    break
+                case this.RIGHT():
+                    newX++;
+                    break
+                case this.TOP():
+                    newY--;
+                    break
+                case this.BOTTOM():
+                    newY++;
+                    break
+            }
+
+            var newNode = SimulationInterface.cy.nodes('#' + newX + "_" + newY);
+            var isWall = (cell.data('cellType') == SimulationInterface.configurationModule.WALL);
+
+            return isWall ? cell : newNode
+        }
+
+        this.displayAction = function(cell, action) {
+            var id = cell.id();
+            if (action == self.LEFT()) {
+                SimulationInterface.configurationModule.makeLeft(id);
+            } else if (action == self.RIGHT()) {
+                SimulationInterface.configurationModule.makeRight(id);
+            } else if (action == self.TOP()) {
+                SimulationInterface.configurationModule.makeTop(id);
+            } else if (action == self.BOTTOM() ){
+                SimulationInterface.configurationModule.makeBottom(id);
+            }
+        }
+
+        this.removePolicyDisplay = function() {
+            SimulationInterface.cy.nodes().each(function(element) {
+                SimulationInterface.configurationModule.removeImage(element.id())
+            })
         }
 
         this.forwardIterationIndex = function() {
@@ -255,7 +367,7 @@
         }
 
         self.learningTime = function() {
-            return (self.iterationTime() + 2) * self.currentIteration.length;
+            return 250;
         }
 
         // Automated learning is basically just advancing a policy, then playing its iterations
@@ -263,9 +375,8 @@
         this.automateLearning = function() {
             if (!self.learningPaused) {
                 if (!self.atEndOfPolicy()) {
-                    SimulationInterface.animationModule.forwardPolicy();
+                    SimulationInterface.animationModule.displayNextEpisode();
                     SimulationInterface.animationModule.configAnimPaused = false;
-                    SimulationInterface.animationModule.playIterations();
                     setTimeout(function() {
                         self.automateLearning();
                     }, self.learningTime())

@@ -23,15 +23,17 @@ var SimulationInterface = {
 
     runSimulation: function() {
         console.log("running simulation:")
+        var config = this.configurationModule.collectConfig();
         $.ajax({
             method: "POST",
             url: "/Simulations/" + this.currentSimulation,
-            data: { "data": JSON.stringify(this.configurationModule.collectConfig()) },
+            data: { "data": JSON.stringify(config) },
             dataType: "json",
             success: (result) => {
                 console.log("Simulation has completed successfully.");
                 SimulationInterface.simulationResults = result
                 console.log("simulationResults", SimulationInterface.simulationResults);
+                result.config = config;
                 this.animationModule.loadResults(result);
             },
             error: (result) => {

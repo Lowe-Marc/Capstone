@@ -15,6 +15,18 @@
             var anim = node.animation({
                 style: {
                     'background-image': image,
+                    'background-image-opacity': 1.0
+                },
+                duration: 0
+            });
+            return anim;
+        }
+
+        this.animateNodeToRemoveImage = function(node, image) {
+            var anim = node.animation({
+                style: {
+                    'background-image': image,
+                    'background-image-opacity': 0.0
                 },
                 duration: 0
             });

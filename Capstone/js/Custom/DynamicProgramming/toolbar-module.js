@@ -73,7 +73,6 @@
                 }
             });
 
-
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
                     SimulationInterface.animationModule.backwardPolicy();
