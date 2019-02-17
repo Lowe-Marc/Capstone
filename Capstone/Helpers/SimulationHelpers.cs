@@ -108,12 +108,12 @@ namespace Capstone.Models
         
     }
     
-    // A frame for RL is the policy for each learning type.
-    // A policy is a list of actions to be taken
     public class RLAnimationFrame : AnimationFrame
     {
-        public List<int> SARSA;
-        public List<int> QLearning;
+        public List<int> SARSAPolicy;
+        public List<string> SARSAEpisodeStates;
+        public List<int> QLearningPolicy;
+        public List<string> QLearningEpisodeStates;
     }
 
     // Params coming from the view, built in javascript

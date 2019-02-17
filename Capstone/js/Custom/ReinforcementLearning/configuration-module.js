@@ -27,6 +27,19 @@
             return 'data:image/png;base64,' + this.images[3];
         }
 
+        this.imageForDirection = function(direction) {
+            switch (direction) {
+                case SimulationInterface.animationModule.LEFT():
+                    return this.LEFT();
+                case SimulationInterface.animationModule.RIGHT():
+                    return this.RIGHT();
+                case SimulationInterface.animationModule.TOP():
+                    return this.TOP();
+                case SimulationInterface.animationModule.BOTTOM():
+                    return this.BOTTOM();
+            }
+        }
+
         this.nodeColor = function(cellType) {
             switch (cellType) {
                 case this.GOAL:
@@ -242,6 +255,16 @@
             var node = SimulationInterface.cy.$('#' + nodeID);
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.TOP())
             anim.play();
+        }
+
+        this.makeDirection = function(nodeID, direction, returnHandle) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            var image = this.imageForDirection(direction);
+            var anim = SimulationInterface.animationModule.animateNodeToImage(node, image)
+            if (returnHandle)
+                return anim;
+            else
+                anim.play();
         }
 
         this.removeImage = function(nodeID) {

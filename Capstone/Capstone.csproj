@@ -265,6 +265,7 @@
     <Content Include="js\GridSnapping\cytoscape.js-grid-guide-2.2.1\LICENSE" />
     <Content Include="js\GridSnapping\cytoscape.js-grid-guide-2.2.1\package.json" />
     <Content Include="js\GridSnapping\cytoscape.js-grid-guide-2.2.1\README.md" />
+    <None Include="Properties\PublishProfiles\StandardServerDeployment.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />

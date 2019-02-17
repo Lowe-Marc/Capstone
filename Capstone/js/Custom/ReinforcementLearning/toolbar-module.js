@@ -13,34 +13,14 @@
         }
 
         this.setConfig = function() {
-            // var currentConfig = SimulationInterface.configurationModule.currentConfig;
-            // var numNodes = currentConfig.nodes.length;
-            // var i = 0, currentRow = 0, currentCol = 0;
-            // SimulationInterface.animationModule.currentIterationIndex = 0;
-            // SimulationInterface.animationModule.currentIterationNumber = 0;
             var content = '';
             content += '<div class="notation pull-right dp-config-div">';
-            // content += this.animationMenu();
-            // content += '<table class="table">';
-            // content += '<tr>';
-            // for (i = 0; i < numNodes; i++) {
-            //     if (currentConfig.nodes[i].coords.Item2 > currentRow) {
-            //         currentCol = 0;
-            //         currentRow++;
-            //         content += '</tr>';
-            //         content += '<tr>';
-            //     }
-            //     content += '<td id="iteration-cell-' + i + '">-</td>';
-            //     currentCol++;
-            // }
-            // content += '</tr>';
-            // content += '</table>';
             
             content += '<div>';
             content += '<input type="radio" name="simulation-type" value="q-learning" checked="checked"> Q-Learning<br>';
             content += '<input type="radio" name="simulation-type" value="sarsa"> SARSA<br>';
+            content += '<input type="checkbox" name="show-agent" value="show-agent" id="show-agent"> Show Agent<br>';
             content += '</div>';
-            content += '<div> <label>π*: <label id="pi-value"></label>---</label> </div>';
             content += '</div>';
             content += '</div>';
 
@@ -72,7 +52,6 @@
                 }
             });
 
-
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
                     SimulationInterface.animationModule.displayPreviousEpisode();
@@ -84,13 +63,12 @@
                     $('#play').addClass('disabled');
                     $('#pause').removeClass('disabled');
                     SimulationInterface.animationModule.learningPaused = false;
-                    SimulationInterface.animationModule.automateLearning();
+                    SimulationInterface.animationModule.displayNextEpisode();
                 }
             });
 
             $('#pause').click(function() {
                 if (!$('#pause').hasClass('disabled')) {
-                    // SimulationInterface.animationModule.configAnimPaused = true;
                     $('#pause').addClass('disabled');
                     $('#play').removeClass('disabled');
                     SimulationInterface.animationModule.learningPaused = true;

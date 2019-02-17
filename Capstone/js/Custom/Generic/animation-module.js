@@ -1,12 +1,14 @@
 (function() {
 
     function genericAnimationModule() {
-        this.animateNodeToColor = function(node, color) {
+        this.animateNodeToColor = function(node, color, time) {
+            if (time == null)
+                time = this.animationTime();
             var anim = node.animation({
                 style: {
                     'background-color': color,
                 },
-                duration: this.animationTime()
+                duration: time
             });
             return anim;
         }
@@ -31,6 +33,12 @@
                 duration: 0
             });
             return anim;
+        }
+
+        this.setAnimCallback = function(anim, callbackFunction) {
+            anim.promise('completed').then(function() {
+                callbackFunction();
+            })
         }
 
         // Time in ms it takes for each animation in a frame to activate

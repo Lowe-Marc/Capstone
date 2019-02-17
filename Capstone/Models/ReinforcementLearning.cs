@@ -14,7 +14,7 @@ namespace Capstone.Models
         const double ALPHA = 1.0;
         private int startID, goalID;
         private CytoscapeNode startNode, goalNode;
-        private double epsilon;
+        private double epsilon, originalEpsilon;
         private int timeHorizon;
         // Q maps a state action pair to a value
         private Dictionary<Tuple<CytoscapeNode, int>, double> QLearningQ = new Dictionary<Tuple<CytoscapeNode, int>, double>();
@@ -47,15 +47,16 @@ namespace Capstone.Models
             }
 
             epsilon = 0.9;
+            originalEpsilon = epsilon;
             startID = cyParams.startID;
             goalID = cyParams.goalID;
             startNode = nodeIDMap[startID];
             goalNode = nodeIDMap[goalID];
 
-            Tuple<List<int>, int> QLearningActionRewardPair;
-            Tuple<List<int>, int> SARSAActionRewardPair;
-            List<List<int>> QLearningPolicyOverTime = new List<List<int>>();
-            List<List<int>> SARSAPolicyOverTime = new List<List<int>>();
+            Tuple<List<string>, int> QLearningActionRewardPair;
+            Tuple<List<string>, int> SARSAActionRewardPair;
+            List<List<int>> QLearningEpisodes = new List<List<int>>();
+            List<List<int>> SARSAEpisodes = new List<List<int>>();
             results.frames = new List<AnimationFrame>();
             for (int episodeNumber = 0; episodeNumber < numEpisodes; episodeNumber++)
             {
@@ -63,22 +64,20 @@ namespace Capstone.Models
                 QLearningActionRewardPair = runEpisode(QLEARNING_EPISODE);
                 SARSAActionRewardPair = runEpisode(SARSA_EPISODE);
 
-                // Epsilon will die off over time
+                // Epsilon decreases every 10 episodes
                 if (episodeNumber >= 10 && episodeNumber % 10 == 0)
                 {
-                    epsilon = 0.9 / episodeNumber;
+                    epsilon = originalEpsilon / (episodeNumber/10);
                     if (epsilon <= 0.009)
                         epsilon = 0.0;
                 }
 
-                // Store each policy and its reward
-                QLearningPolicyOverTime.Add(QLearningActionRewardPair.Item1);
-                SARSAPolicyOverTime.Add(SARSAActionRewardPair.Item1);
-
                 // An animation frame will be either the QLearning or SARSA policy over time
                 RLAnimationFrame frame = new RLAnimationFrame();
-                frame.QLearning = collectCurrentOptimalPolicy(cyParams.nodes, QLEARNING_EPISODE);
-                frame.SARSA = collectCurrentOptimalPolicy(cyParams.nodes, SARSA_EPISODE);
+                frame.QLearningPolicy = collectCurrentOptimalPolicy(cyParams.nodes, QLEARNING_EPISODE);
+                frame.SARSAPolicy = collectCurrentOptimalPolicy(cyParams.nodes, SARSA_EPISODE);
+                frame.QLearningEpisodeStates = QLearningActionRewardPair.Item1;
+                frame.SARSAEpisodeStates = SARSAActionRewardPair.Item1;
                 results.frames.Add(frame);
             }
 
@@ -111,7 +110,7 @@ namespace Capstone.Models
                     action = i;
                 }
             }
-            return action;
+            return max == Double.MinValue ? -1 : action;
         }
 
         /*
@@ -121,22 +120,21 @@ namespace Capstone.Models
 
          This will return the reward gained in the episode and the sequence of actions taken
         */
-        private Tuple<List<int>, int> runEpisode(int algorithm)
+        private Tuple<List<string>, int> runEpisode(int algorithm)
         {
             int a, aPrime, episodeIteration, reward;
             CytoscapeNode s, sPrime;
-            List<int> actions = new List<int>();
+            List<string> statesVisited = new List<string>();
 
             bool goalFound = false;
             s = startNode;
             a = epsilonGreedyAction(s, algorithm);
             reward = 0;
             episodeIteration = 0;
-
+            // Record the start state
+            statesVisited.Add(s.x + "_" + s.y);
             while (episodeIteration < timeHorizon && !goalFound)
             {
-                // Record the action
-                actions.Add(a);
                 //Observe the next state and its reward
                 sPrime = getNewState(s, a);
                 goalFound = (sPrime == goalNode);
@@ -158,11 +156,12 @@ namespace Capstone.Models
 
                 if (s == goalNode)
                     goalFound = true;
-
+                // Record the state at the end so we animate the goal when found
+                statesVisited.Add(s.x + "_" + s.y);
                 episodeIteration++;
             }
 
-            return new Tuple<List<int>, int>(actions, reward);
+            return new Tuple<List<string>, int>(statesVisited, reward);
         }
 
         /*
