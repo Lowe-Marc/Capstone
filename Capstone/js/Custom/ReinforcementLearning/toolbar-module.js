@@ -101,6 +101,10 @@
                     SimulationInterface.animationModule.pauseIterations();
                 }
             });
+
+            $('input[type=radio][name=simulation-type]').change(function() {
+                SimulationInterface.animationModule.setSimulationType(this.value);
+            });
         }
 
         this.adjustDefaultToolbar = function() {

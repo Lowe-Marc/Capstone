@@ -138,7 +138,7 @@ namespace Capstone.Models
                 //Observe the next state and its reward
                 sPrime = getNewState(s, a);
                 goalFound = (sPrime == goalNode);
-                reward += getStateReward(sPrime);
+                reward = getStateReward(sPrime);
                 //Determine the next action
                 aPrime = epsilonGreedyAction(sPrime, algorithm);
                 //Adjust Q
@@ -306,7 +306,7 @@ namespace Capstone.Models
 
         /*
          Position and action here are the state action pair (s',a')
-         Q(s, a) = Q(s, a) + gamma[r + argMaxa'Q(s', a')Q(s, a)]
+         Q(s, a) = Q(s, a) + gamma[r + argMaxa'Q(s', a') - Q(s, a)]
         */
         private void qLearningBellmanCalculation(CytoscapeNode s, int a, int reward)
         {
@@ -314,7 +314,9 @@ namespace Capstone.Models
             int aPrime = argMax(s);
             CytoscapeNode sPrime = getNewState(s, a);
             Tuple<CytoscapeNode, int> stateActionPairPrime = new Tuple<CytoscapeNode, int>(sPrime, aPrime);
-            QLearningQ[stateActionPair] = getQValue(stateActionPair, QLEARNING_EPISODE) + ALPHA * (reward + GAMMA * getQValue(stateActionPairPrime, QLEARNING_EPISODE) - getQValue(stateActionPair, QLEARNING_EPISODE));
+            double QsPrimeaPrime = getQValue(stateActionPairPrime, QLEARNING_EPISODE);
+            double QsA = getQValue(stateActionPair, QLEARNING_EPISODE);
+            QLearningQ[stateActionPair] = getQValue(stateActionPair, QLEARNING_EPISODE) + ALPHA * (reward + GAMMA * QsPrimeaPrime - QsA);
         }
 
         /*

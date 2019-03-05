@@ -13,8 +13,15 @@
         this.startNode = {};
         this.goalNode = {};
 
+        // 0 corresponds to q-learning, 1 to sarsa
+        this.currentSimIndex = 0;
+        this.currentFrameBySimType = [0, 0];
+        this.simTypeInitialized = [false, false];
+
         this.configAnimPaused = false;
         this.learningPaused = true;
+
+        this.simulationType = 'q-learning';
 
         this.TOP = function() {
             return 0;
@@ -48,6 +55,14 @@
             return 100;
         }
 
+        this.QLEARNING = function() {
+            return 'q-learning';
+        }
+
+        this.SARSA = function() {
+            return 'sarsa';
+        }
+
         this.getDisplayedFrame = function() {
             return $('#frame-tracker').val()
         }
@@ -73,6 +88,41 @@
 
         this.showAgent = function() {
             return $('#show-agent').is(":checked");
+        }
+
+        this.getStates = function(episodeNumber) {
+            if (self.simulationType === self.QLEARNING())
+                return self.episodes[episodeNumber].QLearningEpisodeStates
+            else
+                return self.episodes[episodeNumber].SARSAEpisodeStates
+        }
+
+        this.getPolicy = function(episodeNumber) {
+            if (self.simulationType == self.QLEARNING())
+                return self.episodes[episodeNumber].QLearningPolicy;
+            else
+                return self.episodes[episodeNumber].SARSAPolicy;
+        }
+
+        this.setSimulationType = function(type) {
+            if (type === self.QLEARNING()) {
+                this.currentSimIndex = 0;
+                self.simulationType = self.QLEARNING();
+                
+            } else if (type === self.SARSA()) {
+                this.currentSimIndex = 1;
+                self.simulationType = self.SARSA();
+            }
+            this.currentEpisodeNumber = this.currentFrameBySimType[this.currentSimIndex];
+            this.setCurrentFrame(this.currentEpisodeNumber);
+            if (this.simTypeInitialized[this.currentSimIndex]) {
+                if (self.currentEpisodeNumber < self.numEpisodes) {
+                    this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeNumber);
+                    this.setCurrentFrame(this.currentEpisodeNumber + 1);
+                }
+            }
+            else
+                this.removePolicyDisplay();
         }
 
         this.loadResults = function(results) {
@@ -101,22 +151,34 @@
         }
 
         this.displayNextEpisode = function() {
-            if (this.currentEpisodeNumber < this.numEpisodes) {
+            if (this.currentEpisodeNumber < this.numEpisodes - 1) {
                 if (self.showAgent()) {
                     this.displayAgentActions(this.currentEpisodeNumber);
                 } else {
-                    this.displayCurrentPolicy(this.currentEpisodeNumber);
-                    this.currentEpisodeNumber++;
-                    this.setCurrentFrame(this.currentEpisodeNumber);
+                    if (!this.simTypeInitialized[this.currentSimIndex]) {
+                        this.displayCurrentPolicy(this.currentEpisodeNumber);
+                        this.setCurrentFrame(this.currentEpisodeNumber + 1);
+                        this.simTypeInitialized[this.currentSimIndex] = true;
+                    } else {
+                        this.currentEpisodeNumber++;
+                        this.currentFrameBySimType[this.currentSimIndex]++;
+                        this.displayCurrentPolicy(this.currentEpisodeNumber);
+                        this.setCurrentFrame(this.currentEpisodeNumber + 1);
+                    }
                 }
+            } else {
+                this.learningPaused = true;
+                $('#pause').addClass('disabled');
+                $('#play').removeClass('disabled');
             }
         }
 
         this.displayPreviousEpisode = function() {
             if (this.currentEpisodeNumber > 0) {
                 this.currentEpisodeNumber--;
-                this.displayCurrentPolicy(this.currentEpisodeNumber - 1);
-                this.setCurrentFrame(this.currentEpisodeNumber);
+                this.currentFrameBySimType[this.currentSimIndex]--;
+                this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeNumber);
+                this.setCurrentFrame(this.currentEpisodeNumber + 1);
             }
         }
 
@@ -127,7 +189,7 @@
         // animate next node to agent color
         // repeat
         this.displayAgentActions = function(episodeNumber) {
-            self.states = self.episodes[episodeNumber].QLearningEpisodeStates;
+            self.states = self.getStates(episodeNumber);
             var currentAction = 0;
             var node = SimulationInterface.cy.nodes('#' + self.states[currentAction]);
             var anim;
@@ -168,7 +230,7 @@
         }
 
         this.displayCurrentPolicy = function(episodeNumber) {
-            var policy = self.episodes[episodeNumber].QLearningPolicy;
+            var policy = self.getPolicy(episodeNumber);
             var currentConfig = SimulationInterface.configurationModule.currentConfig;
             var i, policyLength = policy.length;
             var currentCol = 0;
@@ -191,8 +253,8 @@
                     anim.play();
             }
 
-            if (!this.learningPaused && !this.showAgent()) {
-                anim.promise('completed').then(function(){
+            if (!self.learningPaused && !self.showAgent()) {
+                anim.promise('completed').then(function() {
                     setTimeout(function(){
                         self.displayNextEpisode();
                     }, self.NO_AGENT_ANIMATION_TIME())
@@ -216,9 +278,13 @@
             }
         }
 
-        this.removePolicyDisplay = function() {
-            SimulationInterface.cy.nodes().each(function(element) {
-                SimulationInterface.configurationModule.removeImage(element.id())
+        this.removePolicyDisplay = function(callbackFunction, functionParams) {
+            var nodes = SimulationInterface.cy.nodes()
+            nodes.each(function(element) {
+                if (element.id() == nodes[nodes.length-1].id())
+                    SimulationInterface.configurationModule.removeImage(element.id(), callbackFunction, functionParams)
+                else
+                    SimulationInterface.configurationModule.removeImage(element.id())
             })
         }
 

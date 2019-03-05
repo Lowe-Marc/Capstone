@@ -35,9 +35,9 @@
             return anim;
         }
 
-        this.setAnimCallback = function(anim, callbackFunction) {
+        this.setAnimCallback = function(anim, callbackFunction, functionParams) {
             anim.promise('completed').then(function() {
-                callbackFunction();
+                callbackFunction(functionParams);
             })
         }
 
