@@ -62,6 +62,7 @@
                 if (!$('#play').hasClass('disabled')) {
                     $('#play').addClass('disabled');
                     $('#pause').removeClass('disabled');
+                    $('#show-agent').addClass('disabled');
                     SimulationInterface.animationModule.learningPaused = false;
                     SimulationInterface.animationModule.displayNextEpisode();
                 }
@@ -71,34 +72,8 @@
                 if (!$('#pause').hasClass('disabled')) {
                     $('#pause').addClass('disabled');
                     $('#play').removeClass('disabled');
+                    $('#show-agent').removeClass('disabled');
                     SimulationInterface.animationModule.learningPaused = true;
-                }
-            });
-
-            $('#iteration-forward').click(function() {
-                if (!$('#iteration-forward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.forwardIterationIndex();
-                }
-            });
-
-            $('#iteration-backward').click(function() {
-                if (!$('#iteration-backward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.backwardIterationIndex();
-                }
-            });
-
-            $('#iteration-play').click(function() {
-                if (!$('#iteration-play').hasClass('disabled')) {
-                    $('#iteration-play').addClass('disabled');
-                    $('#iteration-pause').removeClass('disabled');
-                    SimulationInterface.animationModule.configAnimPaused = false;
-                    SimulationInterface.animationModule.playIterations();
-                }
-            });
-
-            $('#iteration-pause').click(function() {
-                if (!$('#iteration-pause').hasClass('disabled')) {
-                    SimulationInterface.animationModule.pauseIterations();
                 }
             });
 
