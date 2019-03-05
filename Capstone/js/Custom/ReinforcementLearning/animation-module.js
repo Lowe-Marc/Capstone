@@ -90,6 +90,12 @@
             return $('#show-agent').is(":checked");
         }
 
+        this.pause = function() {
+            this.learningPaused = true;
+            $('#pause').addClass('disabled');
+            $('#play').removeClass('disabled');
+        }
+
         this.getStates = function(episodeNumber) {
             if (self.simulationType === self.QLEARNING())
                 return self.episodes[episodeNumber].QLearningEpisodeStates
@@ -105,6 +111,7 @@
         }
 
         this.setSimulationType = function(type) {
+            this.pause();
             if (type === self.QLEARNING()) {
                 this.currentSimIndex = 0;
                 self.simulationType = self.QLEARNING();
@@ -167,9 +174,7 @@
                     }
                 }
             } else {
-                this.learningPaused = true;
-                $('#pause').addClass('disabled');
-                $('#play').removeClass('disabled');
+                this.pause();
             }
         }
 
