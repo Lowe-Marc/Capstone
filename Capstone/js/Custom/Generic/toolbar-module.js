@@ -1,6 +1,7 @@
 (function() {
-
+    // Generic toolbar module constructor
     function genericToolbarModule() {
+        // self is used in scenarios where the programmer is trying to reference this module, but is in a callback function
         var self = this;
 
         this.simulationConfigBottomBorder = function() {
@@ -15,41 +16,55 @@
                 SimulationInterface.runSimulation();
             });
 
+            // Set functionality to enter fullscreen mode
             $('#fullscreen-enter').click(function () {
                 self.toggleFullscreen();
             });
     
+            // Set functionality to exit from fullscreen mode
             $('#fullscreen-exit').click(function () {
                 self.closeFullscreen();
             });
     
+            /*
+            When the sidebar is clicked, the cy display must be resized or 
+            it doesn't register click locations correctly
+            */
             $('#sidenavToggler').click(function () {
                 SimulationInterface.cy.resize();
             });
-    
+            
+            // Set functionality to lock node positions
             $('#lock-locked').click(function () {
                 SimulationInterface.configurationModule.unlockNodes();
             });
     
+            // Set functionality to unlock node positions
             $('#lock-unlocked').click(function () {
                 SimulationInterface.configurationModule.lockNodes();
             });
     
+            // Set functionality to save configurations in cookies
             $('#save-config').click(function () {
                 self.saveConfigurationPrompt();
             });
     
+            // Set functionality to disable node grid snapping when moved
             $('#disable-grid-snapping').click(function () {
                 self.disableGridSnapping();
             });
     
+            // Set functionality to enable node grid snapping when moved
             $('#enable-grid-snapping').click(function () {
                 self.enableGridSnapping();
             });
         }
 
-        // Need to manually save off original and fullscreen sizes,
-        // because cy will not dynamically adjust sizes
+        /*
+        Toggling fullscreen mode has some quirks across browsers and when working with cy.
+        Need to manually save off original and fullscreen sizes,
+        because cy will not dynamically adjust sizes
+        */
         this.toggleFullscreen = function() {
             var section = document.getElementById('simulation-area');
             SimulationInterface.cy.originalWidth = SimulationInterface.cy.size()['width'];
@@ -73,6 +88,9 @@
             SimulationInterface.cy.resize();
         }
 
+        /*
+        Need to once again handle browser specific and cy issues
+        */
         this.closeFullscreen = function() {
             SimulationInterface.cy.fullscreenWidth = SimulationInterface.cy.size()['width'];
             SimulationInterface.cy.fullscreenHeight = SimulationInterface.cy.size()['height'];
@@ -92,6 +110,9 @@
             SimulationInterface.cy.resize();
         }
 
+        /*
+        Small configuration details for how grid snapping handles
+        */
         this.enableGridSnapping = function() {
             SimulationInterface.cy.gridGuide({
                 // On/Off Modules
@@ -106,6 +127,9 @@
             $('#enable-grid-snapping').hide();
         }
         
+        /*
+        Small configuration details for how removing grid snapping handles
+        */
         this.disableGridSnapping = function() {
             SimulationInterface.cy.gridGuide({
                 // On/Off Modules

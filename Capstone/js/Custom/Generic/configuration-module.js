@@ -2,45 +2,60 @@
 // cyConstructor(), nodeData(), edgeData()
 
 (function() {
-    // Generic configureation module constructor
+    // Generic configuration module constructor
     function genericConfigurationModule() {
+        // self is used in scenarios where the programmer is trying to reference this module, but is in a callback function
         var self = this;
+        // simple reference to the simulationInterface cy to shorten the name when using it
         this.cy = null;
+        // An element is a single element of the cy display
         this.elements = [];
+        // Contains x,y coordinates for elements
         this.positionsArr = [];
+        // List of configurations associated with the simulation
         this.configs = [];
+        // List of configurations that are included by default. i.e. these are the configurations not created and saved by the user.
         this.defaultConfigs = []
+        // Reference to the configuration currently being viewed.
         this.currentConfig = null;
 
+        // Number of vertical pixels for each cy element
         this.nodeHeight = function() {
             return 30;
         }
         
+        // Number of horizontal pixels for each cy element
         this.nodeWidth = function() {
             return 30;
         }
         
+        // Number of vertical pixels between grid lines
         this.gridHeight = function() {
             return 40;
         }
         
+        // Number of horizontal pixels between grid lines
         this.gridWidth = function() {
             return 40;
         }
 
+        // Disable the movement of nodes
         this.lockNodes = function() {
             this.cy.nodes().lock();
             $('#lock-locked').show();
             $('#lock-unlocked').hide();
         }
         
+        // Enable the movement of nodes
         this.unlockNodes = function() {
             this.cy.nodes().unlock();    
             $('#lock-locked').hide();
             $('#lock-unlocked').show();
         }
 
-        // Renders the CY map and handles node specific properties such as clicking and locking
+        /* 
+        Renders the CY map and handles node specific properties such as clicking and locking
+        */
         this.setCytoscape = function() {
             this.buildElementStructure();
             this.cy = this.cyConstructor();
@@ -70,7 +85,9 @@
             SimulationInterface.toolbarModule.setConfig();
         }
 
-        // Assembles the object used to render the CY map
+        /* 
+        Assembles the object used to render the CY map
+        */
         this.buildElementStructure = function() {
             var nodeMap = {};
             var i;
@@ -78,7 +95,7 @@
             var elements = [];
             this.positionsArr = [];
             var currentConfig = this.currentConfig;
-            // Collect informaiton on nodes
+            // Collect information on nodes
             for (i = 0; i < currentConfig.nodes.length; i++) {
                 heuristic = 1;
                 elements.push({
@@ -100,6 +117,10 @@
             self.elements = elements;
         }
 
+        /* 
+        Puts the names of each configuration into the dropbox selector
+        and associates it with the configuration object when selected
+        */
         this.setConfigurationsInSelector = function() {
             var configSelector = $('#configuration-selector');
             var i;
@@ -132,6 +153,9 @@
             this.setCytoscape();
         },
 
+        /*
+        Collects any configurations that were created and saved by the user
+        */
         this.collectCookieConfigurations = function() {
             var cookies = document.cookie.split("; ");
             var nameConfigPair;
@@ -147,6 +171,9 @@
             }
         }
 
+        /*
+        Contains all configuration information for the cy grid
+        */
         this.gridInfo = function() {
             return {
                 // On/Off Modules
@@ -193,12 +220,6 @@
 
                 // Parent Padding
                 parentSpacing: -1 // -1 to set paddings of parents to gridSpacing
-            }
-        }
-
-        this.validateMin = function(value, validValue) {
-            if (value < validValue) {
-                return validValue;
             }
         }
     }
