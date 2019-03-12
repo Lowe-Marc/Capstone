@@ -80,6 +80,14 @@
             $('input[type=radio][name=simulation-type]').change(function() {
                 SimulationInterface.animationModule.setSimulationType(this.value);
             });
+
+            $('#frame-tracker').keypress(function (e) {
+                if (e.which == 13) {
+                    var frameToPlay = parseInt($('#frame-tracker').val());
+                    if (frameToPlay < SimulationInterface.animationModule.numEpisodes && frameToPlay >= 0)
+                        SimulationInterface.animationModule.setCurrentFrame(frameToPlay);
+                }
+            })
         }
 
         this.adjustDefaultToolbar = function() {

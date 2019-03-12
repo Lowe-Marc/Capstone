@@ -63,6 +63,21 @@
             return 'sarsa';
         }
 
+        this.setCurrentFrame = function(frameIndex) {
+            self.setCurrentFrameDisplay(frameIndex);
+            if (frameIndex > 0) {
+                self.currentEpisodeIndex = frameIndex - 1;
+                self.currentFrameBySimType[self.currentSimIndex] = frameIndex - 1;
+                self.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeIndex);
+                self.currentEpisodeIndex++;
+                self.currentFrameBySimType[self.currentSimIndex]++;
+            } else {
+                self.currentEpisodeIndex = frameIndex;
+                self.currentFrameBySimType[self.currentSimIndex] = frameIndex;
+                self.removePolicyDisplay();
+            }
+        }
+
         this.getDisplayedFrame = function() {
             return $('#frame-tracker').val()
         }
@@ -77,12 +92,12 @@
             $('#max-frame-count').text("/"+frameCount);
         }
         
-        this.setCurrentFrame = function(frameNumber) {
+        this.setCurrentFrameDisplay = function(frameNumber) {
             $('#frame-tracker').val(frameNumber);
             $('#frame-tracker').width((($('#frame-tracker').val().length + 2) * 8) + 'px');
         }
 
-        this.syncCurrentFrame = function() {
+        this.syncCurrentFrameDisplay = function() {
             $('#frame-tracker').val(self.currentEpisodeIndex);
             $('#frame-tracker').width((($('#frame-tracker').val().length + 2) * 8) + 'px');
         }
@@ -126,11 +141,11 @@
                 self.simulationType = self.SARSA();
             }
             this.currentEpisodeIndex = this.currentFrameBySimType[this.currentSimIndex];
-            this.syncCurrentFrame();
+            this.syncCurrentFrameDisplay();
             if (this.currentFrameBySimType[this.currentSimIndex] > 0) {
                 if (self.currentEpisodeIndex < self.numEpisodes) {
                     this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeIndex);
-                    this.syncCurrentFrame();
+                    this.syncCurrentFrameDisplay();
                 }
             }
             else if (this.currentFrameBySimType[this.currentSimIndex] == 0)
@@ -149,7 +164,7 @@
             this.episodes = results.frames;
             this.numEpisodes = this.episodes.length;
             this.setMaxFrameCount(this.numEpisodes - 1);
-            this.setCurrentFrame(0);
+            this.setCurrentFrameDisplay(0);
         }
 
         this.updateValues = function() {
@@ -170,7 +185,7 @@
                     this.displayCurrentPolicy(this.currentEpisodeIndex);
                     this.currentEpisodeIndex++;
                     this.currentFrameBySimType[this.currentSimIndex]++;
-                    this.syncCurrentFrame();
+                    this.syncCurrentFrameDisplay();
                 }
             } else {
                 this.pause();
@@ -185,12 +200,12 @@
                 this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeIndex);
                 this.currentEpisodeIndex++;
                 this.currentFrameBySimType[this.currentSimIndex]++;
-                this.syncCurrentFrame();
+                this.syncCurrentFrameDisplay();
             } else if (this.currentEpisodeIndex == 1) {
                 this.currentEpisodeIndex--;
                 this.currentFrameBySimType[this.currentSimIndex]--;
                 this.removePolicyDisplay();
-                this.syncCurrentFrame();
+                this.syncCurrentFrameDisplay();
             }
         }
 
@@ -230,7 +245,7 @@
                     self.displayCurrentPolicy(self.currentEpisodeIndex);
                     this.currentEpisodeIndex++;
                     this.currentFrameBySimType[this.currentSimIndex]++;
-                    self.syncCurrentFrame();
+                    self.syncCurrentFrameDisplay();
                     if (!self.learningPaused) {
                         self.displayNextEpisode();
                     }
