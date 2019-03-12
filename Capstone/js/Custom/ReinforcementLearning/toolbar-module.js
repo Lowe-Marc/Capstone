@@ -62,7 +62,7 @@
                 if (!$('#play').hasClass('disabled')) {
                     $('#play').addClass('disabled');
                     $('#pause').removeClass('disabled');
-                    $('#show-agent').addClass('disabled');
+                    $('#show-agent').attr("disabled", true);
                     SimulationInterface.animationModule.learningPaused = false;
                     SimulationInterface.animationModule.displayNextEpisode();
                 }
@@ -72,7 +72,7 @@
                 if (!$('#pause').hasClass('disabled')) {
                     $('#pause').addClass('disabled');
                     $('#play').removeClass('disabled');
-                    $('#show-agent').removeClass('disabled');
+                    $('#show-agent').removeAttr('disabled');
                     SimulationInterface.animationModule.learningPaused = true;
                 }
             });

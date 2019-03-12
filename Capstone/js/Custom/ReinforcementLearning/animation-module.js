@@ -8,7 +8,7 @@
         this.episodes = [];
         this.simulationResults = {};
         this.numEpisodes = 0;
-        this.currentEpisodeNumber = 0;
+        this.currentEpisodeIndex = 0;
         this.config = {};
         this.startNode = {};
         this.goalNode = {};
@@ -82,6 +82,11 @@
             $('#frame-tracker').width((($('#frame-tracker').val().length + 2) * 8) + 'px');
         }
 
+        this.syncCurrentFrame = function() {
+            $('#frame-tracker').val(self.currentEpisodeIndex);
+            $('#frame-tracker').width((($('#frame-tracker').val().length + 2) * 8) + 'px');
+        }
+
         this.setGamma = function(gamma) {
             $('#gamma-value').text(parseFloat(gamma).toFixed(2));
         }
@@ -120,15 +125,15 @@
                 this.currentSimIndex = 1;
                 self.simulationType = self.SARSA();
             }
-            this.currentEpisodeNumber = this.currentFrameBySimType[this.currentSimIndex];
-            this.setCurrentFrame(this.currentEpisodeNumber);
-            if (this.simTypeInitialized[this.currentSimIndex]) {
-                if (self.currentEpisodeNumber < self.numEpisodes) {
-                    this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeNumber);
-                    this.setCurrentFrame(this.currentEpisodeNumber + 1);
+            this.currentEpisodeIndex = this.currentFrameBySimType[this.currentSimIndex];
+            this.syncCurrentFrame();
+            if (this.currentFrameBySimType[this.currentSimIndex] > 0) {
+                if (self.currentEpisodeIndex < self.numEpisodes) {
+                    this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeIndex);
+                    this.syncCurrentFrame();
                 }
             }
-            else
+            else if (this.currentFrameBySimType[this.currentSimIndex] == 0)
                 this.removePolicyDisplay();
         }
 
@@ -143,7 +148,7 @@
             
             this.episodes = results.frames;
             this.numEpisodes = this.episodes.length;
-            this.setMaxFrameCount(this.numEpisodes);
+            this.setMaxFrameCount(this.numEpisodes - 1);
             this.setCurrentFrame(0);
         }
 
@@ -158,20 +163,14 @@
         }
 
         this.displayNextEpisode = function() {
-            if (this.currentEpisodeNumber < this.numEpisodes - 1) {
+            if (this.currentEpisodeIndex < this.numEpisodes - 1) {
                 if (self.showAgent()) {
-                    this.displayAgentActions(this.currentEpisodeNumber);
+                    this.displayAgentActions(this.currentEpisodeIndex);
                 } else {
-                    if (!this.simTypeInitialized[this.currentSimIndex]) {
-                        this.displayCurrentPolicy(this.currentEpisodeNumber);
-                        this.setCurrentFrame(this.currentEpisodeNumber + 1);
-                        this.simTypeInitialized[this.currentSimIndex] = true;
-                    } else {
-                        this.currentEpisodeNumber++;
-                        this.currentFrameBySimType[this.currentSimIndex]++;
-                        this.displayCurrentPolicy(this.currentEpisodeNumber);
-                        this.setCurrentFrame(this.currentEpisodeNumber + 1);
-                    }
+                    this.displayCurrentPolicy(this.currentEpisodeIndex);
+                    this.currentEpisodeIndex++;
+                    this.currentFrameBySimType[this.currentSimIndex]++;
+                    this.syncCurrentFrame();
                 }
             } else {
                 this.pause();
@@ -179,11 +178,19 @@
         }
 
         this.displayPreviousEpisode = function() {
-            if (this.currentEpisodeNumber > 0) {
-                this.currentEpisodeNumber--;
+            console.log("currentEpisodeIndex:", this.currentEpisodeIndex)
+            if (this.currentEpisodeIndex > 1) {
+                this.currentEpisodeIndex -= 2;
+                this.currentFrameBySimType[this.currentSimIndex] -= 2;
+                this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeIndex);
+                this.currentEpisodeIndex++;
+                this.currentFrameBySimType[this.currentSimIndex]++;
+                this.syncCurrentFrame();
+            } else if (this.currentEpisodeIndex == 1) {
+                this.currentEpisodeIndex--;
                 this.currentFrameBySimType[this.currentSimIndex]--;
-                this.removePolicyDisplay(self.displayCurrentPolicy, self.currentEpisodeNumber);
-                this.setCurrentFrame(this.currentEpisodeNumber + 1);
+                this.removePolicyDisplay();
+                this.syncCurrentFrame();
             }
         }
 
@@ -207,7 +214,7 @@
             self.returnAnim.promise('completed').then(function() {
                 self.thisFunction = arguments.callee;
                 currentAction += 1;
-                node = node = SimulationInterface.cy.nodes('#' + self.states[currentAction]);
+                node = SimulationInterface.cy.nodes('#' + self.states[currentAction]);
                 color = node.data('background-color');
                 anim = self.animateNodeToColor(node, self.AGENT_COLOR(), self.AGENT_ANIMATION_TIME());
                 self.returnAnim = self.animateNodeToColor(node, color, self.AGENT_ANIMATION_TIME());
@@ -220,9 +227,10 @@
                     })
                     anim.play();
                 } else {
-                    self.displayCurrentPolicy(self.currentEpisodeNumber);
-                    self.currentEpisodeNumber++;
-                    self.setCurrentFrame(self.currentEpisodeNumber);
+                    self.displayCurrentPolicy(self.currentEpisodeIndex);
+                    this.currentEpisodeIndex++;
+                    this.currentFrameBySimType[this.currentSimIndex]++;
+                    self.syncCurrentFrame();
                     if (!self.learningPaused) {
                         self.displayNextEpisode();
                     }
