@@ -165,6 +165,9 @@
             return content;
         }
 
+        /*
+        Begin several methods to displaying an image on a node.
+        */
         this.makeCellPassable = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
             node.cellType = this.PASSABLE;
@@ -226,6 +229,14 @@
         this.makeTop = function(nodeID) {
             var node = SimulationInterface.cy.$('#' + nodeID);
             var anim = SimulationInterface.animationModule.animateNodeToImage(node, this.TOP())
+            anim.play();
+        }
+
+        this.removeImage = function(nodeID, callbackFunction, functionParams) {
+            var node = SimulationInterface.cy.$('#' + nodeID);
+            var anim = SimulationInterface.animationModule.animateNodeToRemoveImage(node, this.TOP())
+            if (callbackFunction != null)
+                SimulationInterface.animationModule.setAnimCallback(anim, callbackFunction, functionParams);
             anim.play();
         }
 

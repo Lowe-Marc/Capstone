@@ -30,7 +30,11 @@
                     content += '</tr>';
                     content += '<tr>';
                 }
-                content += '<td id="iteration-cell-' + i + '">-</td>';
+
+                if (currentConfig.nodes[i].cellType == SimulationInterface.configurationModule.WALL)
+                    content += '<td id="iteration-cell-' + i + '">-</td>';
+                else
+                    content += '<td id="iteration-cell-' + i + '">-0.00</td>';
                 currentCol++;
             }
             content += '</tr>';
@@ -113,6 +117,8 @@
                 if (!$('#iteration-play').hasClass('disabled')) {
                     $('#iteration-play').addClass('disabled');
                     $('#iteration-pause').removeClass('disabled');
+                    $('#iteration-forward').addClass('disabled');
+                    $('#iteration-backward').addClass('disabled');
                     SimulationInterface.animationModule.configAnimPaused = false;
                     SimulationInterface.animationModule.playIterations();
                 }
