@@ -147,7 +147,14 @@
             })
         }
 
+        this.shouldHaveQtip = function(node) {
+            return node.connectedEdges().length == 4;
+        }
+
         this.qtipStructure = function(node) {
+            if (node.connectedEdges().length != 4) {
+                return {};
+            }
             return {
                 content: {
                     text: function(event, api) {
@@ -168,7 +175,7 @@
             }
         }
 
-        this.qtipContent = function(node, connecting) {
+        this.qtipContent = function(node) {
             var content;
             // Start and end buttons
             // Add node and connection buttons

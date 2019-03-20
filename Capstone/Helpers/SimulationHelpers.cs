@@ -59,6 +59,7 @@ namespace Capstone.Models
         public string id;
         public double x;
         public double y;
+        public Tuple<double, double> coords;
         public List<AStarAnimationNode> path;
     }
 

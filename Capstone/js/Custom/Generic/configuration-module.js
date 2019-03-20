@@ -71,12 +71,9 @@
                 });
                 self.lockNodes();
             });
-
             cy.nodes().each(function (node) {
-                if (node.connectedEdges().length != 4) {
-                    return {};
-                }
-                cy.$('#' + node.id()).qtip(self.qtipStructure(node));
+                if (self.shouldHaveQtip(node))
+                    cy.$('#' + node.id()).qtip(self.qtipStructure(node));
             });
 
             cy.gridGuide(this.gridInfo())
@@ -99,19 +96,18 @@
             for (i = 0; i < currentConfig.nodes.length; i++) {
                 heuristic = 1;
                 elements.push({
-                    data: this.nodeData(currentConfig.nodes[i]),
+                    data: this.nodeData(currentConfig.nodes[i], i),
                     classes: 'multiline-manual'
                 })
-                if (this.currentSimulation == "AStar") {
+                console.log("this.currentSimulation", SimulationInterface.currentSimulation)
+                if (SimulationInterface.currentSimulation === "AStar") {
                     nodeMap[currentConfig.nodes[i].id.replace(' ', '_')] = i;
                 }
             }
             // Collect information on connections
             for (i = 0; i < currentConfig.edges.length; i++) {
-                realDistance = currentConfig.edges[i].distance
-                label = "g: " + realDistance;
                 elements.push({
-                    data: this.edgeData(currentConfig.edges[i]),
+                    data: this.edgeData(currentConfig.edges[i], i, nodeMap),
                 })
             }
             self.elements = elements;

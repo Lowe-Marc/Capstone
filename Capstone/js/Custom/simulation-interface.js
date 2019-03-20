@@ -39,6 +39,7 @@ var SimulationInterface = {
     runSimulation: function() {
         console.log("running simulation:")
         var config = this.configurationModule.collectConfig();
+        console.log("params:", config)
         $.ajax({
             method: "POST",
             url: "/Simulations/" + this.currentSimulation,

@@ -2,328 +2,130 @@
     ViewBag.Title = "Home Page";
 }
 
-<body>
-
-    @{
-        if (ViewData["ConfigurationException"] != null && !ViewData["ConfigurationException"].Equals(""))
-        {
-            <script>
-                alert("An exception was thrown parsing the configuration file. Please see the /Home/Debug endpoint for a stacktrace.")
-            </script>
-        }
-
-        List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
+@{
+    if (ViewData["ConfigurationException"] != null && !ViewData["ConfigurationException"].Equals(""))
+    {
+        <script>
+            alert("An exception was thrown parsing the configuration file. Please see the /Home/Debug endpoint for a stacktrace.")
+        </script>
     }
 
+    List<Capstone.Models.ConfigurationHelper.CytoscapeConfig> AStarConfigs = (List<Capstone.Models.ConfigurationHelper.CytoscapeConfig>)ViewData["Configs"];
+}
 
-    <div id="myModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add a new node</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-6 ml-auto">
-                                <label for="node-connection" style="vertical-align:sub" class="col-sm-4 control-label">Connection</label>
-                            </div>
-                            <div class="col-md-6 ml-auto">
-                                <input type="text" class="form-control disabled" id="node-connection-name" name="node-connection-name" readonly required="">
-                            </div>
+<div id="myModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add a new node</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-connection" style="vertical-align:sub" class="col-sm-4 control-label">Connection</label>
                         </div>
-                        <div class="row">
-                            <br />
+                        <div class="col-md-6 ml-auto">
+                            <input type="text" class="form-control disabled" id="node-connection-name" name="node-connection-name" readonly required="">
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 ml-auto">
-                                <label for="node-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
-                            </div>
-                            <div class="col-md-6 ml-auto">
-                                <input type="text" class="form-control" id="node-name" name="node-name" required="">
-                            </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
                         </div>
-                        <div class="row">
-                            <br />
+                        <div class="col-md-6 ml-auto">
+                            <input type="text" class="form-control" id="node-name" name="node-name" required="">
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 ml-auto">
-                                <label for="node-distance" style="vertical-align:sub" class="col-sm-4 control-label">Distance</label>
-                            </div>
-                            <div class="col-md-6 ml-auto">
-                                <input type="number" class="form-control" id="node-distance" name="node-distance" min="1" required="" onkeyup="if (value < 1){ value =1 }">
-                            </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-distance" style="vertical-align:sub" class="col-sm-4 control-label">Distance</label>
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <input type="number" class="form-control" id="node-distance" name="node-distance" min="1" required="" onkeyup="if (value < 1){ value =1 }">
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="addNode()">Add Node</button>
-                    <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="self.addNode()">Add Node</button>
+                <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="add-connection-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="col-12 modal-title text-center">
-                        Select the node to connect to
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </h5>
-                    <label style="display:none" id="connection-header"></label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="save-config-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Save Configuration</h5>
+<div id="add-connection-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="col-12 modal-title text-center">
+                    Select the node to connect to
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-md-6 ml-auto">
-                                <label for="configuration-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
-                            </div>
-                            <div class="col-md-6 ml-auto">
-                                <input type="text" class="form-control" id="configuration-name" name="node-connection-name" required="" onkeyup="checkConfigName()">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="saveConfigButton" class="btn btn-primary" onclick="requestAStarConfigurationSave()">Save</button>
-                    <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
-                </div>
+                </h5>
+                <label style="display:none" id="connection-header"></label>
             </div>
         </div>
     </div>
+</div>
 
+<div id="save-config-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save Configuration</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="configuration-name" style="vertical-align:sub" class="col-sm-4 control-label">Name</label>
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <input type="text" class="form-control" id="configuration-name" name="node-connection-name" required="" onkeyup="checkConfigName()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="saveConfigButton" class="btn btn-primary" onclick="self.requestAStarConfigurationSave()">Save</button>
+                <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<body>
+
+    <div id="arrow-left-div" data-image='@Url.Content("~/images/add.png")'></div>
+    <img id="arrow-left-img" src="~/vendor/open-iconic-master/png/arrow-left.png" style="display:none" />
 
     <div id="cy"></div>
-
-    <!-- Custom scripts for handling cytoscape-->
-    <script src="~/js/Custom/cytoscape-helpers.js"></script>
-    <!-- One off UI functions-->
-    <script src="~/js/Custom/ui-helpers.js"></script>
-
+    <script src="~/js/Custom/AStar/configuration-module.js"></script>
+    <script src="~/js/Custom/AStar/toolbar-module.js"></script>
+    <script src="~/js/Custom/AStar/animation-module.js"></script>
     <script>
         $(function () { // on dom ready
-            // Parse simulation configs
-            configs = @Html.Raw(Json.Encode(AStarConfigs));
-            console.log("configs", configs)
-            defaultConfigs = Object.values(jQuery.extend(true, {}, configs));
-            console.log("defaultConfigs", defaultConfigs)
-            var currentConfig = configs[0];
-            var currentAnimation = {
-                timestep: 0,
-                frames: [],
-                paused: false,
-                finished: false
-            };
-            var simulationResults = [];
+            var configs = @Html.Raw(Json.Encode(AStarConfigs))
+            SimulationInterface.setCurrentSimulation("AStar", configs);
 
-            // Set page description
             $('#simulation-title').text("A* Search");
             $('#simulation-description').html("<a href='https://en.wikipedia.org/wiki/A*_search_algorithm'>Link to information.</a>");
             $('#simulation-header').show();
-            setAStarConfig();
-            //setAStarPriorityQueue();
-
-
-            // Cytoscape initialization
-            var cy = setCytoscape(currentConfig);
-            setConfigurationsInSelector(configs, defaultConfigs);
-
-            // Master simulation object, useful since the JS functions are separated from the views
-            var simulationInfo = {
-                results: null,
-                cy: null,
-                animation: null
-            }
-
-            $('#fullscreen-enter').click(function () {
-                toggleFullscreen();
-            });
-
-            $('#fullscreen-exit').click(function () {
-                closeFullscreen();
-            });
-
-            $('#sidenavToggler').click(function () {
-                cy.resize();
-            });
-
-            $('#lock-locked').click(function () {
-                unlockNodes();
-            });
-
-            $('#lock-unlocked').click(function () {
-                lockNodes();
-            });
-
-            $('#save-config').click(function () {
-                saveAStarConfigurationPrompt();
-            });
-
-            $('#disable-grid-snapping').click(function () {
-                disableGridSnapping();
-            });
-
-            $('#enable-grid-snapping').click(function () {
-                enableGridSnapping();
-            });
-
-            // When enter is clicked in frame tracker,
-            // that frame is played
-            //TODO: write displayFrame function
-            $('#frame-tracker').keypress(function (e) {
-                if (e.which == 13) {
-                    updateSimulationInfo()
-                    var frameToPlay = $('#frame-tracker').val();
-                    var simulationResults = simulationInfo['results'];
-                    console.log("Searching to frame number", frameToPlay)
-                    console.log("simulationInfo", simulationInfo)
-                    var cy = simulationInfo['cy'];
-                    var currentAnimation = simulationInfo['animation'];
-                    frameInfo = {
-                        frame: currentAnimation['frames'][frameToPlay-1],
-                        timestep: frameToPlay,
-                        numFrames: currentAnimation['frames'].length,
-                        simulationSpecific: simulationInfo['results']['simulationSpecific'][frameToPlay-1],
-                        frameToStopOn: frameToPlay,
-                        simulationInfo: simulationInfo
-                    }
-                    resetFrame('TODO: remove this param', displayFrame, frameInfo)
-                }
-            })
-
-            // Run a simulation
-            $('#simulate').click(function () {
-                //setAStarConfig();
-                //configurationOverlayOn();
-                runSimulation();
-            });
-
-            // Start playing the animation beginning from the current frame
-            $('#play').click(function () {
-                if (!canPlay()) {
-                    return;
-                }
-                currentAnimation['paused'] = false;
-                updateSimulationInfo();
-                disablePlay();
-                enablePause();
-                if (getDisplayedFrame() == 0) {
-                    playFromBeginning(simulationInfo);
-                } else {
-                    resetFrame(currentAnimation['frames'][currentAnimation['timestep']], restartAnim, simulationInfo);
-                }
-            });
-
-            // Pauses the animation at the current frame
-            $('#pause').click(function () {
-                if ($('#pause').hasClass('disabled')) {
-                    return;
-                }
-                updateSimulationInfo();
-                pauseFrame(currentAnimation['frames'][currentAnimation['timestep']]);
-                currentAnimation['paused'] = true;
-                updateSimulationInfo();
-                enablePlay();
-                disablePause();
-            });
-
-            // Move forward a frame
-            $('#forward').click(function () {
-                if (canPlay()) {
-                    updateSimulationInfo();
-                    frameForward(simulationInfo);
-                }
-            });
-
-            // Move backward a frame
-            $('#backward').click(function () {
-                if (canPlay()) {
-                    updateSimulationInfo()
-                    frameBackward(simulationInfo);
-                }
-            });
-
-            function runSimulation() {
-                //cy = getCurrentMapObject(defaultConfigs);
-                var params = collectAStarParams(cy);
-                console.log("running simulation:", params)
-                $.ajax({
-                    method: "POST",
-                    url: "/Simulations/AStar",
-                    data: { "data": JSON.stringify(params) },
-                    dataType: "json",
-                    success: (result) => {
-                        console.log("Simulation has completed successfully.");
-                        simulationResults = result
-                        console.log("simulationResults", simulationResults);
-                        setMaxFrameCount(simulationResults['frames'].length);
-                        //cy = getCurrentMapObject(defaultConfigs);
-                        assembleFullAnimation(simulationResults, cy, currentAnimation, currentAnimation['timestep']);
-                        enablePlay();
-                        updateSimulationInfo()
-                    },
-                    error: (result) => {
-                        console.log("Simulation has completed unsuccessfully.");
-                        console.log(result);
-                    }
-                });
-            }
-
-            // Helper to keep the master simulation object up to date
-            function updateSimulationInfo() {
-                simulationInfo['results'] = simulationResults;
-                simulationInfo['cy'] = cy;
-                if (getDisplayedFrame() > 0) {
-                    currentAnimation['timestep'] = getDisplayedFrame() - 1;
-                }
-                simulationInfo['animation'] = currentAnimation;
-            }
-
-
-            // When the user clicks on <span> (x), close the modal
-            $('.close').click(function () {
-                $('#myModal').hide();
-                $('#add-connection-modal').hide();
-                $('#save-config-modal').hide();
-            });
-
-            $('.close-modal-button').click(function () {
-                $('#myModal').hide();
-                $('#add-connection-modal').hide();
-                $('#save-config-modal').hide();
-            });
-
-            $('#close-add-connection-modal').click(function () {
-                $('#add-connection-modal').hide();
-            });
-
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function (event) {
-                if (event.target.id == 'myModal') {
-                    $('#myModal').hide();
-                }
-            }
-
         });
     </script>
 </body>

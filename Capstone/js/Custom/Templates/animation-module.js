@@ -1,6 +1,6 @@
 (function() {
 
-    function AStarAnimationModule() {
+    function SimulationNameAnimationModule() {
         SimulationInterface.genericConstructors.animation.call(this);
 
         var self = this;
@@ -60,5 +60,5 @@
     }
 
     // Give the simulation interface an instance of the module
-    SimulationInterface.availableModules.AStar.animation = new AStarAnimationModule();
+    SimulationInterface.availableModules.SimulationName.animation = new SimulationNameAnimationModule();
 })();

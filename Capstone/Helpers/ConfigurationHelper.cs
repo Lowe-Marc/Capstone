@@ -104,6 +104,7 @@ namespace Capstone.Models
                                 node.id = name;
                                 node.x = Convert.ToDouble(lineContents[lineContents.Length - 2]);
                                 node.y = Convert.ToDouble(lineContents[lineContents.Length - 1]);
+                                node.coords = new Tuple<double, double>(node.x, node.y);
                                 nodes.Add(node);
                             }
                             else
@@ -283,7 +284,7 @@ namespace Capstone.Models
         private static void readReinforcementLearningConfigs()
         {
             CONFIGURATIONS.Remove(REINFORCEMENT_LEARNING);
-            List<CytoscapeConfig> DPConfigs = new List<CytoscapeConfig>();
+            List<CytoscapeConfig> RLConfigs = new List<CytoscapeConfig>();
 
             string[] configFiles = Directory.GetFiles(CONFIG_DIR + REINFORCEMENT_LEARNING);
 
@@ -367,7 +368,7 @@ namespace Capstone.Models
                     thisConfig.name = fileName.Split('\\').Last().Split('.').First();
                     thisConfig.nodes = nodes;
                     thisConfig.edges = edges;
-                    DPConfigs.Add(thisConfig);
+                    RLConfigs.Add(thisConfig);
                 }
                 catch (Exception e)
                 {
@@ -377,7 +378,7 @@ namespace Capstone.Models
                 }
             }
 
-            CONFIGURATIONS[REINFORCEMENT_LEARNING] = DPConfigs;
+            CONFIGURATIONS[REINFORCEMENT_LEARNING] = RLConfigs;
         }
     }
 }

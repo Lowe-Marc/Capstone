@@ -50,11 +50,11 @@ namespace Capstone.Controllers
         {
             ViewData["ConfigurationException"] = ConfigurationHelper.readConfigFiles(ConfigurationHelper.REINFORCEMENT_LEARNING);
 
-            List<ConfigurationHelper.CytoscapeConfig> DPConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
+            List<ConfigurationHelper.CytoscapeConfig> RLConfigs = new List<ConfigurationHelper.CytoscapeConfig>();
             if (ConfigurationHelper.CONFIGURATIONS != null && ConfigurationHelper.CONFIGURATIONS.ContainsKey(ConfigurationHelper.REINFORCEMENT_LEARNING))
-                DPConfigs = ConfigurationHelper.CONFIGURATIONS[ConfigurationHelper.REINFORCEMENT_LEARNING];
+                RLConfigs = ConfigurationHelper.CONFIGURATIONS[ConfigurationHelper.REINFORCEMENT_LEARNING];
 
-            ViewData["Configs"] = DPConfigs;
+            ViewData["Configs"] = RLConfigs;
             ViewData["Images"] = getDPImages();
 
             return View();

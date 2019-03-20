@@ -127,6 +127,10 @@
             })
         }
 
+        this.shouldHaveQtip = function(node) {
+            return node.connectedEdges().length == 4;
+        }
+
         this.qtipStructure = function(node) {
             return {
                 content: {
