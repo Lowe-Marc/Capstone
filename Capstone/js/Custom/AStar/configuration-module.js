@@ -89,7 +89,6 @@
         }
 
         this.edgeData = function(edge, thisEdgesIndex, nodeMap) {
-            console.log("nodeMap:", nodeMap)
             var realDistance = edge.distance
             var label = "g: " + realDistance;
             return {
@@ -198,7 +197,7 @@
             content += "<label id='heuristic-label'>Heuristic:</label>"
             content += "<input id='heuristic-value-" + node.id() + "' class='heuristic-input' type='number' min='0' step='1' value='" + node.data('heuristic') + "' onkeyup='if (value < 0){ value = 0 }'></input>"
             content += "<div style='padding:2px'></div>"
-            content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='setHeuristic(\"" + node.id().replace(' ','_') + "\",\"" + node.data('simulationID') + "\")'>Update</button>"
+            content += "<button id='heuristic-update-button' style='width: 100%' class='btn' onclick='self.setHeuristic(\"" + node.id().replace(' ','_') + "\")'>Update</button>"
             content += "</div>"
             content += "</div>"
             return content;
@@ -277,7 +276,7 @@
         */
         this.setHeuristics = function() {
             var dijkstra
-            var goalID = $('#goal-label').text();
+            var goalID = $('#goal-label').text().replace(" ", "_");
             var nodes = SimulationInterface.cy.nodes(), node;
             for (var i = 0; i < nodes['length']; i++) {
                 node = nodes[i]
@@ -287,6 +286,24 @@
                 node.data('heuristic', dijkstra.distanceTo(SimulationInterface.cy.$('#' + goalID)))
                 node.data('label', node.id().replace('_', ' ') + ": " + node.data('heuristic'));
             }
+        }
+
+        // Called when the heuristic of a single node is changed
+        this.setHeuristic = function(id) {
+            id = id.split(":")[0].replace(' ', '_');
+            var node = SimulationInterface.cy.$('#' + id);
+            node.data('id', id)
+            var heuristic = parseInt($('#heuristic-value-' + id).val());
+            if (heuristic < 0 || !Number.isInteger(heuristic)) {
+                $('#heuristic-value-' + id).addClass('has-error');
+                return;
+            }
+            $('#heuristic-value-' + id).val(heuristic);
+            $('#heuristic-value-' + id).removeClass('has-error');
+            self.calculateDistances(node.id());
+            node.data('heuristic', heuristic);
+            node.data('label', node.id().replace('_', ' ') + ": " + heuristic);
+            self.checkHeuristics();
         }
 
         this.checkHeuristics = function() {
@@ -335,7 +352,7 @@
 
         this.calculateDistances = function() {
             var dijkstra
-            var goalID = $('#goal-label').text();
+            var goalID = $('#goal-label').text().replace(" ", "_");
             
             for (var i = 0; i < SimulationInterface.cy.nodes()['length']; i++) {
                 dijkstra = SimulationInterface.cy.elements().dijkstra('#' + SimulationInterface.cy.nodes()[i].id(), function(edge) {

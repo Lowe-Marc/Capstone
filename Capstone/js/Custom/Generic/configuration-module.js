@@ -99,7 +99,6 @@
                     data: this.nodeData(currentConfig.nodes[i], i),
                     classes: 'multiline-manual'
                 })
-                console.log("this.currentSimulation", SimulationInterface.currentSimulation)
                 if (SimulationInterface.currentSimulation === "AStar") {
                     nodeMap[currentConfig.nodes[i].id.replace(' ', '_')] = i;
                 }

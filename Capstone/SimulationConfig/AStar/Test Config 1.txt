@@ -1,8 +1,8 @@
 # name latitude longitude
-La Crosse -5.0 5.0
-La Crescent -5.0 -5.0
-Winona 5.0 5.0
-Minneapolis 5.0 -5.0
+La Crosse 0.0 10.0
+La Crescent 0.0 0.0
+Winona 10.0 10.0
+Minneapolis 10.0 0.0
 # distances
 La Crosse, La Crescent: 5.0
 La Crosse, Winona: 5.0

@@ -24,36 +24,33 @@
             $('#simulation-config').html(content);
             $('#simulation-config').show();
             $('#simulation-config').height(600 - this.simulationConfigBottomBorder());
+            this.setAnimationButtonFunctionality();
             this.adjustDefaultToolbar();
         }
 
-        this.setCalculationAnimations = function() {
+        this.setAnimationButtonFunctionality = function() {
             $('#forward').click(function() {
                 if (!$('#forward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.displayNextFrame();
+                    SimulationInterface.animationModule.enablePauseControls();
+                    SimulationInterface.animationModule.frameForward();
                 }
             });
 
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.displayPreviousFrame();
+                    SimulationInterface.animationModule.enablePauseControls();
+                    SimulationInterface.animationModule.frameBackward();
                 }
             });
 
             $('#play').click(function() {
                 if (!$('#play').hasClass('disabled')) {
-                    $('#play').addClass('disabled');
-                    $('#pause').removeClass('disabled');
-                    $('#show-agent').attr("disabled", true);
                     SimulationInterface.animationModule.play();
                 }
             });
 
             $('#pause').click(function() {
                 if (!$('#pause').hasClass('disabled')) {
-                    $('#pause').addClass('disabled');
-                    $('#play').removeClass('disabled');
-                    $('#show-agent').removeAttr('disabled');
                     SimulationInterface.animationModule.pause();
                 }
             });
@@ -61,7 +58,7 @@
             $('#frame-tracker').keypress(function (e) {
                 if (e.which == 13) {
                     var frameToPlay = parseInt($('#frame-tracker').val());
-                    SimulationInterface.animationModule.setCurrentFrame(frameToPlay);
+                    SimulationInterface.animationModule.seekToFrame(frameToPlay);
                 }
             })
         }
