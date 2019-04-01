@@ -69,10 +69,20 @@
         // scaling to the grid size, and offset to center the maze
         this.nodeData = function(node, thisNodesIndex) {
             var centerOffset = this.gridWidth()*4;
-            this.positionsArr.push({
-                x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth() - centerOffset,
-                y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight() - centerOffset
-            })
+
+            var coords;
+            if (node.userDefined == undefined) {
+                coords = {
+                    x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth() - centerOffset,
+                    y: this.gridWidth()/2 + node.coords.Item2*this.gridHeight() - centerOffset
+                }
+            } else {
+                coords = {
+                    x: node.x,
+                    y: node.y
+                }
+            }
+
             var data = {
                 id: node.id.replace(" ", "_"),
                 simulationID: thisNodesIndex,
@@ -81,9 +91,9 @@
                 elementType: "node",
                 label: node.id.replace("_", " "),
                 position: {
-                    x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth(),
-                    y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight()
-                }
+                    x: coords.x,
+                    y: coords.y
+                },
             }
             return Object.assign(this.nodeStyle(), data);
         }
@@ -220,6 +230,8 @@
                     Item1: 0,
                     Item2: 0
                 },
+                x: 0,
+                y: 0
             });
 
             self.currentConfig.edges.push({

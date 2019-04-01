@@ -10,8 +10,6 @@
         this.cy = null;
         // An element is a single element of the cy display
         this.elements = [];
-        // Contains x,y coordinates for elements
-        this.positionsArr = [];
         // List of configurations associated with the simulation
         this.configs = [];
         // List of configurations that are included by default. i.e. these are the configurations not created and saved by the user.
@@ -53,6 +51,66 @@
             $('#lock-unlocked').show();
         }
 
+        this.checkConfigName = function() {
+            var configName = $('#configuration-name').val();
+
+            if (self.getCookie(configName) != "") {
+                $('#saveConfigButton').disable();
+            }
+        }
+
+        this.getCookie = function(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        this.setCookie = function(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + JSON.stringify(cvalue) + ";" + expires + ";path=/";
+        }
+
+        this.requestConfigurationSave = function() {
+            var configName = $('#configuration-name').val();
+            var newConfig = jQuery.extend(true, {}, self.currentConfig) // Deep copy of currentConfig
+            newConfig.name = configName;
+            self.updatePositions(newConfig);
+
+            // Store the new config if it doesn't already exist
+            if (self.getCookie(configName) == "") {
+                self.setCookie(configName, newConfig, 180);
+            }
+
+            self.setConfigurationsInSelector();
+            $('#save-config-modal').hide();
+        }
+
+        /*
+        Make sure the saved config has the current positions as they are diplayed
+        */
+        this.updatePositions = function(config) {
+            var configNode, cyNode;
+            for(var i = 0; i < config.nodes.length; i++) {
+                configNode = config.nodes[i];
+                cyNode = SimulationInterface.cy.$('#' + configNode.id.replace(' ', '_'))[0];
+                configNode.userDefined = true;
+                configNode.x = cyNode.position('x');
+                configNode.y = cyNode.position('y');
+            }
+        }
+
         /* 
         Renders the CY map and handles node specific properties such as clicking and locking
         */
@@ -64,10 +122,7 @@
 
             cy.ready(function () {
                 cy.nodes().positions(function (ele, i) {
-                    return {
-                        x: self.positionsArr[i].x,
-                        y: self.positionsArr[i].y
-                    }
+                    return ele.data('position')
                 });
                 self.lockNodes();
             });
@@ -90,7 +145,6 @@
             var i;
 
             var elements = [];
-            this.positionsArr = [];
             var currentConfig = this.currentConfig;
             // Collect information on nodes
             for (i = 0; i < currentConfig.nodes.length; i++) {

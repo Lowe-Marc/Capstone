@@ -143,6 +143,14 @@
             $('#disable-grid-snapping').hide();
             $('#enable-grid-snapping').show();
         }
+
+        /*
+        Note that the save-config-modal is in the AStar View, and must be included or accessible in whatever 
+        view is currently being displayed for this to work
+        */
+        this.saveConfigurationPrompt = function() {
+            $('#save-config-modal').show();
+        }
     }
 
     // Give interface a handle to the generic toolbar module constructor
