@@ -61,10 +61,6 @@
         // scaling to the grid size, and offset to center the maze
         this.nodeData = function(node) {
             var centerOffset = this.gridWidth()*4;
-            this.positionsArr.push({
-                x: this.gridWidth()/2 + node.coords.Item1*this.gridWidth() - centerOffset,
-                y: this.gridHeight()/2 + node.coords.Item2*this.gridHeight() - centerOffset
-            })
             var data = {
                 id: node.coords.Item1 + "_" + node.coords.Item2,
                 elementType: "node",
