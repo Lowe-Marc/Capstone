@@ -58,7 +58,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="self.addNode()">Add Node</button>
-                <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary close-modal-button" onclick="self.closeAddNodeMenu()" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -68,13 +68,48 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="col-12 modal-title text-center">
-                    Select the node to connect to
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </h5>
-                <label style="display:none" id="connection-header"></label>
+                <h5 class="modal-title">Add a Connection</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-connection" style="vertical-align:sub" class="col-sm-4 control-label">Node</label>
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <input type="text" class="form-control disabled" id="node-one-connection-name" name="node-connection-name" readonly required="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-name" style="vertical-align:sub" class="col-sm-4 control-label">Node</label>
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <input type="text" class="form-control disabled" id="node-two-connection-name" name="node-connection-name" readonly required="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 ml-auto">
+                            <label for="node-distance" style="vertical-align:sub" class="col-sm-4 control-label">Distance</label>
+                        </div>
+                        <div class="col-md-6 ml-auto">
+                            <input type="number" class="form-control" id="new-connection-distance" name="node-distance" min="1" required="" onkeyup="if (value < 1){ value =1 }">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="self.addConnection()">Add Connection</button>
+                <button type="button" class="btn btn-secondary close-modal-button" onclick="self.closeAddConnectionMenu()" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -103,7 +138,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="saveConfigButton" class="btn btn-primary" onclick="SimulationInterface.configurationModule.requestConfigurationSave()">Save</button>
-                <button type="button" class="btn btn-secondary close-modal-button" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary close-modal-button" onclick="SimulationInterface.configurationModule.closeConfigurationMenu()" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

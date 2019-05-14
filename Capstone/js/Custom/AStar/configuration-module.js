@@ -9,6 +9,9 @@
         this.INCONSISTENT = 3;
         this.INADMISSIBLE_AND_INCONSISTENT = 4;
 
+        this.newConnectionSource = null;
+        this.newConnectionTarget = null;
+
         this.nodeHeight = function() {
             return 30;
         }
@@ -220,10 +223,14 @@
             $('#node-connection-name').val(nodeToConnect.replace('_', ' '));
         }
 
+        this.closeAddNodeMenu = function() {
+            $('#myModal').hide();
+        }
+
         this.addNode = function() {
             var nodeToConnect = $('#node-connection-name').val().replace(' ', '_');
             var name = $('#node-name').val().replace(' ', '_');
-            var distance = $('#node-distance').val();
+            var distance = parseInt($('#node-distance').val());
             self.currentConfig.nodes.push({
                 id: name,
                 coords: {
@@ -247,24 +254,36 @@
             $('.qtip').hide();
             $('#add-connection-label').show();
             $('#add-connection-label').children().show();
-            $('#connection-header').text(nodeToConnect.replace('_', ' '))
+            self.newConnectionSource = nodeToConnect.replace('_', ' ')
         }
 
-        this.confirmConnection = function(nodeOne) {
-            var nodeTwo = $('#connection-header').text()
-            self.addConnection(nodeOne, nodeTwo);
+        this.confirmConnection = function(node) {
+            self.newConnectionTarget = node
+            self.showAddConnectionModal();
+        }
+
+        this.showAddConnectionModal = function() {
             $('#add-connection-label').hide();
+            $('#node-one-connection-name').val(self.newConnectionSource.replace('_', ' '));
+            $('#node-two-connection-name').val(self.newConnectionTarget.replace('_', ' '));
+            $('.qtip').hide();
+            $('#add-connection-modal').show();
+            $('#add-connection-modal').children().show();
         }
 
-        this.addConnection = function(nodeOne, nodeTwo) {
-            nodeOne = nodeOne.split(':')[0];
-            nodeTwo = nodeTwo.split(':')[0];
+        this.addConnection = function() {
+            var distance = parseInt($('#new-connection-distance').val())
             self.currentConfig.edges.push({
-                source: nodeOne,
-                target: nodeTwo,
-                distance: 5,
+                source: self.newConnectionSource,
+                target: self.newConnectionTarget,
+                distance: distance,
             });
             self.setCytoscape(self.currentConfig);
+            self.closeAddConnectionMenu();
+        }
+
+        this.closeAddConnectionMenu = function() {
+            $('#add-connection-modal').hide();
         }
 
         this.makeStartNode = function(id, simulationID) {
@@ -297,6 +316,10 @@
                 })
                 node.data('heuristic', dijkstra.distanceTo(SimulationInterface.cy.$('#' + goalID)))
                 node.data('label', node.id().replace('_', ' ') + ": " + node.data('heuristic'));
+                console.log("node.id():", node.id())
+                console.log("dijkstra:", typeof dijkstra.distanceTo(SimulationInterface.cy.$('#' + goalID)))
+                console.log("heuristic:", node.data('heuristic'))
+                console.log("label:", node.data('label'))
             }
         }
 

@@ -97,6 +97,10 @@
             $('#save-config-modal').hide();
         }
 
+        this.closeConfigurationMenu = function() {
+            $('#save-config-modal').hide();
+        }
+
         /*
         Make sure the saved config has the current positions as they are diplayed
         */
@@ -216,6 +220,7 @@
             for (i = 0; i < cookies.length; i++) {
                 nameConfigPair = cookies[i].split("=")
                 newConfig = JSON.parse(nameConfigPair[1]);
+                console.log("newConfig:", newConfig)
                 this.configs.push(newConfig)
             }
         }
