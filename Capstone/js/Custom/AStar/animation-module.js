@@ -27,7 +27,7 @@
         }
 
         this.ANIMATION_ACTIVE_TIME = function() {
-            return 1000;
+            return 1500;
         }
 
         this.RESET_TIME = function() {
@@ -76,7 +76,7 @@
             $('#play').addClass('disabled');
             $('#pause').addClass('disabled');
             $('#forward').addClass('disabled');
-            $('#forward').addClass('disabled');
+            $('#backward').addClass('disabled');
         }
 
         this.pause = function() {
@@ -101,7 +101,7 @@
             if (self.currentFrameNumber >= self.numFrames) {
                 return;
             }
-            SimulationInterface.animationModule.enablePauseControls();
+            self.disableAllAnimationControls();
             if (self.currentAnimation != null && self.currentAnimation.progress() < 1) {
                 self.currentAnimation.play();
             } else {
@@ -147,6 +147,7 @@
         }
 
         this.frameForward = function() {
+            self.disableAllAnimationControls();
             self.animationIsPaused = true;
             self.frameByFrame = true;
             if (this.currentFrameNumber < this.numFrames) {
@@ -159,6 +160,7 @@
         }
 
         this.frameBackward = function() {
+            self.disableAllAnimationControls();
             self.animationIsPaused = true;
             self.frameByFrame = true;
             if (this.currentFrameNumber > 0) {
@@ -246,11 +248,13 @@
                         self.currentFrameNumber++;
                         self.syncCurrentFrameDisplay();
                         if (!self.frameByFrame && !self.animationIsPaused && self.currentFrameNumber < self.numFrames) {
+                            self.enablePauseControls();
                             setTimeout(function() {
                                 // Repeating this condition because if pause is pressed after the timeout has started,
                                 // the animation should not play
                                 if (!self.animationIsPaused) {
-                                    self.anims[self.animIndex].play()
+                                    self.anims[self.animIndex].play();
+                                    self.disableAllAnimationControls();
                                 }
                             }, self.ANIMATION_ACTIVE_TIME());
                         } else {

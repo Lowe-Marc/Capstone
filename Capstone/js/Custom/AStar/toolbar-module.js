@@ -29,32 +29,35 @@
         }
 
         this.setAnimationButtonFunctionality = function() {
+            $('#forward').unbind();
             $('#forward').click(function() {
                 if (!$('#forward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.enablePauseControls();
                     SimulationInterface.animationModule.frameForward();
                 }
             });
 
+            $('#backward').unbind();
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
-                    SimulationInterface.animationModule.enablePauseControls();
                     SimulationInterface.animationModule.frameBackward();
                 }
             });
 
+            $('#play').unbind();
             $('#play').click(function() {
                 if (!$('#play').hasClass('disabled')) {
                     SimulationInterface.animationModule.play();
                 }
             });
 
+            $('#pause').unbind();
             $('#pause').click(function() {
                 if (!$('#pause').hasClass('disabled')) {
                     SimulationInterface.animationModule.pause();
                 }
             });
 
+            $('#frame-tracker').unbind();
             $('#frame-tracker').keypress(function (e) {
                 if (e.which == 13) {
                     var frameToPlay = parseInt($('#frame-tracker').val());
