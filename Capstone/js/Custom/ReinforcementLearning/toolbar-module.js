@@ -93,6 +93,7 @@
         this.adjustDefaultToolbar = function() {
             $('#lock-locked').hide();
             $('#disable-grid-snapping').hide();
+            $('#save-config').hide();
         }
 
     }
