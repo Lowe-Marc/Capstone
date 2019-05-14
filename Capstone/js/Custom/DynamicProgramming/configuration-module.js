@@ -82,6 +82,13 @@
             }
         }
 
+        /*
+        Override this function for cookie configurations
+        */
+        this.collectCookieConfigurations = function() {
+            
+        }
+
         this.cyConstructor = function() {
             return cytoscape({
                 container: document.getElementById('cy'),
