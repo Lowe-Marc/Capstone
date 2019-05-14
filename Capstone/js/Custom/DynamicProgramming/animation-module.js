@@ -266,6 +266,10 @@
             if (this.currentIterationIndex < this.currentIteration.length) {
                 if (this.currentIterationIndex > 0) {
                     $('#iteration-cell-' + (this.currentIterationIndex - 1)).css('background-color', '');
+                } else if (this.currentIterationIndex == 0) {
+                    // When highlighting the first calculation of an iteration, ensure the final calculation from
+                    // the previous round is no longer highlighted
+                    $('#iteration-cell-' + (this.currentIteration.length - 1)).css('background-color', '');
                 }
                 $('#iteration-cell-' + this.currentIterationIndex).css('background-color', 'LightSteelBlue');
                 $('#iteration-cell-' + this.currentIterationIndex).text(this.currentIterationCellText(this.currentIterationIndex));
@@ -376,8 +380,10 @@
                         self.forwardIterationIndex();
                         self.playIterations(onFinished);
                     }, self.iterationTime());
+                } else {
+                    self.pauseIterations();
                 }
-            } else if(this.atEndOfCalculationRound()) {
+            } else if(self.atEndOfCalculationRound()) {
                 $('#complete-iteration-label').hide();
                 if (onFinished != null) {
                     onFinished();
