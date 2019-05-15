@@ -167,7 +167,6 @@
         }
 
         this.qtipStructure = function(node) {
-            $('.qtip').appendTo('#simulation-area');
             return {
                 content: {
                     text: function(event, api) {

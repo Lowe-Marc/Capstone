@@ -194,7 +194,6 @@
         }
 
         this.displayPreviousEpisode = function() {
-            console.log("currentEpisodeIndex:", this.currentEpisodeIndex)
             if (this.currentEpisodeIndex > 1) {
                 this.currentEpisodeIndex -= 2;
                 this.currentFrameBySimType[this.currentSimIndex] -= 2;
@@ -223,7 +222,7 @@
             var anim;
             var color;
 
-            color = node.data('background-color');
+            color = node.style('background-color');
             anim = self.animateNodeToColor(node, self.AGENT_COLOR(), self.AGENT_ANIMATION_TIME());
             self.returnAnim = self.animateNodeToColor(node, color, self.AGENT_ANIMATION_TIME());
 
@@ -231,7 +230,7 @@
                 self.thisFunction = arguments.callee;
                 currentAction += 1;
                 node = SimulationInterface.cy.nodes('#' + self.states[currentAction]);
-                color = node.data('background-color');
+                color = node.style('background-color');
                 anim = self.animateNodeToColor(node, self.AGENT_COLOR(), self.AGENT_ANIMATION_TIME());
                 self.returnAnim = self.animateNodeToColor(node, color, self.AGENT_ANIMATION_TIME());
                 if (currentAction < self.states.length) {
