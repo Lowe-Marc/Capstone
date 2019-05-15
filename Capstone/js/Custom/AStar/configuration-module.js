@@ -167,6 +167,7 @@
         }
 
         this.qtipStructure = function(node) {
+            $('.qtip').appendTo('#simulation-area');
             return {
                 content: {
                     text: function(event, api) {
@@ -188,6 +189,7 @@
         }
 
         this.qtipContent = function(node, connecting) {
+            $('.qtip').appendTo('#simulation-area');
             var content;
             if (connecting) {
                 return "<button id='confirm-connection' class='btn' onclick='self.confirmConnection(\"" +  node.id().replace(' ','_').split(':')[0] + "\")'>Connect to this node</button>"

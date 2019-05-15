@@ -131,8 +131,9 @@
                 self.lockNodes();
             });
             cy.nodes().each(function (node) {
-                if (self.shouldHaveQtip(node))
+                if (self.shouldHaveQtip(node)) {
                     cy.$('#' + node.id()).qtip(self.qtipStructure(node));
+                }
             });
 
             cy.gridGuide(this.gridInfo())
