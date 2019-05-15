@@ -46,18 +46,21 @@
         }
 
         this.setCalculationAnimations = function() {
+            $('#forward').unbind();
             $('#forward').click(function() {
                 if (!$('#forward').hasClass('disabled')) {
                     SimulationInterface.animationModule.displayNextEpisode();
                 }
             });
 
+            $('#backward').unbind();
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
                     SimulationInterface.animationModule.displayPreviousEpisode();
                 }
             });
 
+            $('#play').unbind();
             $('#play').click(function() {
                 if (!$('#play').hasClass('disabled')) {
                     $('#play').addClass('disabled');
@@ -68,6 +71,7 @@
                 }
             });
 
+            $('#pause').unbind();
             $('#pause').click(function() {
                 if (!$('#pause').hasClass('disabled')) {
                     $('#pause').addClass('disabled');
@@ -77,10 +81,12 @@
                 }
             });
 
+            $('input[type=radio][name=simulation-type]').unbind();
             $('input[type=radio][name=simulation-type]').change(function() {
                 SimulationInterface.animationModule.setSimulationType(this.value);
             });
 
+            $('#frame-tracker').unbind();
             $('#frame-tracker').keypress(function (e) {
                 if (e.which == 13) {
                     var frameToPlay = parseInt($('#frame-tracker').val());

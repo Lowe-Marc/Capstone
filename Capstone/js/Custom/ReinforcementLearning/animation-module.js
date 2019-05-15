@@ -114,6 +114,7 @@
             this.learningPaused = true;
             $('#pause').addClass('disabled');
             $('#play').removeClass('disabled');
+            $('#show-agent').removeAttr('disabled');
         }
 
         this.getStates = function(episodeNumber) {

@@ -71,18 +71,21 @@
         }
 
         this.setCalculationAnimations = function() {
+            $('#forward').unbind();
             $('#forward').click(function() {
                 if (!$('#forward').hasClass('disabled')) {
                     SimulationInterface.animationModule.forwardPolicy();
                 }
             });
 
+            $('#backward').unbind();
             $('#backward').click(function() {
                 if (!$('#backward').hasClass('disabled')) {
                     SimulationInterface.animationModule.backwardPolicy();
                 }
             });
 
+            $('#play').unbind();
             $('#play').click(function() {
                 if (!$('#play').hasClass('disabled')) {
                     $('#play').addClass('disabled');
@@ -92,6 +95,7 @@
                 }
             });
 
+            $('#pause').unbind();
             $('#pause').click(function() {
                 if (!$('#pause').hasClass('disabled')) {
                     // SimulationInterface.animationModule.configAnimPaused = true;
@@ -101,18 +105,21 @@
                 }
             });
 
+            $('#iteration-forward').unbind();
             $('#iteration-forward').click(function() {
                 if (!$('#iteration-forward').hasClass('disabled')) {
                     SimulationInterface.animationModule.forwardIterationIndex();
                 }
             });
 
+            $('#iteration-backward').unbind();
             $('#iteration-backward').click(function() {
                 if (!$('#iteration-backward').hasClass('disabled')) {
                     SimulationInterface.animationModule.backwardIterationIndex();
                 }
             });
 
+            $('#iteration-play').unbind();
             $('#iteration-play').click(function() {
                 if (!$('#iteration-play').hasClass('disabled')) {
                     $('#iteration-play').addClass('disabled');
@@ -124,6 +131,7 @@
                 }
             });
 
+            $('#iteration-pause').unbind();
             $('#iteration-pause').click(function() {
                 if (!$('#iteration-pause').hasClass('disabled')) {
                     SimulationInterface.animationModule.pauseIterations();
