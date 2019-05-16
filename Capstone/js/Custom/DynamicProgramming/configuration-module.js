@@ -135,6 +135,7 @@
         }
 
         this.qtipStructure = function(node) {
+            $('.qtip').appendTo('#simulation-area');
             return {
                 content: {
                     text: function(event, api) {
@@ -156,6 +157,7 @@
         }
 
         this.qtipContent = function(node, connecting) {
+            $('.qtip').appendTo('#simulation-area');
             var content;
             // Start and end buttons
             // Add node and connection buttons

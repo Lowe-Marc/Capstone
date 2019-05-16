@@ -155,6 +155,7 @@
         }
 
         this.qtipStructure = function(node) {
+            $('.qtip').appendTo('#simulation-area');
             if (node.connectedEdges().length != 4) {
                 return {};
             }
@@ -179,6 +180,7 @@
         }
 
         this.qtipContent = function(node) {
+            $('.qtip').appendTo('#simulation-area');
             var content;
             // Start and end buttons
             // Add node and connection buttons
